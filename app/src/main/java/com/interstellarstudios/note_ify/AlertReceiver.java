@@ -33,7 +33,7 @@ public class AlertReceiver extends BroadcastReceiver {
                     ApiClient defaultClient = Configuration.getDefaultApiClient();
 
                     ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-                    apiKey.setApiKey("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");
+                    apiKey.setApiKey("API KEY GOES HERE");
 
                     SmtpApi apiInstance = new SmtpApi();
 
