@@ -211,7 +211,6 @@ public class Collections extends AppCompatActivity {
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
         navigation.setLabelVisibilityMode(LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED);
 
         BottomNavigationMenuView menuView = (BottomNavigationMenuView) navigation.getChildAt(0);
@@ -222,9 +221,9 @@ public class Collections extends AppCompatActivity {
             final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, displayMetrics);
             layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, displayMetrics);
-
             iconView.setLayoutParams(layoutParams);
         }
+
         setUpRecyclerView();
     }
 

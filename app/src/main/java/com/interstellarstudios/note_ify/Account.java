@@ -2,6 +2,7 @@ package com.interstellarstudios.note_ify;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.bottomnavigation.LabelVisibilityMode;
 import android.support.design.internal.BottomNavigationMenuView;
@@ -73,6 +74,15 @@ public class Account extends AppCompatActivity implements View.OnClickListener {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
+        ImageView websiteLink = findViewById(R.id.website_link);
+        websiteLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://interstellarstudios.co.uk/"));
+                startActivity(browserIntent);
+            }
+        });
+
         ImageView imageViewSettings = findViewById(R.id.image_view_settings);
         imageViewSettings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,7 +95,6 @@ public class Account extends AppCompatActivity implements View.OnClickListener {
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
         navigation.setLabelVisibilityMode(LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED);
 
         BottomNavigationMenuView menuView = (BottomNavigationMenuView) navigation.getChildAt(0);
@@ -96,7 +105,6 @@ public class Account extends AppCompatActivity implements View.OnClickListener {
             final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, displayMetrics);
             layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, displayMetrics);
-
             iconView.setLayoutParams(layoutParams);
         }
 

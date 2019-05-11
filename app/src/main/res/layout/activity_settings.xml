@@ -114,29 +114,4 @@
         app:layout_constraintTop_toTopOf="@+id/settingsHeading"
         app:srcCompat="@drawable/ic_settings" />
 
-    <ImageView
-        android:id="@+id/web_icon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/priorityDescription"
-        app:srcCompat="@drawable/ic_website" />
-
-    <TextView
-        android:id="@+id/web_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Visit Our Website"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/web_icon" />
-
 </android.support.constraint.ConstraintLayout>

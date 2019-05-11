@@ -108,7 +108,7 @@ public class Bin extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,7 +136,7 @@ public class Bin extends AppCompatActivity {
             }
         });
 
-        searchButton = (ImageView)findViewById(R.id.searchButton);
+        searchButton = findViewById(R.id.searchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -149,27 +149,21 @@ public class Bin extends AppCompatActivity {
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        //Disable shift mode for bottom navigation
         navigation.setLabelVisibilityMode(LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED);
 
-        //To change size of bottom navigation icons
         BottomNavigationMenuView menuView = (BottomNavigationMenuView) navigation.getChildAt(0);
         for (int i = 2; i < 3; i++) {
 
             final View iconView = menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
             final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
             final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            // set your height here
             layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, displayMetrics);
-            // set your width here
             layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, displayMetrics);
-
             iconView.setLayoutParams(layoutParams);
         }
 
-        emptyView = (ImageView)findViewById(R.id.emptyView);
-        emptyViewText = (TextView)findViewById(R.id.emptyViewText);
+        emptyView = findViewById(R.id.emptyView);
+        emptyViewText = findViewById(R.id.emptyViewText);
         setUpRecyclerView();
     }
 

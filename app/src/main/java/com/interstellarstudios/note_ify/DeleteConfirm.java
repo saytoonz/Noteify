@@ -12,8 +12,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import es.dmoral.toasty.Toasty;
 import spencerstudios.com.bungeelib.Bungee;
 
@@ -33,16 +31,8 @@ public class DeleteConfirm extends AppCompatActivity {
         confirm_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String current_user_id = mFireBaseAuth.getCurrentUser().getUid();
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
                 FirebaseUser user = mFireBaseAuth.getCurrentUser();
-                String userEmailDetail = user.getEmail();
 
-                DocumentReference userMap = db.collection("Deleted_User").document(userEmailDetail);
-                userMap.set(new UserDetailsModel(current_user_id));
-
-                //Delete account method
                 user.delete()
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
