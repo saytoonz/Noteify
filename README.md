@@ -2,11 +2,15 @@
 
 Create Beautiful Notes
 
-Create stunning notes with a wide variety of rich text formatting options. Images can be inserted into your notes or take a photo with your camera and add it directly into your note. Insert links into your notes with the click of a button. 
+Create stunning notes with a wide variety of rich text formatting options. Images can be inserted into your notes or take a photo with your camera and add it directly into your note. Insert links into your notes with the click of a button. 
 
 Powered by the Cloud
 
 All of your notes automatically synced to the Cloud. Sign in and see your notes instantly. Powered by Google Firebase and the Google Cloud Platform.
+
+Themes
+
+Prefer a darker theme? Easily switch between our light and dark themes with the flick of a switch.
 
 Attachments
 
@@ -31,5 +35,3 @@ Your notes are available even when your device is offline. Create a note and it 
 Organize
 
 Use powerful Search & Sort to quickly find what you need. Create folders to organize your notes. Priority and Revision fields keep your notes in order.
-
-We've set out to create a beautiful (and free!) note and document sharing App. We've started out fairly small but we're hoping to grow our platform and following quickly. We'd love to hear your feedback and thank you for your support.
