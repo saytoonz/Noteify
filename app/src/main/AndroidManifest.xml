@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.interstellarstudios.note_ify">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter android:label="Note-ify">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Notes"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".NotesSortAlphabetical"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".NotesSortPriority"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".SignIn"
+            android:theme="@style/SubTheme" />
+        <activity
+            android:name=".Register"
+            android:theme="@style/SubTheme" />
+        <activity
+            android:name=".GroceryList"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".Account"
+            android:label="@string/manifest_activity_name_account"
+            android:theme="@style/SubTheme" />
+        <activity
+            android:name=".NewNote"
+            android:label=""
+            android:theme="@style/SubTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ForgotPassword"
+            android:theme="@style/SubTheme" />
+        <activity
+            android:name=".Bin"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".EditNote"
+            android:label=""
+            android:theme="@style/SubTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".EditAccountDetails"
+            android:label="@string/manifest_activity_name_edit_account_details"
+            android:theme="@style/SubTheme" />
+        <activity android:name=".PrivacyPolicy" />
+        <activity android:name=".BinSearchResults" />
+        <activity android:name=".TermsOfService" />
+        <activity
+            android:name=".FingerprintLogin"
+            android:theme="@style/SubTheme" />
+        <activity
+            android:name=".NewCollection"
+            android:label="New Folder"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".NewNotebookNote"
+            android:label=""
+            android:theme="@style/SubTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".Settings"
+            android:label="Settings"
+            android:theme="@style/SubTheme" />
+        <activity
+            android:name=".DeleteAccount"
+            android:theme="@style/SubTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".EditSharedNote"
+            android:label=""
+            android:theme="@style/SubTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".DeleteConfirm"
+            android:theme="@style/SubTheme" />
+        <activity android:name=".SharedSearchResults" />
+        <activity
+            android:name=".SharedSortAlphabetical"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".SharedSortPriority"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".MoveSelectFolder" />
+        <activity android:name=".FolderSearchResults" />
+        <activity
+            android:name=".Home"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".Information"
+            android:theme="@style/SubTheme" />
+        <activity android:name=".NotesSearchResults" />
+        <activity
+            android:name=".Shared"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="com.interstellarstudios.note_ify.FirebasePushNotifications.TARGETNOTIFICATION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.interstellarstudios.note_ify.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <receiver
+            android:name=".AlertReceiver"
+            android:enabled="true" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+    </application>
+
+</manifest>

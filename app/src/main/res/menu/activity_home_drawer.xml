@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_new_note"
+            android:icon="@drawable/note_placeholder"
+            android:title="New Note" />
+        <item
+            android:id="@+id/nav_folders"
+            android:icon="@drawable/ic_folder"
+            android:title="Folders" />
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_share"
+            android:title="Shared with Me" />
+        <item
+            android:id="@+id/nav_grocery_list"
+            android:icon="@drawable/ic_grocery_green"
+            android:title="Grocery List" />
+        <item
+            android:id="@+id/nav_bin"
+            android:icon="@drawable/ic_bin_green"
+            android:title="Bin" />
+    </group>
+
+    <item android:title="Themes">
+        <menu>
+            <item
+                android:id="@+id/nav_dark"
+                android:icon="@drawable/ic_dark"
+                app:actionLayout="@layout/drawer_switch"
+                android:title="Dark Theme" />
+        </menu>
+    </item>
+
+    <item android:title="Tools">
+        <menu>
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_settings"
+                android:title="Settings" />
+            <item
+                android:id="@+id/nav_account"
+                android:icon="@drawable/ic_account"
+                android:title="Account" />
+            <item
+                android:id="@+id/nav_information"
+                android:icon="@drawable/ic_info"
+                android:title="Information" />
+        </menu>
+    </item>
+
+</menu>

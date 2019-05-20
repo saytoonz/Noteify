@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.interstellarstudios.note_ify.MainActivity">
+
+    <item
+        android:id="@+id/sort_date"
+        android:orderInCategory="1"
+        android:title="Sort: Date"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sort_alphabetically"
+        android:orderInCategory="2"
+        android:title="Sort: Alphabetical"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/sort_priority"
+        android:orderInCategory="3"
+        android:title="Sort: Priority"
+        app:showAsAction="never" />
+
+</menu>
