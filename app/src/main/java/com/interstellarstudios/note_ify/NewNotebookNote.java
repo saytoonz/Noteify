@@ -132,6 +132,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
 
         TextView priorityTextView = findViewById(R.id.priorityTextView);
         HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
+        ImageView buttonBackground = findViewById(R.id.buttonBackground);
 
         TextView toolbarContacts = toolbar.findViewById(R.id.toolbar_contacts);
         toolbarContacts.setOnClickListener(new View.OnClickListener() {
@@ -450,6 +451,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
             mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeString));
 
             horizontalScrollView.setBackgroundColor(ContextCompat.getColor(NewNotebookNote.this, R.color.colorPrimaryDarkTheme));
+            buttonBackground.setBackgroundColor(ContextCompat.getColor(NewNotebookNote.this, R.color.buttonBackground));
         }
     }
 

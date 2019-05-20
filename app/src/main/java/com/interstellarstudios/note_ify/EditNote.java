@@ -132,6 +132,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
         TextView priorityTextView = findViewById(R.id.priorityTextView);
         HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
+        ImageView buttonBackground = findViewById(R.id.buttonBackground);
 
         Bundle bundle = getIntent().getExtras();
         String title = bundle.getString("title");
@@ -479,6 +480,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeString));
 
             horizontalScrollView.setBackgroundColor(ContextCompat.getColor(EditNote.this, R.color.colorPrimaryDarkTheme));
+            buttonBackground.setBackgroundColor(ContextCompat.getColor(EditNote.this, R.color.buttonBackground));
         }
     }
 

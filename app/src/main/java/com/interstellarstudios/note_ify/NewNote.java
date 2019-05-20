@@ -132,6 +132,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
         TextView priorityTextView = findViewById(R.id.priorityTextView);
         HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
+        ImageView buttonBackground = findViewById(R.id.buttonBackground);
 
         TextView toolbarContacts = toolbar.findViewById(R.id.toolbar_contacts);
         toolbarContacts.setOnClickListener(new View.OnClickListener() {
@@ -449,6 +450,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeString));
 
             horizontalScrollView.setBackgroundColor(ContextCompat.getColor(NewNote.this, R.color.colorPrimaryDarkTheme));
+            buttonBackground.setBackgroundColor(ContextCompat.getColor(NewNote.this, R.color.buttonBackground));
         }
     }
 

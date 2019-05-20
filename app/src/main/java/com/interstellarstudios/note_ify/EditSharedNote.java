@@ -132,6 +132,7 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
 
         TextView priorityTextView = findViewById(R.id.priorityTextView);
         HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
+        ImageView buttonBackground = findViewById(R.id.buttonBackground);
 
         Bundle bundle = getIntent().getExtras();
         String title = bundle.getString("title");
@@ -478,6 +479,7 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
             mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeString));
 
             horizontalScrollView.setBackgroundColor(ContextCompat.getColor(EditSharedNote.this, R.color.colorPrimaryDarkTheme));
+            buttonBackground.setBackgroundColor(ContextCompat.getColor(EditSharedNote.this, R.color.buttonBackground));
         }
     }
 
