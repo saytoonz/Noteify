@@ -574,9 +574,9 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         if (requestCode == READ_CONTACTS_PERMISSIONS_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(EditNote.this, "Read Contacts permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(EditNote.this, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(EditNote.this, "Read Contacts permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(EditNote.this, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -585,9 +585,9 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         if (requestCode == MY_CAMERA_REQUEST_CODE) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(EditNote.this, "Camera permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(EditNote.this, "Camera permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(EditNote.this, "Camera permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(EditNote.this, "Camera permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -596,9 +596,9 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(EditNote.this, "External storage permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(EditNote.this, "External storage permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(EditNote.this, "External storage permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(EditNote.this, "External storage permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -666,7 +666,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
             mImageUri = data.getData();
 
-            progressDialog.setMessage("Uploading Image...");
+            progressDialog.setMessage("Uploading Image");
             progressDialog.show();
 
             Thread thread = new Thread(new Runnable() {
@@ -741,7 +741,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                         cursor.close();
                     }
                     if (email.length() == 0) {
-                        Toasty.info(EditNote.this, "No email address stored for this contact.", Toast.LENGTH_LONG, true).show();
+                        Toasty.info(EditNote.this, "No email address stored for this contact", Toast.LENGTH_LONG, true).show();
                     } else {
                         sharedUserEmailInput.setText(email);
                     }
@@ -755,7 +755,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             galleryAddPic();
             mImageUri = Uri.fromFile(photoFile);
 
-            progressDialog.setMessage("Uploading Image...");
+            progressDialog.setMessage("Uploading Image");
             progressDialog.show();
 
             Thread thread = new Thread(new Runnable() {
@@ -963,14 +963,14 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         lowerCaseTitle = title.toLowerCase();
 
         if (title.trim().isEmpty()) {
-            Toasty.info(EditNote.this, "Please enter a title.", Toast.LENGTH_LONG, true).show();
+            Toasty.info(EditNote.this, "Please enter a title", Toast.LENGTH_LONG, true).show();
             return;
         }
 
         DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(noteId);
         documentPath.set(new Note(title, lowerCaseTitle, description, priority, date, "", updatedRevision, attachmentUrl));
 
-        Toasty.success(EditNote.this, "Note Saved.", Toast.LENGTH_LONG, true).show();
+        Toasty.success(EditNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
         mFireBaseAnalytics.logEvent("edit_note_save_called", analyticsBundle);
     }
@@ -1025,7 +1025,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                         mFireBaseAnalytics.logEvent("edit_share_email_only_called", analyticsBundle);
                     }
                 } else {
-                    Toasty.error(EditNote.this, "Please ensure that there is an active network connection to share a note.", Toast.LENGTH_LONG, true).show();
+                    Toasty.error(EditNote.this, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
                     finish();
                 }
             }

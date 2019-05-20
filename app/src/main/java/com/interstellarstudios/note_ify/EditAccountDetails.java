@@ -182,6 +182,6 @@ public class EditAccountDetails extends AppCompatActivity {
                         }
                     });
         }
-        Toasty.success(EditAccountDetails.this, "Profile Updated.", Toast.LENGTH_LONG, true).show();
+        Toasty.success(EditAccountDetails.this, "Profile Updated", Toast.LENGTH_LONG, true).show();
     }
 }

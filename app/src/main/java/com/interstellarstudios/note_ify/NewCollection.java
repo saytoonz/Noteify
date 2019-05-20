@@ -69,7 +69,7 @@ public class NewCollection extends AppCompatActivity {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
             mNewFolder.setTextColor(ContextCompat.getColor(NewCollection.this, R.color.colorDarkThemeText));
             mNewFolder.setHintTextColor(ContextCompat.getColor(NewCollection.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
             ImageViewCompat.setImageTintList(folderImageView, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
             buttonSave.setTextColor(ContextCompat.getColor(NewCollection.this, R.color.colorDarkThemeText));
         }
@@ -81,7 +81,7 @@ public class NewCollection extends AppCompatActivity {
         String lowerCaseFolder = folder.toLowerCase();
 
         if (folder.trim().isEmpty()) {
-            Toasty.info(NewCollection.this, "Please enter a folder name.", Toast.LENGTH_LONG, true).show();
+            Toasty.info(NewCollection.this, "Please enter a folder name", Toast.LENGTH_LONG, true).show();
             return;
         }
 
@@ -92,7 +92,7 @@ public class NewCollection extends AppCompatActivity {
         DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folder);
         documentPath.set(new Collection(folder, lowerCaseFolder, mFolderDate));
 
-        Toasty.success(NewCollection.this, "Folder Created.", Toast.LENGTH_LONG, true).show();
+        Toasty.success(NewCollection.this, "Folder Created", Toast.LENGTH_LONG, true).show();
         finish();
     }
 }

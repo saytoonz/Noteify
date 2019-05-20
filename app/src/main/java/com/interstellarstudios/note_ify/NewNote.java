@@ -550,9 +550,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         if (requestCode == READ_CONTACTS_PERMISSIONS_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNote.this, "Read Contacts permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(NewNote.this, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(NewNote.this, "Read Contacts permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(NewNote.this, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -561,9 +561,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         if (requestCode == MY_CAMERA_REQUEST_CODE) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNote.this, "Camera permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(NewNote.this, "Camera permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(NewNote.this, "Camera permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(NewNote.this, "Camera permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -572,9 +572,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNote.this, "External storage permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(NewNote.this, "External storage permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(NewNote.this, "External storage permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(NewNote.this, "External storage permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -642,7 +642,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
             mImageUri = data.getData();
 
-            progressDialog.setMessage("Uploading Image...");
+            progressDialog.setMessage("Uploading Image");
             progressDialog.show();
 
             Thread thread = new Thread(new Runnable() {
@@ -715,7 +715,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 cursor.close();
             }
             if (email.length() == 0) {
-                Toasty.info(NewNote.this, "No email address stored for this contact.", Toast.LENGTH_LONG, true).show();
+                Toasty.info(NewNote.this, "No email address stored for this contact", Toast.LENGTH_LONG, true).show();
             } else {
                 sharedUserEmailInput.setText(email);
             }
@@ -728,7 +728,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             galleryAddPic();
             mImageUri = Uri.fromFile(photoFile);
 
-            progressDialog.setMessage("Uploading Image...");
+            progressDialog.setMessage("Uploading Image");
             progressDialog.show();
 
             Thread thread = new Thread(new Runnable() {
@@ -932,7 +932,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         String lowerCaseFolder = folderId.toLowerCase();
 
         if (title.trim().isEmpty()) {
-            Toasty.info(NewNote.this, "Please enter a title.", Toast.LENGTH_LONG, true).show();
+            Toasty.info(NewNote.this, "Please enter a title", Toast.LENGTH_LONG, true).show();
             return;
         }
 
@@ -942,7 +942,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(localNoteId);
         documentPath.set(new Note(title, lowerCaseTitle, description, priority, date, "", 1, ""));
 
-        Toasty.success(NewNote.this, "Note Saved.", Toast.LENGTH_LONG, true).show();
+        Toasty.success(NewNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
         mFireBaseAnalytics.logEvent("save_note_called", analyticsBundle);
     }
@@ -993,7 +993,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                         mFireBaseAnalytics.logEvent("note_share_email_only_called", analyticsBundle);
                     }
                 } else {
-                    Toasty.error(NewNote.this, "Please ensure that there is an active network connection to share a note.", Toast.LENGTH_LONG, true).show();
+                    Toasty.error(NewNote.this, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
                     finish();
                 }
             }
@@ -1027,7 +1027,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts").collection("Drafts").document(id);
         documentPath.set(new Note(title, lowerCaseTitle, description, priority, date, "", 1, ""));
 
-        Toasty.success(NewNote.this, "Note saved to Drafts.", Toast.LENGTH_LONG, true).show();
+        Toasty.success(NewNote.this, "Note saved to Drafts", Toast.LENGTH_LONG, true).show();
         finish();
     }
 }

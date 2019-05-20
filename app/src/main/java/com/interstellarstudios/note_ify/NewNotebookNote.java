@@ -27,7 +27,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -551,9 +550,9 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         if (requestCode == READ_CONTACTS_PERMISSIONS_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNotebookNote.this, "Read Contacts permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(NewNotebookNote.this, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(NewNotebookNote.this, "Read Contacts permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(NewNotebookNote.this, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -562,9 +561,9 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         if (requestCode == MY_CAMERA_REQUEST_CODE) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNotebookNote.this, "Camera permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(NewNotebookNote.this, "Camera permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(NewNotebookNote.this, "Camera permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(NewNotebookNote.this, "Camera permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -573,9 +572,9 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNotebookNote.this, "External storage permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(NewNotebookNote.this, "External storage permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(NewNotebookNote.this, "External storage permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(NewNotebookNote.this, "External storage permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -643,7 +642,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
 
             mImageUri = data.getData();
 
-            progressDialog.setMessage("Uploading Image...");
+            progressDialog.setMessage("Uploading Image");
             progressDialog.show();
 
             Thread thread = new Thread(new Runnable() {
@@ -716,7 +715,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
                 cursor.close();
             }
             if (email.length() == 0) {
-                Toasty.info(NewNotebookNote.this, "No email address stored for this contact.", Toast.LENGTH_LONG, true).show();
+                Toasty.info(NewNotebookNote.this, "No email address stored for this contact", Toast.LENGTH_LONG, true).show();
             } else {
                 sharedUserEmailInput.setText(email);
             }
@@ -729,7 +728,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
             galleryAddPic();
             mImageUri = Uri.fromFile(photoFile);
 
-            progressDialog.setMessage("Uploading Image...");
+            progressDialog.setMessage("Uploading Image");
             progressDialog.show();
 
             Thread thread = new Thread(new Runnable() {
@@ -924,7 +923,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         lowerCaseTitle = title.toLowerCase();
 
         if (title.trim().isEmpty()) {
-            Toasty.info(NewNotebookNote.this, "Please enter a title.", Toast.LENGTH_LONG, true).show();
+            Toasty.info(NewNotebookNote.this, "Please enter a title", Toast.LENGTH_LONG, true).show();
             return;
         }
 
@@ -934,7 +933,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Notebook").collection("Notebook").document(localNoteId);
         documentPath.set(new Note(title, lowerCaseTitle, description, priority, date, "", 1, ""));
 
-        Toasty.success(NewNotebookNote.this, "Note Saved.", Toast.LENGTH_LONG, true).show();
+        Toasty.success(NewNotebookNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
         mFireBaseAnalytics.logEvent("save_note_called", analyticsBundle);
     }
@@ -985,7 +984,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
                         mFireBaseAnalytics.logEvent("note_share_email_only_called", analyticsBundle);
                     }
                 } else {
-                    Toasty.error(NewNotebookNote.this, "Please ensure that there is an active network connection to share a note.", Toast.LENGTH_LONG, true).show();
+                    Toasty.error(NewNotebookNote.this, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
                     finish();
                 }
             }
@@ -1019,7 +1018,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts").collection("Drafts").document(id);
         documentPath.set(new Note(title, lowerCaseTitle, description, priority, date, "", 1, ""));
 
-        Toasty.success(NewNotebookNote.this, "Note saved to Drafts.", Toast.LENGTH_LONG, true).show();
+        Toasty.success(NewNotebookNote.this, "Note saved to Drafts", Toast.LENGTH_LONG, true).show();
         finish();
     }
 }

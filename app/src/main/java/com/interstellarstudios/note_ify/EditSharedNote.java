@@ -573,9 +573,9 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
         if (requestCode == READ_CONTACTS_PERMISSIONS_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(EditSharedNote.this, "Read Contacts permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(EditSharedNote.this, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(EditSharedNote.this, "Read Contacts permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(EditSharedNote.this, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -584,9 +584,9 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
         if (requestCode == MY_CAMERA_REQUEST_CODE) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(EditSharedNote.this, "Camera permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(EditSharedNote.this, "Camera permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(EditSharedNote.this, "Camera permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(EditSharedNote.this, "Camera permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -595,9 +595,9 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
         if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(EditSharedNote.this, "External storage permission granted.", Toast.LENGTH_LONG, true).show();
+                Toasty.success(EditSharedNote.this, "External storage permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(EditSharedNote.this, "External storage permission denied.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(EditSharedNote.this, "External storage permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -665,7 +665,7 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
 
             mImageUri = data.getData();
 
-            progressDialog.setMessage("Uploading Image...");
+            progressDialog.setMessage("Uploading Image");
             progressDialog.show();
 
             Thread thread = new Thread(new Runnable() {
@@ -740,7 +740,7 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
                         cursor.close();
                     }
                     if (email.length() == 0) {
-                        Toasty.info(EditSharedNote.this, "No email address stored for this contact.", Toast.LENGTH_LONG, true).show();
+                        Toasty.info(EditSharedNote.this, "No email address stored for this contact", Toast.LENGTH_LONG, true).show();
                     } else {
                         sharedUserEmailInput.setText(email);
                     }
@@ -754,7 +754,7 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
             galleryAddPic();
             mImageUri = Uri.fromFile(photoFile);
 
-            progressDialog.setMessage("Uploading Image...");
+            progressDialog.setMessage("Uploading Image");
             progressDialog.show();
 
             Thread thread = new Thread(new Runnable() {
@@ -962,14 +962,14 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
         lowerCaseTitle = title.toLowerCase();
 
         if (title.trim().isEmpty()) {
-            Toasty.info(EditSharedNote.this, "Please enter a title.", Toast.LENGTH_LONG, true).show();
+            Toasty.info(EditSharedNote.this, "Please enter a title", Toast.LENGTH_LONG, true).show();
             return;
         }
 
         DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Public").document("Shared").collection("Shared").document(noteId);
         documentPath.set(new Note(title, lowerCaseTitle, description, priority, date, fromEmailAddress, updatedRevision, attachmentUrl));
 
-        Toasty.success(EditSharedNote.this, "Note Saved.", Toast.LENGTH_LONG, true).show();
+        Toasty.success(EditSharedNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
         mFireBaseAnalytics.logEvent("edit_note_save_called", analyticsBundle);
     }
@@ -991,7 +991,7 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
         sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
 
         if (sharedUserEmail.trim().isEmpty()) {
-            Toasty.info(EditSharedNote.this, "Don't forget to enter an email address to share your note.", Toast.LENGTH_LONG, true).show();
+            Toasty.info(EditSharedNote.this, "Don't forget to enter an email address to share your note", Toast.LENGTH_LONG, true).show();
             return;
         }
 
@@ -1025,7 +1025,7 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
                         mFireBaseAnalytics.logEvent("edit_share_email_only_called", analyticsBundle);
                     }
                 } else {
-                    Toasty.error(EditSharedNote.this, "Please ensure that there is an active network connection to share a note.", Toast.LENGTH_LONG, true).show();
+                    Toasty.error(EditSharedNote.this, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
                     finish();
                 }
             }
