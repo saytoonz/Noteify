@@ -43,10 +43,12 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".SignIn"
-            android:theme="@style/SubTheme" />
+            android:theme="@style/SubTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Register"
-            android:theme="@style/SubTheme" />
+            android:theme="@style/SubTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".GroceryList"
             android:windowSoftInputMode="stateHidden|adjustResize" />
@@ -61,7 +63,8 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ForgotPassword"
-            android:theme="@style/SubTheme" />
+            android:theme="@style/SubTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Bin"
             android:windowSoftInputMode="stateHidden|adjustResize" />

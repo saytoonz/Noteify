@@ -92,7 +92,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:gravity="center_horizontal"
-        android:text="This folder is empty. Open the menu button to create a note."
+        android:text="This folder is empty. Tap the '+' button to create a note."
         android:textColor="@color/colorLightThemeText"
         android:textSize="14sp"
         android:visibility="gone"
