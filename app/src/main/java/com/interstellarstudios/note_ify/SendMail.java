@@ -27,7 +27,7 @@ public class SendMail {
 
                     SmtpApi apiInstance = new SmtpApi();
 
-                    List<SendSmtpEmailTo> emailArrayList = new ArrayList<SendSmtpEmailTo>();
+                    List<SendSmtpEmailTo> emailArrayList = new ArrayList<>();
                     emailArrayList.add(new SendSmtpEmailTo().email(sharedUserEmail));
 
                     SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
@@ -499,7 +499,7 @@ public class SendMail {
                             "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
                             "                                                    </tr><tr>\n" +
                             "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
-                            "                                                            <div><div style=\"text-align: center;\">Download the free App now to see attachments.</div>\n" +
+                            "                                                            <div><div style=\"text-align: center;\">Download the free App now.</div>\n" +
                             "</div>\n" +
                             "                                                        </td>\n" +
                             "                                                    </tr>\n" +

@@ -41,7 +41,7 @@ public class AlertReceiver extends BroadcastReceiver {
                     FirebaseUser user = firebaseAuth.getCurrentUser();
                     String currentUserEmail = user.getEmail();
 
-                    List<SendSmtpEmailTo> emailArrayList = new ArrayList<SendSmtpEmailTo>();
+                    List<SendSmtpEmailTo> emailArrayList = new ArrayList<>();
                     emailArrayList.add(new SendSmtpEmailTo().email(currentUserEmail));
 
                     SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
