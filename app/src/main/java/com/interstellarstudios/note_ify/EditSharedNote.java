@@ -160,10 +160,11 @@ public class EditSharedNote extends AppCompatActivity implements DatePickerDialo
             public void onClick(View v) {
 
                 saveNote();
-                saveSharedNote();
 
                 sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
                 SendMail.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+
+                saveSharedNote();
 
                 attachment_name = attachmentTextView.getText().toString();
                 if (!attachment_name.equals("")) {
