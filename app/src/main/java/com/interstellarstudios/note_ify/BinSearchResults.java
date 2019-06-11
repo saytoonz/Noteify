@@ -283,6 +283,9 @@ public class BinSearchResults extends AppCompatActivity implements NavigationVie
         } else if (id == R.id.nav_grocery_list) {
             Intent k = new Intent(BinSearchResults.this, GroceryList.class);
             startActivity(k);
+        } else if (id == R.id.nav_shared_grocery_list) {
+            Intent k = new Intent(BinSearchResults.this, SharedGroceryList.class);
+            startActivity(k);
         } else if (id == R.id.nav_bin) {
             Intent k = new Intent(BinSearchResults.this, Bin.class);
             startActivity(k);

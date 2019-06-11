@@ -404,6 +404,9 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
         } else if (id == R.id.nav_grocery_list) {
             Intent k = new Intent(Notes.this, GroceryList.class);
             startActivity(k);
+        } else if (id == R.id.nav_shared_grocery_list) {
+            Intent k = new Intent(Notes.this, SharedGroceryList.class);
+            startActivity(k);
         } else if (id == R.id.nav_bin) {
             Intent l = new Intent(Notes.this, Bin.class);
             startActivity(l);

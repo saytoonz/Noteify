@@ -125,6 +125,15 @@
             android:theme="@style/SubTheme" />
         <activity android:name=".NotesSearchResults" />
         <activity
+            android:name=".SharedGroceryList"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="com.interstellarstudios.note_ify.FirebasePushNotifications.TARGETNOTIFICATION2" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".Shared"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>

@@ -22,6 +22,10 @@
             android:icon="@drawable/ic_grocery_green"
             android:title="Grocery List" />
         <item
+            android:id="@+id/nav_shared_grocery_list"
+            android:icon="@drawable/ic_shared_grocery"
+            android:title="Shared Grocery List" />
+        <item
             android:id="@+id/nav_bin"
             android:icon="@drawable/ic_bin_green"
             android:title="Bin" />

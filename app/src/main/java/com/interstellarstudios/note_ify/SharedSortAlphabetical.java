@@ -380,6 +380,9 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
         } else if (id == R.id.nav_grocery_list) {
             Intent k = new Intent(SharedSortAlphabetical.this, GroceryList.class);
             startActivity(k);
+        } else if (id == R.id.nav_shared_grocery_list) {
+            Intent k = new Intent(SharedSortAlphabetical.this, SharedGroceryList.class);
+            startActivity(k);
         } else if (id == R.id.nav_bin) {
             Intent l = new Intent(SharedSortAlphabetical.this, Bin.class);
             startActivity(l);

@@ -338,6 +338,9 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
         } else if (id == R.id.nav_grocery_list) {
             Intent k = new Intent(Bin.this, GroceryList.class);
             startActivity(k);
+        } else if (id == R.id.nav_shared_grocery_list) {
+            Intent k = new Intent(Bin.this, SharedGroceryList.class);
+            startActivity(k);
         } else if (id == R.id.nav_dark) {
 
         } else if (id == R.id.nav_settings) {

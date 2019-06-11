@@ -403,6 +403,9 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
         } else if (id == R.id.nav_grocery_list) {
             Intent k = new Intent(NotesSortAlphabetical.this, GroceryList.class);
             startActivity(k);
+        } else if (id == R.id.nav_shared_grocery_list) {
+            Intent k = new Intent(NotesSortAlphabetical.this, SharedGroceryList.class);
+            startActivity(k);
         } else if (id == R.id.nav_bin) {
             Intent l = new Intent(NotesSortAlphabetical.this, Bin.class);
             startActivity(l);

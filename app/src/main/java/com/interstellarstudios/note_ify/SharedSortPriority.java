@@ -382,6 +382,9 @@ public class SharedSortPriority extends AppCompatActivity implements NavigationV
         } else if (id == R.id.nav_grocery_list) {
             Intent k = new Intent(SharedSortPriority.this, GroceryList.class);
             startActivity(k);
+        } else if (id == R.id.nav_shared_grocery_list) {
+            Intent k = new Intent(SharedSortPriority.this, SharedGroceryList.class);
+            startActivity(k);
         } else if (id == R.id.nav_bin) {
             Intent l = new Intent(SharedSortPriority.this, Bin.class);
             startActivity(l);
