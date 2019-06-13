@@ -27,8 +27,6 @@ public class Note {
         this.attachmentUrl = attachmentUrl;
     }
 
-    //These method naming conventions are important for Firebase. Always 'get' and then the name of the field,
-    //NEED THE GET METHOD WHEN ADDING A FIELD
     public String getTitle() {
         return title;
     }

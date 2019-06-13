@@ -1,10 +1,8 @@
 package com.interstellarstudios.note_ify;
 
-import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -35,15 +33,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,9 +64,6 @@ import sibModel.SendSmtpEmailTo;
 public class GroceryList extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ArrayList<String> groceryArrayList = new ArrayList<>();
-    private FirebaseAnalytics mFireBaseAnalytics;
-    private SQLiteDatabase mDatabase;
-    private GroceryAdapter mAdapter;
     private EditText mEditTextName;
     private TextView mTextViewAmount;
     private int mAmount = 0;
@@ -75,6 +73,8 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
     private String mSharedUserId;
     private String sharedUserEmail;
     private String currentUserEmail;
+    private String mCurrentUserID;
+    private GroceryListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +87,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         mFireBaseFireStore = FirebaseFirestore.getInstance();
 
         if (mFireBaseAuth.getCurrentUser() != null) {
+            mCurrentUserID = mFireBaseAuth.getCurrentUser().getUid();
             FirebaseUser mUser = mFireBaseAuth.getCurrentUser();
             currentUserEmail = mUser.getEmail();
         }
@@ -94,9 +95,6 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         int colorLightThemeText = getResources().getColor(R.color.colorLightThemeText);
         String colorLightThemeTextString = Integer.toString(colorLightThemeText);
         getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorLightThemeTextString + "\">" + "Grocery List" + "</font>"));
-
-        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
-        final Bundle analyticsBundle = new Bundle();
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.drawer_view);
@@ -118,27 +116,6 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        GroceryDBHelper dbHelper = new GroceryDBHelper(this);
-        mDatabase = dbHelper.getWritableDatabase();
-
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new GroceryAdapter(this, getAllItems(), sharedPreferences);
-        recyclerView.setAdapter(mAdapter);
-
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                removeItem((long) viewHolder.itemView.getTag());
-            }
-        }).attachToRecyclerView(recyclerView);
-
         mEditTextName = findViewById(R.id.grocery_item);
         mTextViewAmount = findViewById(R.id.grocery_amount);
         mSharedUserEmailText = findViewById(R.id.sharedUserEmail);
@@ -148,8 +125,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             @Override
             public void onClick(View v) {
                 shareGroceryList();
-                sendMail();
-                Toasty.success(GroceryList.this, "Grocery list shared with and emailed to: " + currentUserEmail, Toast.LENGTH_LONG, true).show();
+                Toasty.success(GroceryList.this, "Grocery list shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
             }
         });
 
@@ -160,8 +136,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
                             shareGroceryList();
-                            sendMail();
-                            Toasty.success(GroceryList.this, "Grocery list shared with and emailed to: " + currentUserEmail, Toast.LENGTH_LONG, true).show();
+                            Toasty.success(GroceryList.this, "Grocery list shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                             return true;
                         default:
                             break;
@@ -192,7 +167,6 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             @Override
             public void onClick(View v) {
                 addItem();
-                mFireBaseAnalytics.logEvent("grocery_list_item_added", analyticsBundle);
             }
         });
 
@@ -236,6 +210,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             buttonDecrease.setBackgroundColor(ContextCompat.getColor(GroceryList.this, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
         }
+        setUpRecyclerView();
     }
 
     public void savePreferences() {
@@ -270,32 +245,17 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         }
 
         String name = mEditTextName.getText().toString();
-        ContentValues cv = new ContentValues();
-        cv.put(GroceryContract.GroceryEntry.COLUMN_NAME, name);
-        cv.put(GroceryContract.GroceryEntry.COLUMN_AMOUNT, mAmount);
+        String amount = mTextViewAmount.getText().toString();
+        String newItem = amount + " " + name;
 
-        mDatabase.insert(GroceryContract.GroceryEntry.TABLE_NAME, null, cv);
-        mAdapter.swapCursor(getAllItems());
+        String randomId = UUID.randomUUID().toString();
+        String groceryDocumentString = "item " + randomId;
 
+        DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Grocery_List").collection("Grocery_List").document(groceryDocumentString);
+        groceryListPath.set(new GroceryItem(newItem));
+
+        recreate();
         mEditTextName.getText().clear();
-    }
-
-    private void removeItem(long id) {
-        mDatabase.delete(GroceryContract.GroceryEntry.TABLE_NAME,
-                GroceryContract.GroceryEntry._ID + "=" + id, null);
-        mAdapter.swapCursor(getAllItems());
-    }
-
-    private Cursor getAllItems() {
-        return mDatabase.query(
-                GroceryContract.GroceryEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                GroceryContract.GroceryEntry.COLUMN_TIMESTAMP + " DESC"
-        );
     }
 
     @Override
@@ -345,6 +305,64 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         return true;
     }
 
+    private void setUpRecyclerView() {
+
+        Context context = this;
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+
+        final CollectionReference groceryListRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Grocery_List").collection("Grocery_List");
+        Query query = groceryListRef.orderBy("item", Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<GroceryItem> options = new FirestoreRecyclerOptions.Builder<GroceryItem>()
+                .setQuery(query, GroceryItem.class)
+                .build();
+
+        adapter = new GroceryListAdapter(options, sharedPreferences, context);
+
+        final RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(recyclerView);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(recyclerView);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
     private void shareGroceryList() {
 
         sharedUserEmail = mSharedUserEmailText.getText().toString().trim();
@@ -364,64 +382,46 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                         UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
                         mSharedUserId = userDetails.getUserId();
 
-                        mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").delete();
+                        mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-                        Map<String, Object> groceryList = new HashMap<>();
-                        DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List");
-                        groceryListPath.set(groceryList);
-                    }
-                }
-            }
-        });
+                                                String documentId = document.getId();
+                                                mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List").document(documentId).delete();
+                                            }
 
-        Cursor cursor = mDatabase.rawQuery("select * from groceryList", null);
+                                            mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Grocery_List").collection("Grocery_List")
+                                                    .get()
+                                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                            if (task.isSuccessful()) {
 
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
+                                                                groceryArrayList.clear();
 
-                String randomId = UUID.randomUUID().toString();
-                final String groceryDocumentString = "item " + randomId;
+                                                                for (QueryDocumentSnapshot document : task.getResult()) {
 
-                final int amount = cursor.getInt(cursor.getColumnIndex("amount"));
-                final String name = cursor.getString(cursor.getColumnIndex("name"));
+                                                                    String documentId = document.getId();
 
-                final String groceryItem = (amount + " " + name);
-                groceryArrayList.add(groceryItem);
+                                                                    GroceryItem groceryItem = document.toObject(GroceryItem.class);
+                                                                    String setItem = groceryItem.getItem();
+                                                                    groceryArrayList.add(setItem);
 
-                DocumentReference userDetailsRef2 = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
-                userDetailsRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
+                                                                    DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List").document(documentId);
+                                                                    groceryListPath.set(new GroceryItem(setItem));
+                                                                }
 
-                                UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
-                                mSharedUserId = userDetails.getUserId();
-
-                                Map<String, Object> groceryList = new HashMap<>();
-                                groceryList.put(groceryDocumentString, groceryItem);
-                                DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List");
-                                groceryListPath.update(groceryList);
-                            }
-                        }
-                    }
-                });
-                cursor.moveToNext();
-            }
-        }
-        cursor.close();
-
-        DocumentReference userDetailsRef2 = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
-        userDetailsRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
-                        mSharedUserId = userDetails.getUserId();
+                                                                sendMail();
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                    }
+                                });
 
                         Map<String, Object> notificationMessage = new HashMap<>();
                         notificationMessage.put("from", currentUserEmail);
@@ -1220,9 +1220,6 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "        </tbody></table>\n" +
                             "\n" +
                             "</body></html>");
-
-                    groceryArrayList.clear();
-
                     try {
                         CreateSmtpEmail result = apiInstance.sendTransacEmail(sendSmtpEmail);
                     } catch (ApiException e) {

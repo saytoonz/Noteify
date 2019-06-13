@@ -16,6 +16,7 @@ import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -32,6 +33,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +42,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +63,6 @@ import sibModel.SendSmtpEmailTo;
 
 public class SharedGroceryList extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private ArrayList<String> tempArrayList = new ArrayList<>();
     private ArrayList<String> groceryArrayList = new ArrayList<>();
     private EditText mEditTextName;
     private TextView mTextViewAmount;
@@ -70,13 +74,12 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
     private String sharedUserEmail;
     private String currentUserEmail;
     private String mCurrentUserID;
-    private RecyclerView mRecyclerView;
-    private SharedGroceryAdapter mSharedGroceryAdapter;
+    private GroceryListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shared_grocery_list);
+        setContentView(R.layout.activity_grocery_list);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
@@ -101,15 +104,7 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toasty.success(SharedGroceryList.this, "Tap the 'X' to clear the list", Toast.LENGTH_LONG, true).show();
-            }
-        });
-
-        FloatingActionButton fab2 = findViewById(R.id.fab2);
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clearList();
+                Toasty.success(SharedGroceryList.this, "Swipe left or right to remove an item", Toast.LENGTH_LONG, true).show();
             }
         });
 
@@ -130,8 +125,7 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
             @Override
             public void onClick(View v) {
                 shareGroceryList();
-                sendMail();
-                Toasty.success(SharedGroceryList.this, "Grocery list shared with and emailed to: " + currentUserEmail, Toast.LENGTH_LONG, true).show();
+                Toasty.success(SharedGroceryList.this, "Grocery list shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
             }
         });
 
@@ -142,8 +136,7 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
                             shareGroceryList();
-                            sendMail();
-                            Toasty.success(SharedGroceryList.this, "Grocery list shared with and emailed to: " + currentUserEmail, Toast.LENGTH_LONG, true).show();
+                            Toasty.success(SharedGroceryList.this, "Grocery list shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                             return true;
                         default:
                             break;
@@ -258,10 +251,8 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
         String randomId = UUID.randomUUID().toString();
         String groceryDocumentString = "item " + randomId;
 
-        Map<String, Object> groceryList = new HashMap<>();
-        groceryList.put(groceryDocumentString, newItem);
-        DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List");
-        groceryListPath.update(groceryList);
+        DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List").document(groceryDocumentString);
+        groceryListPath.set(new GroceryItem(newItem));
 
         recreate();
         mEditTextName.getText().clear();
@@ -316,68 +307,60 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
 
     private void setUpRecyclerView() {
 
-        final Context context = this;
-        final SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        Context context = this;
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
-        DocumentReference sharedGroceryListRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List");
-        sharedGroceryListRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        final CollectionReference groceryListRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List");
+        Query query = groceryListRef.orderBy("item", Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<GroceryItem> options = new FirestoreRecyclerOptions.Builder<GroceryItem>()
+                .setQuery(query, GroceryItem.class)
+                .build();
+
+        adapter = new GroceryListAdapter(options, sharedPreferences, context);
+
+        final RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT) {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        String data = document.getData().toString();
-
-                        String[] dataValues = data.split(",");
-
-                        for (int i = 0; i < dataValues.length; i++) {
-
-                            if (dataValues[i].contains("item")) {
-                                tempArrayList.add(dataValues[i]);
-                            }
-                        }
-
-                        String[] groceryArray = tempArrayList.toArray(new String[0]);
-
-                        for (int i = 0; i < groceryArray.length; i++) {
-                            String groceryItems = groceryArray[i].substring(groceryArray[i].lastIndexOf("=") + 1);
-                            String groceryItemsFinal = groceryItems.replace("}", "");
-                            groceryArrayList.add(groceryItemsFinal);
-                        }
-
-                        mRecyclerView = findViewById(R.id.recycler_view);
-                        mSharedGroceryAdapter = new SharedGroceryAdapter(groceryArrayList, context, sharedPreferences);
-                        mRecyclerView.setHasFixedSize(true);
-                        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-                        mRecyclerView.setAdapter(mSharedGroceryAdapter);
-                    }
-                }
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
             }
-        });
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(recyclerView);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(recyclerView);
     }
 
-    private void clearList() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
 
-        DocumentReference sharedGroceryListRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List");
-        sharedGroceryListRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List").delete();
-
-                        Map<String, Object> groceryList = new HashMap<>();
-                        DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List");
-                        groceryListPath.set(groceryList);
-
-                        recreate();
-                    }
-                }
-            }
-        });
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     private void shareGroceryList() {
@@ -399,46 +382,51 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
                         UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
                         mSharedUserId = userDetails.getUserId();
 
-                        mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").delete();
+                        mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-                        Map<String, Object> groceryList = new HashMap<>();
-                        DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List");
-                        groceryListPath.set(groceryList);
-                    }
-                }
-            }
-        });
+                                                String documentId = document.getId();
+                                                mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List").document(documentId).delete();
+                                            }
 
-        DocumentReference userDetailsRef2 = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
-        userDetailsRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
+                                            mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List")
+                                                    .get()
+                                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                            if (task.isSuccessful()) {
 
-                        UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
-                        mSharedUserId = userDetails.getUserId();
+                                                                groceryArrayList.clear();
+
+                                                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                                    String documentId = document.getId();
+
+                                                                    GroceryItem groceryItem = document.toObject(GroceryItem.class);
+                                                                    String setItem = groceryItem.getItem();
+                                                                    groceryArrayList.add(setItem);
+
+                                                                    DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List").document(documentId);
+                                                                    groceryListPath.set(new GroceryItem(setItem));
+                                                                }
+
+                                                                sendMail();
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                    }
+                                });
 
                         Map<String, Object> notificationMessage = new HashMap<>();
                         notificationMessage.put("from", currentUserEmail);
                         CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Grocery_Notifications").collection("Grocery_Notifications");
                         notificationPath.add(notificationMessage);
-
-                        String[] groceryArray = groceryArrayList.toArray(new String[0]);
-
-                        for (int i = 0; i < groceryArray.length; i++) {
-
-                            String groceryItems = groceryArray[i];
-
-                            String randomId = UUID.randomUUID().toString();
-                            final String groceryDocumentString = "item " + randomId;
-
-                            Map<String, Object> groceryList = new HashMap<>();
-                            groceryList.put(groceryDocumentString, groceryItems);
-                            DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List");
-                            groceryListPath.update(groceryList);
-                        }
                     }
                 }
             }
