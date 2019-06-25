@@ -3,11 +3,11 @@ package com.interstellarstudios.note_ify;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -36,7 +36,9 @@ public class SignIn extends AppCompatActivity {
     private EditText editTextEmail;
     private EditText editTextPassword;
     private FirebaseAuth mFireBaseAuth;
-    private ProgressDialog progressDialog;
+    private FirebaseFirestore mFireBaseFireStore;
+    private String mCurrentUserId;
+    private ProgressDialog mProgressDialog;
     private Switch switchThemes;
 
     @Override
@@ -45,11 +47,12 @@ public class SignIn extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         mFireBaseAuth = FirebaseAuth.getInstance();
+        mFireBaseFireStore = FirebaseFirestore.getInstance();
 
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
         ImageView logoImageView = findViewById(R.id.logoImageView);
-        progressDialog = new ProgressDialog(this);
+        mProgressDialog = new ProgressDialog(this);
 
         Button buttonSignIn = findViewById(R.id.buttonSignIn);
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
@@ -63,8 +66,7 @@ public class SignIn extends AppCompatActivity {
         textViewRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SignIn.this, Register.class));
-                overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+                onBackPressed();
             }
         });
 
@@ -141,8 +143,8 @@ public class SignIn extends AppCompatActivity {
             return;
         }
 
-        progressDialog.setMessage("Signing In");
-        progressDialog.show();
+        mProgressDialog.setMessage("Signing In");
+        mProgressDialog.show();
 
         mFireBaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -150,8 +152,9 @@ public class SignIn extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            final String current_user_id = mFireBaseAuth.getCurrentUser().getUid();
-                            final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            if (mFireBaseAuth.getCurrentUser() != null) {
+                                mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
+                            }
 
                             FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                                 @Override
@@ -161,7 +164,7 @@ public class SignIn extends AppCompatActivity {
                                     Map<String, Object> userToken = new HashMap<>();
                                     userToken.put("User_Token_ID", deviceToken);
 
-                                    DocumentReference userTokenDocumentPath = db.collection("Users").document(current_user_id).collection("User_Details").document("User_Token");
+                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
                                     userTokenDocumentPath.set(userToken);
                                 }
                             });
@@ -175,7 +178,7 @@ public class SignIn extends AppCompatActivity {
                         } else {
                             Toasty.error(SignIn.this, "Sign In Error, please try again. Please ensure that your email address and password are correct.", Toast.LENGTH_LONG, true).show();
                         }
-                        progressDialog.dismiss();
+                        mProgressDialog.dismiss();
                     }
                 });
     }

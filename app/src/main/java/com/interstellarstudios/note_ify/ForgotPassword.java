@@ -2,11 +2,11 @@ package com.interstellarstudios.note_ify;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,12 +23,14 @@ import es.dmoral.toasty.Toasty;
 public class ForgotPassword extends AppCompatActivity {
 
     private EditText editTextEmail;
-    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth mFireBaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
+
+        mFireBaseAuth = FirebaseAuth.getInstance();
 
         editTextEmail = findViewById(R.id.editTextEmail);
         ImageView logoImageView = findViewById(R.id.logoImageView);
@@ -45,9 +47,7 @@ public class ForgotPassword extends AppCompatActivity {
         textViewSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(ForgotPassword.this, SignIn.class);
-                startActivity(i);
-                overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+                onBackPressed();
             }
         });
 
@@ -75,7 +75,7 @@ public class ForgotPassword extends AppCompatActivity {
             return;
         }
 
-        firebaseAuth.sendPasswordResetEmail(email)
+        mFireBaseAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
