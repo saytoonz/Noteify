@@ -8,7 +8,7 @@ android {
         applicationId "com.interstellarstudios.note_ify"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 51
+        versionCode 52
         versionName "2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -17,11 +17,6 @@ android {
         packagingOptions {
             exclude 'META-INF/NOTICE'
             exclude 'META-INF/LICENSE'
-        }
-
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
         }
     }
     buildTypes {
