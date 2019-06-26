@@ -43,7 +43,6 @@ import sendinblue.ApiException;
 import sendinblue.Configuration;
 import sendinblue.auth.ApiKeyAuth;
 import sibApi.SmtpApi;
-import sibModel.CreateSmtpEmail;
 import sibModel.SendSmtpEmail;
 import sibModel.SendSmtpEmailSender;
 import sibModel.SendSmtpEmailTo;
@@ -150,6 +149,8 @@ public class Register extends AppCompatActivity {
             textViewSignIn.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
             buttonSignUp.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
             switchThemes.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
+            buttonGuestMode.setBackgroundColor(ContextCompat.getColor(Register.this, R.color.colorPrimary));
+            buttonGuestMode.setTextColor(ContextCompat.getColor(Register.this, R.color.colorLightThemeText));
         }
     }
 
@@ -610,15 +611,15 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
-                            "            <div>\n" +
+                            "            <div style=\"background-color: rgb(249, 250, 252);\">\n" +
                             "                \n" +
-                            "                <table class=\"rnb-del-min-width rnb-tmpl-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_5\" id=\"Layout_5\">\n" +
+                            "                <table class=\"rnb-del-min-width rnb-tmpl-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_9\" id=\"Layout_9\">\n" +
                             "                    \n" +
                             "                    <tbody><tr>\n" +
                             "                        <td class=\"rnb-del-min-width\" valign=\"top\" align=\"center\" style=\"min-width: 590px;\">\n" +
                             "                            <table width=\"100%\" cellpadding=\"0\" border=\"0\" bgcolor=\"#f9fafc\" align=\"center\" cellspacing=\"0\" style=\"background-color: rgb(249, 250, 252);\">\n" +
                             "                                <tbody><tr>\n" +
-                            "                                    <td height=\"10\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                    <td height=\"10\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                                </tr>\n" +
                             "                                <tr>\n" +
                             "                                    <td align=\"center\" height=\"20\" style=\"font-family:Arial,Helvetica,sans-serif; color:#666666;font-size:13px;font-weight:normal;text-align: center;\">\n" +
@@ -627,7 +628,7 @@ public class Register extends AppCompatActivity {
                             "                                    </td>\n" +
                             "                                </tr>\n" +
                             "                                <tr>\n" +
-                            "                                    <td height=\"10\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                    <td height=\"10\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                                </tr>\n" +
                             "                            </tbody></table>\n" +
                             "                        </td>\n" +
@@ -639,22 +640,22 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
-                            "            <div>\n" +
+                            "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
-                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
                             "                <tr>\n" +
                             "                <![endif]-->\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
                             "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
                             "                <![endif]-->\n" +
-                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_25\" id=\"Layout_25\">\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_8\" id=\"Layout_8\">\n" +
                             "                <tbody><tr>\n" +
                             "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\" style=\"min-width:590px;\">\n" +
                             "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"background-color: rgb(255, 255, 255); border-radius: 0px; padding-left: 20px; padding-right: 20px; border-collapse: separate;\">\n" +
                             "                            <tbody><tr>\n" +
-                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                            </tr>\n" +
                             "                            <tr>\n" +
                             "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
@@ -663,8 +664,8 @@ public class Register extends AppCompatActivity {
                             "                                            <td valign=\"top\" align=\"center\">\n" +
                             "                                                <table cellpadding=\"0\" border=\"0\" align=\"center\" cellspacing=\"0\" class=\"logo-img-center\"> \n" +
                             "                                                    <tbody><tr>\n" +
-                            "                                                        <td valign=\"middle\" align=\"center\" style=\"line-height: 0px;\">\n" +
-                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Femail_header.jpg?alt=media&token=bd0debdd-ae94-416b-9368-9540ac271aa1\"></div></div></td>\n" +
+                            "                                                        <td valign=\"middle\" align=\"center\" style=\"line-height: 1px;\">\n" +
+                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c2802ec31b92f71e41dd1de.jpg\"></div></div></td>\n" +
                             "                                                    </tr>\n" +
                             "                                                </tbody></table>\n" +
                             "                                                </td>\n" +
@@ -672,7 +673,7 @@ public class Register extends AppCompatActivity {
                             "                                    </tbody></table></td>\n" +
                             "                            </tr>\n" +
                             "                            <tr>\n" +
-                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                            </tr>\n" +
                             "                        </tbody></table>\n" +
                             "                    </td>\n" +
@@ -692,23 +693,23 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
-                            "            <div>\n" +
+                            "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
                             "            \n" +
                             "                <!--[if mso]>\n" +
-                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
                             "                <tr>\n" +
                             "                <![endif]-->\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
                             "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
                             "                <![endif]-->\n" +
-                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_37\">\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_7\">\n" +
                             "                <tbody><tr>\n" +
                             "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
                             "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"background-color: rgb(255, 255, 255); padding-left: 20px; padding-right: 20px; border-collapse: separate; border-radius: 0px; border-bottom: 0px none rgb(200, 200, 200);\">\n" +
                             "\n" +
                             "                                        <tbody><tr>\n" +
-                            "                                            <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                            <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                                        </tr>\n" +
                             "                                        <tr>\n" +
                             "                                            <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
@@ -720,15 +721,13 @@ public class Register extends AppCompatActivity {
                             "                                                            <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" align=\"left\" class=\"rnb-col-1\">\n" +
                             "\n" +
                             "                                                                <tbody><tr>\n" +
-                            "                                                                    <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\"><div><strong>You've Successfully Registered!</strong></div>\n" +
-                            "\n" +
-                            "<div>&nbsp;</div>\n" +
-                            "\n" +
-                            "<div>You can now use your email address and password to log in to the App from any of your devices. Open the App to start creating and sharing beautiful notes.</div>\n" +
-                            "\n" +
-                            "<div>&nbsp;</div>\n" +
-                            "\n" +
-                            "<div>Please contact us should you have any questions. We hope you enjoy your experience.</div>\n" +
+                            "                                                                    <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\"><div>\n" +
+                            "<div><strong>You've Successfully Registered!</strong><br>\n" +
+                            "<br>\n" +
+                            "You can now use your email address and password to log in to the App from any of your devices. Open the App to start creating and sharing beautiful notes.<br>\n" +
+                            "<br>\n" +
+                            "Please contact us should you have any questions. We hope you enjoy your experience.</div>\n" +
+                            "</div>\n" +
                             "</td>\n" +
                             "                                                                </tr>\n" +
                             "                                                                </tbody></table>\n" +
@@ -737,7 +736,7 @@ public class Register extends AppCompatActivity {
                             "                                                </tbody></table></td>\n" +
                             "                                        </tr>\n" +
                             "                                        <tr>\n" +
-                            "                                            <td height=\"20\" style=\"font-size:1px; line-height:0px\">&nbsp;</td>\n" +
+                            "                                            <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                                        </tr>\n" +
                             "                                    </tbody></table>\n" +
                             "                    </td>\n" +
@@ -756,85 +755,56 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
-                            "            <div>\n" +
+                            "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
-                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
                             "                <tr>\n" +
                             "                <![endif]-->\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
                             "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
                             "                <![endif]-->\n" +
-                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_33\" id=\"Layout_33\">\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_6\" id=\"Layout_6\">\n" +
                             "                <tbody><tr>\n" +
                             "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
                             "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"max-width: 100%; min-width: 100%; table-layout: fixed; background-color: rgb(255, 255, 255); border-radius: 0px; border-collapse: separate; padding-left: 20px; padding-right: 20px;\">\n" +
                             "                            <tbody><tr>\n" +
-                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                            </tr>\n" +
                             "                            <tr>\n" +
                             "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
                             "\n" +
                             "                                    <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-columns-container\">\n" +
                             "                                        <tbody><tr>\n" +
-                            "                                            <td class=\"rnb-force-col\" width=\"263\" valign=\"top\" style=\"padding-right: 20px;\">\n" +
-                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-col-2\" width=\"263\">\n" +
+                            "                                            <td class=\"rnb-force-col\" width=\"550\" valign=\"top\" style=\"padding-right: 0px;\">\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-col-1\" width=\"550\">\n" +
                             "                                                    <tbody><tr>\n" +
                             "                                                        <td width=\"100%\" class=\"img-block-center\" valign=\"top\" align=\"center\">\n" +
                             "                                                            <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
-                            "                                                            <tbody>\n" +
-                            "                                                                <tr>\n" +
-                            "                                                                    <td width=\"100%\" valign=\"top\" align=\"center\" class=\"img-block-center\">\n" +
+                            "                                                                <tbody>\n" +
+                            "                                                                    <tr>\n" +
+                            "                                                                        <td width=\"100%\" valign=\"top\" align=\"center\" class=\"img-block-center\">\n" +
+                            "\n" +
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Ffirebase_comp.jpg?alt=media&token=8e8f24f7-8998-4881-a215-280f668ef245\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
-                            "                                                                                    </div>\n" +
-                            "                                                                            </td>\n" +
+                            "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
+                            "                                                                            <div><a target=\"_blank\" href=\"https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\">\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c27674ccf29bcec2a435996.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            </div></td>\n" +
                             "                                                                            </tr>\n" +
                             "                                                                        </tbody></table>\n" +
                             "\n" +
                             "                                                                    </td>\n" +
-                            "                                                                </tr>\n" +
-                            "                                                            </tbody>\n" +
-                            "                                                        </table></td>\n" +
+                            "                                                                    </tr>\n" +
+                            "                                                                </tbody>\n" +
+                            "                                                                </table></td>\n" +
                             "                                                    </tr><tr>\n" +
-                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
-                            "                                                    </tr><tr>\n" +
-                            "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
-                            "                                                            <div><div>All of your notes automatically synced to the Cloud. Stored securely with Google Firebase.</div>\n" +
-                            "</div>\n" +
-                            "                                                        </td>\n" +
-                            "                                                    </tr>\n" +
-                            "                                                    </tbody></table>\n" +
-                            "\n" +
-                            "                                                </td><td class=\"rnb-force-col\" width=\"263\" valign=\"top\" style=\"padding-right: 0px;\">\n" +
-                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-last-col-2\" width=\"263\">\n" +
-                            "                                                    <tbody><tr>\n" +
-                            "                                                        <td width=\"100%\" class=\"img-block-center\" valign=\"top\" align=\"center\">\n" +
-                            "                                                            <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
-                            "                                                            <tbody>\n" +
-                            "                                                                <tr>\n" +
-                            "                                                                    <td width=\"100%\" valign=\"top\" align=\"center\" class=\"img-block-center\">\n" +
-                            "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
-                            "                                                                            <tbody><tr>\n" +
-                            "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fall_devices.jpg?alt=media&token=59379e41-17cd-45e4-8e36-2238a346717a\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
-                            "                                                                                    </div>\n" +
-                            "                                                                            </td>\n" +
-                            "                                                                            </tr>\n" +
-                            "                                                                        </tbody></table>\n" +
-                            "\n" +
-                            "                                                                    </td>\n" +
-                            "                                                                </tr>\n" +
-                            "                                                            </tbody>\n" +
-                            "                                                        </table></td>\n" +
-                            "                                                    </tr><tr>\n" +
-                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                                                    </tr><tr>\n" +
                             "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
-                            "                                                            <div><div>All of your notes on all of your devices.&nbsp;Share documents instantly via email and device-to-device.</div>\n" +
+                            "                                                            <div><div style=\"text-align: center;\">Download the free App now.</div>\n" +
                             "</div>\n" +
                             "                                                        </td>\n" +
                             "                                                    </tr>\n" +
@@ -844,7 +814,7 @@ public class Register extends AppCompatActivity {
                             "                                    </tbody></table></td>\n" +
                             "                            </tr>\n" +
                             "                            <tr>\n" +
-                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                            </tr>\n" +
                             "                        </tbody></table>\n" +
                             "\n" +
@@ -864,17 +834,125 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
-                            "            <div>\n" +
+                            "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <tr>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                <![endif]-->\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_5\" id=\"Layout_5\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
+                            "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"max-width: 100%; min-width: 100%; table-layout: fixed; background-color: rgb(255, 255, 255); border-radius: 0px; border-collapse: separate; padding-left: 20px; padding-right: 20px;\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
+                            "\n" +
+                            "                                    <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-columns-container\">\n" +
+                            "                                        <tbody><tr>\n" +
+                            "                                            <td class=\"rnb-force-col\" width=\"263\" valign=\"top\" style=\"padding-right: 20px;\">\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-col-2\" width=\"263\">\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td width=\"100%\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
+                            "                                                            <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                            <tbody>\n" +
+                            "                                                                <tr>\n" +
+                            "                                                                    <td width=\"100%\" valign=\"top\" align=\"left\" class=\"img-block-center\">\n" +
+                            "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                                            <tbody><tr>\n" +
+                            "                                                                                <td>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e366516c5d85.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    </div>\n" +
+                            "                                                                            </td>\n" +
+                            "                                                                            </tr>\n" +
+                            "                                                                        </tbody></table>\n" +
+                            "\n" +
+                            "                                                                    </td>\n" +
+                            "                                                                </tr>\n" +
+                            "                                                            </tbody>\n" +
+                            "                                                        </table></td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
+                            "                                                            <div><div>All of your notes automatically synced to the Cloud. Stored securely with Google Firebase.</div>\n" +
+                            "</div>\n" +
+                            "                                                        </td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                    </tbody></table>\n" +
+                            "\n" +
+                            "                                                </td><td class=\"rnb-force-col\" width=\"263\" valign=\"top\" style=\"padding-right: 0px;\">\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-last-col-2\" width=\"263\">\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td width=\"100%\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
+                            "                                                            <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                            <tbody>\n" +
+                            "                                                                <tr>\n" +
+                            "                                                                    <td width=\"100%\" valign=\"top\" align=\"left\" class=\"img-block-center\">\n" +
+                            "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                                            <tbody><tr>\n" +
+                            "                                                                                <td>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e3662461432d.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    </div>\n" +
+                            "                                                                            </td>\n" +
+                            "                                                                            </tr>\n" +
+                            "                                                                        </tbody></table>\n" +
+                            "\n" +
+                            "                                                                    </td>\n" +
+                            "                                                                </tr>\n" +
+                            "                                                            </tbody>\n" +
+                            "                                                        </table></td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
+                            "                                                            <div><div>All of your notes on all of your devices. Share documents instantly via email and device-to-device.</div>\n" +
+                            "</div>\n" +
+                            "                                                        </td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                    </tbody></table>\n" +
+                            "\n" +
+                            "                                                </td></tr>\n" +
+                            "                                    </tbody></table></td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table><!--[if mso]>\n" +
+                            "                </td>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                </tr>\n" +
+                            "                </table>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "            </div></td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
                             "                \n" +
                             "                <!--[if mso 15]>\n" +
-                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
                             "                <tr>\n" +
                             "                <![endif]-->\n" +
                             "                \n" +
                             "                <!--[if mso 15]>\n" +
                             "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
                             "                <![endif]-->\n" +
-                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_38\" id=\"Layout_38\">\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_11\" id=\"Layout_11\">\n" +
                             "                <tbody><tr>\n" +
                             "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
                             "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"max-width: 100%; min-width: 100%; table-layout: fixed; background-color: rgb(255, 255, 255); border-radius: 0px; border-collapse: separate; padding: 20px;\">\n" +
@@ -890,8 +968,8 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "\n" +
                             "                                                    <tbody><tr>\n" +
-                            "                                                        <td width=\"100%\" style=\"line-height: 0px;\" class=\"img-block-center\" valign=\"top\" align=\"center\">\n" +
-                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://noteify.interstellarstudios.co.uk/\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fweb_computer.jpg?alt=media&token=96b0cbb5-abae-454a-8dd4-a9698f22f163\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
+                            "                                                        <td width=\"100%\" style=\"line-height: 1px;\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
+                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://noteify.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4b80730d48fbeb3c5c753d.png\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
                             "                                                    </tr>\n" +
                             "                                                    </tbody></table>\n" +
                             "                                                </td><td class=\"rnb-force-col\" valign=\"top\">\n" +
@@ -902,9 +980,9 @@ public class Register extends AppCompatActivity {
                             "                                                        <td style=\"font-size:24px; font-family:Arial,Helvetica,sans-serif; color:#3c4858; text-align:left;\">\n" +
                             "                                                            <span style=\"color:#3c4858; \"><strong><span style=\"font-size:18px;\">Website</span></strong></span></td>\n" +
                             "                                                    </tr><tr>\n" +
-                            "                                                        <td height=\"10\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                                        <td height=\"10\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                                                    </tr><tr>\n" +
-                            "                                                        <td class=\"rnb-mbl-float-none\" style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif;color:#3c4858;float:right;width:350px; line-height: 21px;\"><div>Need some information? Check out our website:&nbsp;<a href=\"https://noteify.app\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">https://noteify.interstellarstudios.co.uk</a></div>\n" +
+                            "                                                        <td class=\"rnb-mbl-float-none\" style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif;color:#3c4858;float:right;width:350px; line-height: 21px;\"><div>Need some information? Check out our website:&nbsp;<a href=\"https://noteify.interstellarstudios.co.uk/\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">https://noteify.interstellarstudios.co.uk\u200B</a></div>\n" +
                             "</td>\n" +
                             "                                                    </tr>\n" +
                             "                                                    </tbody></table>\n" +
@@ -931,22 +1009,22 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
-                            "            <div>\n" +
+                            "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
-                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
                             "                <tr>\n" +
                             "                <![endif]-->\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
                             "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
                             "                <![endif]-->\n" +
-                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_42\" id=\"Layout_42\">\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_12\" id=\"Layout_12\">\n" +
                             "                <tbody><tr>\n" +
                             "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
                             "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"max-width: 100%; min-width: 100%; table-layout: fixed; background-color: rgb(255, 255, 255); border-radius: 0px; border-collapse: separate; padding-left: 20px; padding-right: 20px;\">\n" +
                             "                            <tbody><tr>\n" +
-                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                            </tr>\n" +
                             "                            <tr>\n" +
                             "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
@@ -967,7 +1045,7 @@ public class Register extends AppCompatActivity {
                             "                                                                                <td>\n" +
                             "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
                             "                                                                            <div><a target=\"_blank\" href=\"https://github.com/craigspicer\">\n" +
-                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2FGitHub_logo.jpg?alt=media&token=2b531655-ee12-4919-8f63-f30bf1ddc17b\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5cd3fccc27351d028e2b7a1b.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                            </div></td>\n" +
                             "                                                                            </tr>\n" +
                             "                                                                        </tbody></table>\n" +
@@ -977,7 +1055,7 @@ public class Register extends AppCompatActivity {
                             "                                                                </tbody>\n" +
                             "                                                                </table></td>\n" +
                             "                                                    </tr><tr>\n" +
-                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                                                    </tr><tr>\n" +
                             "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
                             "                                                            <div><div style=\"text-align: center;\">© 2019 Note-ify. All Rights Reserved.</div>\n" +
@@ -990,7 +1068,7 @@ public class Register extends AppCompatActivity {
                             "                                    </tbody></table></td>\n" +
                             "                            </tr>\n" +
                             "                            <tr>\n" +
-                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                             "                            </tr>\n" +
                             "                        </tbody></table>\n" +
                             "\n" +
@@ -1010,7 +1088,7 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
-                            "            <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_4629\" id=\"Layout_4629\">\n" +
+                            "            <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_4701\" id=\"Layout_4701\">\n" +
                             "                <tbody><tr>\n" +
                             "                    <td class=\"rnb-del-min-width\" valign=\"top\" align=\"center\" style=\"min-width:590px;\">\n" +
                             "                        <table width=\"100%\" cellpadding=\"0\" border=\"0\" height=\"38\" cellspacing=\"0\">\n" +
@@ -1036,7 +1114,7 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "</body></html>");
                     try {
-                        CreateSmtpEmail result = apiInstance.sendTransacEmail(sendSmtpEmail);
+                        apiInstance.sendTransacEmail(sendSmtpEmail);
                     } catch (ApiException e) {
                         e.printStackTrace();
                     }

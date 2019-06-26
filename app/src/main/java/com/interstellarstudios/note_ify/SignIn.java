@@ -196,6 +196,8 @@ public class SignIn extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Intent i = new Intent(SignIn.this, Register.class);
+        startActivity(i);
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 }

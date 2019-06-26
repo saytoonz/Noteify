@@ -49,21 +49,36 @@
             <Button
                 android:id="@+id/buttonSignup"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/colorAccent"
                 android:text="@string/register_register_button"
                 android:textAllCaps="false"
                 android:textColor="@color/colorLightThemeText"
                 android:textSize="16sp"
-                app:backgroundTint="@color/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
+
+            <Button
+                android:id="@+id/buttonGuestMode"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/colorPrimaryDarkTheme"
+                android:text="I'll Register Later"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDarkThemeText"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonSignup" />
 
             <TextView
                 android:id="@+id/textViewSignin"
@@ -130,21 +145,6 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/switchThemes" />
-
-            <Button
-                android:id="@+id/buttonGuestMode"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="I'll Register Later"
-                android:textAllCaps="false"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/buttonSignup" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

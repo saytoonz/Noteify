@@ -81,8 +81,7 @@ public class ForgotPassword extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Toasty.success(ForgotPassword.this, "Password reset email sent", Toast.LENGTH_LONG, true).show();
-                            startActivity(new Intent(getApplicationContext(), SignIn.class));
-                            overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+                            onBackPressed();
                         }else{
                             Toasty.error(ForgotPassword.this, "Error sending password reset email", Toast.LENGTH_LONG, true).show();
                         }
@@ -93,7 +92,8 @@ public class ForgotPassword extends AppCompatActivity {
     @Override
     public void onBackPressed () {
         super.onBackPressed();
-        startActivity(new Intent(ForgotPassword.this, SignIn.class));
+        Intent i = new Intent(ForgotPassword.this, SignIn.class);
+        startActivity(i);
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 }

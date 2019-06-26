@@ -8,7 +8,7 @@ android {
         applicationId "com.interstellarstudios.note_ify"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 49
+        versionCode 51
         versionName "2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -17,6 +17,11 @@ android {
         packagingOptions {
             exclude 'META-INF/NOTICE'
             exclude 'META-INF/LICENSE'
+        }
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
         }
     }
     buildTypes {
@@ -43,9 +48,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.google.firebase:firebase-core:17.0.0'
     implementation 'com.google.firebase:firebase-auth:18.0.0'
-    implementation 'com.google.firebase:firebase-firestore:20.0.0'
+    implementation 'com.google.firebase:firebase-firestore:20.1.0'
     implementation 'com.google.firebase:firebase-storage:18.0.0'
-    implementation 'com.google.firebase:firebase-messaging:19.0.0'
+    implementation 'com.google.firebase:firebase-messaging:19.0.1'
     implementation 'com.firebaseui:firebase-ui-firestore:4.2.1'
     implementation 'com.firebaseui:firebase-ui-storage:4.2.1'
     implementation 'com.firebaseui:firebase-ui-auth:4.2.1'
