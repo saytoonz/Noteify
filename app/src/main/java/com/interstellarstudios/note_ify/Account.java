@@ -37,6 +37,8 @@ public class Account extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+
         mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
 
@@ -47,7 +49,15 @@ public class Account extends AppCompatActivity {
 
         TextView textViewUserEmail = findViewById(R.id.textViewUserEmail);
         mProfilePic = findViewById(R.id.profile_pic);
-        textViewUserEmail.setText(mUser.getEmail());
+
+        boolean guestAccountOn = sharedPreferences.getBoolean("guestAccount", false);
+
+        if(guestAccountOn) {
+            String guestAccount = "Guest Account";
+            textViewUserEmail.setText(guestAccount);
+        } else {
+            textViewUserEmail.setText(mUser.getEmail());
+        }
 
         DocumentReference detailsRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("This User");
         detailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -97,7 +107,6 @@ public class Account extends AppCompatActivity {
             }
         });
 
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
 
         if(switchThemesOnOff) {

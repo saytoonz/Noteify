@@ -1,9 +1,11 @@
 package com.interstellarstudios.note_ify;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -34,6 +36,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import es.dmoral.toasty.Toasty;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
@@ -81,6 +84,27 @@ public class Register extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 registerUser();
+            }
+        });
+
+        Button buttonGuestMode = findViewById(R.id.buttonGuestMode);
+        buttonGuestMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new AlertDialog.Builder(Register.this)
+                        .setTitle("Are you sure you don't want to register?")
+                        .setMessage("You won't be able to log in on another device and see all of your notes and documents.")
+                        .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                guestMode();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -198,6 +222,8 @@ public class Register extends AppCompatActivity {
                                 }
                             });
 
+                            saveNonGuestPreferences();
+
                             Intent i = new Intent(Register.this, Home.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
@@ -212,6 +238,88 @@ public class Register extends AppCompatActivity {
                         mProgressDialog.dismiss();
                     }
                 });
+    }
+
+    private void guestMode() {
+
+        Random rand = new Random();
+        int num = rand.nextInt(9000000) + 1000000;
+        String randomNumber = Integer.toString(num);
+
+        String guestEmail = "guest" + randomNumber + "@interstellarstudios.co.uk";
+        String guestPassword = "Guest123";
+
+        mProgressDialog.setMessage("Launching");
+        mProgressDialog.show();
+
+        mFireBaseAuth.createUserWithEmailAndPassword(guestEmail, guestPassword)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            Calendar calendar = Calendar.getInstance();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd\nHH:mm");
+                            String date = sdf.format(calendar.getTime());
+
+                            if (mFireBaseAuth.getCurrentUser() != null) {
+                                mCurrentUserID = mFireBaseAuth.getCurrentUser().getUid();
+                                mCurrentUser = mFireBaseAuth.getCurrentUser();
+                                mCurrentUserEmail = mCurrentUser.getEmail();
+                            }
+
+                            DocumentReference NotebookDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Notebook");
+                            DocumentReference SharedDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared");
+                            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Drafts");
+                            NotebookDocumentPath.set(new Collection("Notebook", "notebook", date));
+                            SharedDocumentPath.set(new Collection("Shared", "shared", ""));
+                            DraftsDocumentPath.set(new Collection("Drafts", "drafts", date));
+
+                            DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
+                            userMapPath.set(new UserDetailsModel(mCurrentUserID));
+
+                            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                @Override
+                                public void onSuccess(InstanceIdResult instanceIdResult) {
+                                    String deviceToken = instanceIdResult.getToken();
+
+                                    Map<String, Object> userToken = new HashMap<>();
+                                    userToken.put("User_Token_ID", deviceToken);
+
+                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("User_Details").document("User_Token");
+                                    userTokenDocumentPath.set(userToken);
+                                }
+                            });
+
+                            saveGuestPreferences();
+
+                            Intent i = new Intent(Register.this, Home.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
+                            Register.this.finish();
+
+                        } else {
+                            Toasty.error(Register.this, "Registration error, please try again.", Toast.LENGTH_LONG, true).show();
+                        }
+                        mProgressDialog.dismiss();
+                    }
+                });
+    }
+
+    private void saveGuestPreferences() {
+
+        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = myPrefs.edit();
+        prefsEditor.putBoolean("guestAccount", true);
+        prefsEditor.apply();
+    }
+
+    private void saveNonGuestPreferences() {
+
+        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = myPrefs.edit();
+        prefsEditor.putBoolean("guestAccount", false);
+        prefsEditor.apply();
     }
 
     private void sendMail() {

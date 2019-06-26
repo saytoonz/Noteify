@@ -169,6 +169,8 @@ public class SignIn extends AppCompatActivity {
                                 }
                             });
 
+                            saveNonGuestPreferences();
+
                             Intent i = new Intent(SignIn.this, Home.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
@@ -181,6 +183,14 @@ public class SignIn extends AppCompatActivity {
                         mProgressDialog.dismiss();
                     }
                 });
+    }
+
+    private void saveNonGuestPreferences() {
+
+        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = myPrefs.edit();
+        prefsEditor.putBoolean("guestAccount", false);
+        prefsEditor.apply();
     }
 
     @Override
