@@ -321,7 +321,7 @@ public class Register extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    SendGrid sendgrid = new SendGrid(null, "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");
+                    SendGrid sendgrid = new SendGrid(null, "API KEY HERE");
 
                     SendGrid.Email email = new SendGrid.Email();
 
