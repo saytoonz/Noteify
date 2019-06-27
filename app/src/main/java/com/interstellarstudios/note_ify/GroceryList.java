@@ -45,20 +45,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.sendgrid.SendGrid;
+import com.sendgrid.SendGridException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import es.dmoral.toasty.Toasty;
-import sendinblue.ApiClient;
-import sendinblue.ApiException;
-import sendinblue.Configuration;
-import sendinblue.auth.ApiKeyAuth;
-import sibApi.SmtpApi;
-import sibModel.SendSmtpEmail;
-import sibModel.SendSmtpEmailSender;
-import sibModel.SendSmtpEmailTo;
 
 public class GroceryList extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -438,21 +431,15 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             @Override
             public void run() {
                 try {
-                    ApiClient defaultClient = Configuration.getDefaultApiClient();
+                    SendGrid sendgrid = new SendGrid(null, "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");
 
-                    ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-                    apiKey.setApiKey("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");
+                    SendGrid.Email email = new SendGrid.Email();
 
-                    SmtpApi apiInstance = new SmtpApi();
-
-                    List<SendSmtpEmailTo> emailArrayList = new ArrayList<>();
-                    emailArrayList.add(new SendSmtpEmailTo().email(sharedUserEmail));
-
-                    SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
-                    sendSmtpEmail.sender(new SendSmtpEmailSender().email("note-ify@interstellarstudios.co.uk").name("Note-ify"));
-                    sendSmtpEmail.to(emailArrayList);
-                    sendSmtpEmail.subject("You've received a Grocery List from " + currentUserEmail);
-                    sendSmtpEmail.htmlContent("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><meta name=\"x-apple-disable-message-reformatting\" /><meta name=\"apple-mobile-web-app-capable\" content=\"yes\" /><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" /><meta name=\"format-detection\" content=\"telephone=no\" /><title></title><style type=\"text/css\">\n" +
+                    email.addTo(sharedUserEmail);
+                    email.setFrom("note-ify@interstellarstudios.co.uk");
+                    email.setFromName("Note-ify");
+                    email.setSubject("You've received a Grocery List from " + currentUserEmail);
+                    email.setHtml("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><meta name=\"x-apple-disable-message-reformatting\" /><meta name=\"apple-mobile-web-app-capable\" content=\"yes\" /><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" /><meta name=\"format-detection\" content=\"telephone=no\" /><title></title><style type=\"text/css\">\n" +
                             "        /* Resets */\n" +
                             "        .ReadMsgBody { width: 100%; background-color: #ebebeb;}\n" +
                             "        .ExternalClass {width: 100%; background-color: #ebebeb;}\n" +
@@ -720,35 +707,6 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
-                            "            <div style=\"background-color: rgb(249, 250, 252);\">\n" +
-                            "                \n" +
-                            "                <table class=\"rnb-del-min-width rnb-tmpl-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_9\" id=\"Layout_9\">\n" +
-                            "                    \n" +
-                            "                    <tbody><tr>\n" +
-                            "                        <td class=\"rnb-del-min-width\" valign=\"top\" align=\"center\" style=\"min-width: 590px;\">\n" +
-                            "                            <table width=\"100%\" cellpadding=\"0\" border=\"0\" bgcolor=\"#f9fafc\" align=\"center\" cellspacing=\"0\" style=\"background-color: rgb(249, 250, 252);\">\n" +
-                            "                                <tbody><tr>\n" +
-                            "                                    <td height=\"10\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
-                            "                                </tr>\n" +
-                            "                                <tr>\n" +
-                            "                                    <td align=\"center\" height=\"20\" style=\"font-family:Arial,Helvetica,sans-serif; color:#666666;font-size:13px;font-weight:normal;text-align: center;\">\n" +
-                            "                                        <span style=\"color: rgb(102, 102, 102); text-decoration: underline;\">\n" +
-                            "                                            <a target=\"_blank\" href=\"{{ mirror }}\" style=\"text-decoration: underline; color: rgb(102, 102, 102);\">View in browser</a></span>\n" +
-                            "                                    </td>\n" +
-                            "                                </tr>\n" +
-                            "                                <tr>\n" +
-                            "                                    <td height=\"10\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
-                            "                                </tr>\n" +
-                            "                            </tbody></table>\n" +
-                            "                        </td>\n" +
-                            "                    </tr>\n" +
-                            "                </tbody></table>\n" +
-                            "                \n" +
-                            "            </div></td>\n" +
-                            "    </tr><tr>\n" +
-                            "\n" +
-                            "        <td align=\"center\" valign=\"top\">\n" +
-                            "\n" +
                             "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
@@ -774,7 +732,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "                                                <table cellpadding=\"0\" border=\"0\" align=\"center\" cellspacing=\"0\" class=\"logo-img-center\"> \n" +
                             "                                                    <tbody><tr>\n" +
                             "                                                        <td valign=\"middle\" align=\"center\" style=\"line-height: 1px;\">\n" +
-                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c2802ec31b92f71e41dd1de.jpg\"></div></div></td>\n" +
+                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Femail_header.jpg?alt=media&token=bd0debdd-ae94-416b-9368-9540ac271aa1\"></div></div></td>\n" +
                             "                                                    </tr>\n" +
                             "                                                </tbody></table>\n" +
                             "                                                </td>\n" +
@@ -897,7 +855,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "                                                                                <td>\n" +
                             "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
                             "                                                                            <div><a target=\"_blank\" href=\"https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\">\n" +
-                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c27674ccf29bcec2a435996.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fgoogle_play_small.jpg?alt=media&token=c7147e53-bbba-4ab7-804e-1c138fba5ac8\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                            </div></td>\n" +
                             "                                                                            </tr>\n" +
                             "                                                                        </tbody></table>\n" +
@@ -973,7 +931,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e366516c5d85.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Ffirebase_comp.jpg?alt=media&token=8e8f24f7-8998-4881-a215-280f668ef245\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                                    </div>\n" +
                             "                                                                            </td>\n" +
                             "                                                                            </tr>\n" +
@@ -1004,7 +962,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e3662461432d.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fall_devices.jpg?alt=media&token=59379e41-17cd-45e4-8e36-2238a346717a\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                                    </div>\n" +
                             "                                                                            </td>\n" +
                             "                                                                            </tr>\n" +
@@ -1075,7 +1033,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "\n" +
                             "                                                    <tbody><tr>\n" +
                             "                                                        <td width=\"100%\" style=\"line-height: 1px;\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
-                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://noteify.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4b80730d48fbeb3c5c753d.png\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
+                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://noteify.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fweb_computer.jpg?alt=media&token=96b0cbb5-abae-454a-8dd4-a9698f22f163\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
                             "                                                    </tr>\n" +
                             "                                                    </tbody></table>\n" +
                             "                                                </td><td class=\"rnb-force-col\" valign=\"top\">\n" +
@@ -1151,7 +1109,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "                                                                                <td>\n" +
                             "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
                             "                                                                            <div><a target=\"_blank\" href=\"https://github.com/craigspicer\">\n" +
-                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5cd3fccc27351d028e2b7a1b.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2FGitHub_logo.jpg?alt=media&token=2b531655-ee12-4919-8f63-f30bf1ddc17b\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                            </div></td>\n" +
                             "                                                                            </tr>\n" +
                             "                                                                        </tbody></table>\n" +
@@ -1219,13 +1177,9 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                             "        </tbody></table>\n" +
                             "\n" +
                             "</body></html>");
-                    try {
-                        apiInstance.sendTransacEmail(sendSmtpEmail);
-                    } catch (ApiException e) {
-                        e.printStackTrace();
-                    }
 
-                } catch (Exception e) {
+                    sendgrid.send(email);
+                } catch (SendGridException e) {
                     e.printStackTrace();
                 }
             }
