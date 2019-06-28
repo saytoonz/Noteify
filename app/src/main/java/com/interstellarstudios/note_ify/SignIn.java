@@ -50,7 +50,7 @@ public class SignIn extends AppCompatActivity {
         mFireBaseFireStore = FirebaseFirestore.getInstance();
 
         editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPassword = findViewById(R.id.editTextPassword);
+        editTextPassword = findViewById(R.id.confirmPassword);
         ImageView logoImageView = findViewById(R.id.logoImageView);
         mProgressDialog = new ProgressDialog(this);
 
@@ -138,7 +138,7 @@ public class SignIn extends AppCompatActivity {
             Toasty.info(SignIn.this, "Please enter your email address", Toast.LENGTH_LONG, true).show();
             return;
         }
-        if (TextUtils.isEmpty(password)) {
+        else if (TextUtils.isEmpty(password)) {
             Toasty.info(SignIn.this, "Please enter your password", Toast.LENGTH_LONG, true).show();
             return;
         }

@@ -61,7 +61,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
+                app:layout_constraintTop_toBottomOf="@+id/confirmPassword" />
 
             <Button
                 android:id="@+id/buttonGuestMode"
@@ -95,14 +95,33 @@
                 app:layout_constraintTop_toBottomOf="@+id/buttonGuestMode" />
 
             <EditText
-                android:id="@+id/editTextPassword"
+                android:id="@+id/confirmPassword"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ems="10"
+                android:hint="@string/register_confirm_password_hint"
+                android:inputType="textPassword"
+                android:padding="15dp"
+                android:textColor="@color/colorLightThemeText"
+                android:textColorHint="@color/colorLightThemeText"
+                android:textSize="14sp"
+                app:backgroundTint="@color/colorLightThemeText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/password" />
+
+            <EditText
+                android:id="@+id/password"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:ems="10"
                 android:hint="@string/register_enter_password_hint"
-                android:inputType="textVisiblePassword|textPassword"
+                android:inputType="textPassword"
                 android:padding="15dp"
                 android:textColor="@color/colorLightThemeText"
                 android:textColorHint="@color/colorLightThemeText"

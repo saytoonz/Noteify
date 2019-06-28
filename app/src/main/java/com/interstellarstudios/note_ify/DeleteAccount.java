@@ -44,7 +44,7 @@ public class DeleteAccount extends AppCompatActivity {
         });
 
         editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPassword = findViewById(R.id.editTextPassword);
+        editTextPassword = findViewById(R.id.confirmPassword);
         ImageView logoImageView = findViewById(R.id.logoImageView);
         progressDialog = new ProgressDialog(this);
 

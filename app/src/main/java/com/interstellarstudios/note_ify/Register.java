@@ -12,6 +12,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -37,13 +38,26 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Pattern;
 import es.dmoral.toasty.Toasty;
 
 public class Register extends AppCompatActivity {
 
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+                    "(?=.*[0-9])" +         //at least 1 digit
+                    //"(?=.*[a-z])" +         //at least 1 lower case letter
+                    //"(?=.*[A-Z])" +         //at least 1 upper case letter
+                    "(?=.*[a-zA-Z])" +      //any letter
+                    //"(?=.*[@#$%^&+=])" +    //at least 1 special character
+                    "(?=\\S+$)" +           //no white spaces
+                    ".{8,}" +               //at least 8 characters
+                    "$");
+
     private Switch switchThemes;
     private EditText editTextEmail;
     private EditText editTextPassword;
+    private EditText editTextConfirmPassword;
     private ProgressDialog mProgressDialog;
     private FirebaseAuth mFireBaseAuth;
     private FirebaseFirestore mFireBaseFireStore;
@@ -66,7 +80,8 @@ public class Register extends AppCompatActivity {
         }
 
         editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPassword = findViewById(R.id.editTextPassword);
+        editTextPassword = findViewById(R.id.password);
+        editTextConfirmPassword = findViewById(R.id.confirmPassword);
         ImageView logoImageView = findViewById(R.id.logoImageView);
         mProgressDialog = new ProgressDialog(this);
 
@@ -138,6 +153,9 @@ public class Register extends AppCompatActivity {
             editTextPassword.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
             editTextPassword.setHintTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
+            editTextConfirmPassword.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
+            editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
             textViewSignIn.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
             buttonSignUp.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
             switchThemes.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
@@ -163,13 +181,29 @@ public class Register extends AppCompatActivity {
 
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
+        String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            Toasty.info(Register.this, "Please enter email address", Toast.LENGTH_LONG, true).show();
+            Toasty.info(Register.this, "Please enter your email address", Toast.LENGTH_LONG, true).show();
             return;
         }
-        if (TextUtils.isEmpty(password)) {
+
+        else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toasty.info(Register.this, "Please enter a valid email address", Toast.LENGTH_LONG, true).show();
+        }
+
+        else if (TextUtils.isEmpty(password)) {
             Toasty.info(Register.this, "Please enter a password", Toast.LENGTH_LONG, true).show();
+            return;
+        }
+
+        else if (!PASSWORD_PATTERN.matcher(password).matches()) {
+            Toasty.info(Register.this, "Your password must be at least 8 characters and must contain at least 1 number", Toast.LENGTH_LONG, true).show();
+            return;
+        }
+
+        else if (!password.equals(confirmPassword)) {
+            Toasty.info(Register.this, "Please enter the same password in the confirm password field", Toast.LENGTH_LONG, true).show();
             return;
         }
 
@@ -321,7 +355,7 @@ public class Register extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    SendGrid sendgrid = new SendGrid(null, "API KEY HERE");
+                    SendGrid sendgrid = new SendGrid("API KEY GOES HERE");
 
                     SendGrid.Email email = new SendGrid.Email();
 
@@ -597,6 +631,24 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
+                            "            <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_5076\" id=\"Layout_5076\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" valign=\"top\" align=\"center\" style=\"min-width:590px;\">\n" +
+                            "                        <table width=\"100%\" cellpadding=\"0\" border=\"0\" height=\"38\" cellspacing=\"0\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td valign=\"top\" height=\"38\">\n" +
+                            "                                    <img width=\"20\" height=\"38\" style=\"display:block; max-height:38px; max-width:20px;\" alt=\"\" src=\"http://img.mailinblue.com/new_images/rnb/rnb_space.gif\">\n" +
+                            "                                </td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table>\n" +
+                            "            </td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
                             "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
@@ -622,7 +674,7 @@ public class Register extends AppCompatActivity {
                             "                                                <table cellpadding=\"0\" border=\"0\" align=\"center\" cellspacing=\"0\" class=\"logo-img-center\"> \n" +
                             "                                                    <tbody><tr>\n" +
                             "                                                        <td valign=\"middle\" align=\"center\" style=\"line-height: 1px;\">\n" +
-                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Femail_header.jpg?alt=media&token=bd0debdd-ae94-416b-9368-9540ac271aa1\"></div></div></td>\n" +
+                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c2802ec31b92f71e41dd1de.jpg\"></div></div></td>\n" +
                             "                                                    </tr>\n" +
                             "                                                </tbody></table>\n" +
                             "                                                </td>\n" +
@@ -748,7 +800,7 @@ public class Register extends AppCompatActivity {
                             "                                                                                <td>\n" +
                             "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
                             "                                                                            <div><a target=\"_blank\" href=\"https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\">\n" +
-                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fgoogle_play_small.jpg?alt=media&token=c7147e53-bbba-4ab7-804e-1c138fba5ac8\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c27674ccf29bcec2a435996.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                            </div></td>\n" +
                             "                                                                            </tr>\n" +
                             "                                                                        </tbody></table>\n" +
@@ -824,7 +876,7 @@ public class Register extends AppCompatActivity {
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Ffirebase_comp.jpg?alt=media&token=8e8f24f7-8998-4881-a215-280f668ef245\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e366516c5d85.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                                    </div>\n" +
                             "                                                                            </td>\n" +
                             "                                                                            </tr>\n" +
@@ -855,7 +907,7 @@ public class Register extends AppCompatActivity {
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fall_devices.jpg?alt=media&token=59379e41-17cd-45e4-8e36-2238a346717a\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e3662461432d.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                                    </div>\n" +
                             "                                                                            </td>\n" +
                             "                                                                            </tr>\n" +
@@ -926,7 +978,7 @@ public class Register extends AppCompatActivity {
                             "\n" +
                             "                                                    <tbody><tr>\n" +
                             "                                                        <td width=\"100%\" style=\"line-height: 1px;\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
-                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://noteify.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fweb_computer.jpg?alt=media&token=96b0cbb5-abae-454a-8dd4-a9698f22f163\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
+                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://noteify.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4b80730d48fbeb3c5c753d.png\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
                             "                                                    </tr>\n" +
                             "                                                    </tbody></table>\n" +
                             "                                                </td><td class=\"rnb-force-col\" valign=\"top\">\n" +
@@ -1002,7 +1054,7 @@ public class Register extends AppCompatActivity {
                             "                                                                                <td>\n" +
                             "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
                             "                                                                            <div><a target=\"_blank\" href=\"https://github.com/craigspicer\">\n" +
-                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2FGitHub_logo.jpg?alt=media&token=2b531655-ee12-4919-8f63-f30bf1ddc17b\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5cd3fccc27351d028e2b7a1b.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                            </div></td>\n" +
                             "                                                                            </tr>\n" +
                             "                                                                        </tbody></table>\n" +
