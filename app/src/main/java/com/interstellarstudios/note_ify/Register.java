@@ -190,6 +190,7 @@ public class Register extends AppCompatActivity {
 
         else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toasty.info(Register.this, "Please enter a valid email address", Toast.LENGTH_LONG, true).show();
+            return;
         }
 
         else if (TextUtils.isEmpty(password)) {
