@@ -8,8 +8,8 @@ android {
         applicationId "com.interstellarstudios.note_ify"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 59
-        versionName "2.0"
+        versionCode 60
+        versionName "2.60"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -57,10 +57,7 @@ dependencies {
     implementation 'jp.wasabeef:richeditor-android:1.2.2'
     implementation 'com.nbsp:library:1.8'
     implementation 'gr.pantrif:easy-android-splash-screen:0.0.1'
-
-    implementation ('com.github.danysantiago:sendgrid-android:1'){
-        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
-    }
+    implementation 'com.sendinblue:sib-api-v3-sdk:3.0.1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

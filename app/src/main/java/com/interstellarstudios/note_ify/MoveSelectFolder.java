@@ -247,7 +247,7 @@ public class MoveSelectFolder extends AppCompatActivity implements NavigationVie
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    if (document != null) {
+                    if (document != null && document.getData() != null) {
                         toPath.set(document.getData())
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
