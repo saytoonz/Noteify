@@ -64,4 +64,10 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="action_settings">Settings</string>
+
+    <string name="notification_title">Reminder from Note-ify</string>
+    <string name="notification_text">You set a reminder on one of your notes. Tap here to take a look.</string>
+    <string name="notification_updated">Notification Updated</string>
+    <string name="notification_channel_name">Reminder Notification</string>
+    <string name="notification_channel_description">Notifications for Reminders set when creating notes.</string>
 </resources>

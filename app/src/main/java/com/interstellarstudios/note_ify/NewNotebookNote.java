@@ -473,7 +473,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         startAlarm(c);
 
         String reminderDateString = DateFormat.getDateInstance().format(c.getTime());
-        Toasty.success(NewNotebookNote.this, "Email reminder set for 06:00 on " + reminderDateString, Toast.LENGTH_LONG, true).show();
+        Toasty.success(NewNotebookNote.this, "Reminder set for 06:00 on " + reminderDateString, Toast.LENGTH_LONG, true).show();
 
         mFireBaseAnalytics.logEvent("reminder_set", analyticsBundle);
     }

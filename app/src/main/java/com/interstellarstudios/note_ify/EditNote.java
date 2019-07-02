@@ -504,7 +504,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         startAlarm(c);
 
         String reminderDateString = DateFormat.getDateInstance().format(c.getTime());
-        Toasty.success(EditNote.this, "Email reminder set for 06:00 on " + reminderDateString, Toast.LENGTH_LONG, true).show();
+        Toasty.success(EditNote.this, "Reminder set for 06:00 on " + reminderDateString, Toast.LENGTH_LONG, true).show();
 
         mFireBaseAnalytics.logEvent("reminder_set", analyticsBundle);
     }
