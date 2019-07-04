@@ -4,10 +4,12 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.UserNotAuthenticatedException;
+import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +42,7 @@ public class FingerprintLogin extends AppCompatActivity {
     private static final int AUTHENTICATION_DURATION_SECONDS = 3;
     private KeyguardManager mKeyguardManager;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +71,7 @@ public class FingerprintLogin extends AppCompatActivity {
         tryEncrypt();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean tryEncrypt() {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -92,6 +96,7 @@ public class FingerprintLogin extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void createKey() {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");

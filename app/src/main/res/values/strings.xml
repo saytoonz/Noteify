@@ -70,4 +70,5 @@
     <string name="notification_updated">Notification Updated</string>
     <string name="notification_channel_name">Reminder Notification</string>
     <string name="notification_channel_description">Notifications for Reminders set when creating notes.</string>
+    <string name="account_email_address_place_holder">email@address.com</string>
 </resources>

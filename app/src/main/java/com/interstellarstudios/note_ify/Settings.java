@@ -50,6 +50,8 @@ public class Settings extends AppCompatActivity {
                         } else {
                             savePreferences();
                         }
+                    } else {
+                        Toasty.error(Settings.this, "This feature is not supported on the installed version of Android.", Toast.LENGTH_LONG, true).show();
                     }
                 } else {
                     savePreferences();

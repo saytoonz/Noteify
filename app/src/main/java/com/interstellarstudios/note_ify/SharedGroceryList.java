@@ -53,6 +53,7 @@ import es.dmoral.toasty.Toasty;
 
 public class SharedGroceryList extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Context mContext = this;
     private ArrayList<String> groceryArrayList = new ArrayList<>();
     private EditText mEditTextName;
     private TextView mTextViewAmount;
@@ -115,7 +116,6 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
             @Override
             public void onClick(View v) {
                 shareGroceryList();
-                Toasty.success(SharedGroceryList.this, "Grocery list shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
             }
         });
 
@@ -361,6 +361,31 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
             return;
         }
 
+        mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            groceryArrayList.clear();
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                GroceryItem groceryItem = document.toObject(GroceryItem.class);
+                                String setItem = groceryItem.getItem();
+                                groceryArrayList.add(setItem);
+                            }
+                            if(groceryArrayList.isEmpty()) {
+                                Toasty.info(SharedGroceryList.this, "This grocery list is empty", Toast.LENGTH_LONG, true).show();
+                            } else {
+                                SendMailGrocery.sendMail(mContext, sharedUserEmail, currentUserEmail, groceryArrayList);
+                                Toasty.success(SharedGroceryList.this, "Grocery List shared with and emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                            }
+                        }
+                    }
+                });
+
         DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
         userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -404,8 +429,6 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
                                                                     DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List").document(documentId);
                                                                     groceryListPath.set(new GroceryItem(setItem));
                                                                 }
-
-                                                                SendMailGrocery.sendMail(sharedUserEmail, currentUserEmail, groceryArrayList);
                                                             }
                                                         }
                                                     });

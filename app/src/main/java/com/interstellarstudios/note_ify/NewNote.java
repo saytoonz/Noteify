@@ -154,7 +154,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 saveNote();
 
                 sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
-                SendMail.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+                SendMail.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
 
                 saveSharedNote();
 
@@ -482,7 +482,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, AlertReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, i, 0);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        }
     }
 
     public void getPermissionToReadUserContacts() {
@@ -493,8 +495,10 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
-                                READ_CONTACTS_PERMISSIONS_REQUEST);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
+                                    READ_CONTACTS_PERMISSIONS_REQUEST);
+                        }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -503,7 +507,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             }
         }).create().show();
 
-        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSIONS_REQUEST);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSIONS_REQUEST);
+        }
     }
 
     public void getPermissionToUseCamera() {
@@ -514,8 +520,10 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                MY_CAMERA_REQUEST_CODE);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                    MY_CAMERA_REQUEST_CODE);
+                        }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -524,7 +532,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             }
         }).create().show();
 
-        requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+        }
     }
 
     public void getPermissionToWriteStorage() {
@@ -535,8 +545,10 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                WRITE_EXTERNAL_STORAGE_REQUEST);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    WRITE_EXTERNAL_STORAGE_REQUEST);
+                        }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -545,7 +557,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             }
         }).create().show();
 
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
+        }
     }
 
     @Override
