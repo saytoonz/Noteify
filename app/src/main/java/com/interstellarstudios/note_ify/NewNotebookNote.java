@@ -106,9 +106,8 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
     private int priority;
     private String lowerCaseTitle;
     private String sharedUserEmail;
-    private String userIdDetail;
     private String currentUserEmail;
-    private String downloadURL;
+    private String attachmentUrl;
     private int updatedRevision = 1;
 
     @Override
@@ -436,7 +435,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
 
-        if(switchThemesOnOff) {
+        if (switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(NewNotebookNote.this, R.color.colorPrimaryDarkTheme));
             toolbar.setBackgroundColor(ContextCompat.getColor(NewNotebookNote.this, R.color.colorPrimaryDarkTheme));
@@ -490,26 +489,20 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
     public void getPermissionToReadUserContacts() {
 
         new AlertDialog.Builder(this)
-                .setTitle("Permission needed to access Contacts")
+                .setTitle("Permission needed to access contacts")
                 .setMessage("This permission is needed in order to get an email address for a selected contact. Manually enable in Settings > Apps & notifications > Note-ify > Permissions.")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
+                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
-                                    READ_CONTACTS_PERMISSIONS_REQUEST);
+                            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSIONS_REQUEST);
                         }
                     }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        }).create().show();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSIONS_REQUEST);
-        }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
     }
 
     public void getPermissionToUseCamera() {
@@ -521,20 +514,14 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                    MY_CAMERA_REQUEST_CODE);
+                            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
                         }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
             }
         }).create().show();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
-        }
     }
 
     public void getPermissionToWriteStorage() {
@@ -546,20 +533,14 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    WRITE_EXTERNAL_STORAGE_REQUEST);
+                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
                         }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
             }
         }).create().show();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
-        }
     }
 
     @Override
@@ -569,6 +550,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toasty.success(NewNotebookNote.this, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
+                doLaunchContactPicker();
             } else {
                 Toasty.error(NewNotebookNote.this, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
             }
@@ -789,6 +771,7 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
                         });
 
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             });
@@ -822,32 +805,39 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
                             if (task.isSuccessful()) {
 
                                 Uri downloadUri = task.getResult();
-                                downloadURL = downloadUri.toString();
+                                attachmentUrl = downloadUri.toString();
 
                                 final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Notebook").collection("Notebook").document(localNoteId);
-                                documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", 1, downloadURL));
+                                documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl));
 
-                                if (!sharedUserEmail.equals("")) {
+                                sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
+                                if (sharedUserEmail.trim().isEmpty()) {
+                                    return;
+                                }
 
-                                    DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
-                                    userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                DocumentSnapshot document = task.getResult();
+                                DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
+                                userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot document = task.getResult();
 
-                                                if (document.exists()) {
-                                                    final DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(userIdDetail).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
-                                                    sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, 1, downloadURL));
-                                                }
+                                            if (document.exists()) {
+
+                                                UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
+                                                String sharedUserId = userDetails.getUserId();
+
+                                                final DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
+                                                sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl));
                                             }
                                         }
-                                    });
-                                }
+                                    }
+                                });
                             }
                         }
                     });
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -960,7 +950,6 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
         final Bundle analyticsBundle = new Bundle();
 
         sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
-
         if (sharedUserEmail.trim().isEmpty()) {
             return;
         }
@@ -974,14 +963,14 @@ public class NewNotebookNote extends AppCompatActivity implements DatePickerDial
                     if (document.exists()) {
 
                         UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
-                        userIdDetail = userDetails.getUserId();
+                        String sharedUserId = userDetails.getUserId();
 
                         Map<String, Object> notificationMessage = new HashMap<>();
                         notificationMessage.put("from", currentUserEmail);
-                        CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(userIdDetail).collection("Public").document("Notifications").collection("Notifications");
+                        CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Notifications").collection("Notifications");
                         notificationPath.add(notificationMessage);
 
-                        final DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(userIdDetail).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
+                        final DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
                         sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, ""));
 
                         Toasty.success(NewNotebookNote.this, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();

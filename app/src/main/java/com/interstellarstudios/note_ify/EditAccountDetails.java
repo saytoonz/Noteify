@@ -1,6 +1,7 @@
 package com.interstellarstudios.note_ify;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -30,6 +31,7 @@ import es.dmoral.toasty.Toasty;
 
 public class EditAccountDetails extends AppCompatActivity {
 
+    private Context context = this;
     private static final int PICK_IMAGE_REQUEST = 1;
     private ImageView mImageView;
     private StorageReference mStorageRef;
@@ -54,7 +56,6 @@ public class EditAccountDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 saveDetails();
-                finish();
             }
         });
 
@@ -70,7 +71,7 @@ public class EditAccountDetails extends AppCompatActivity {
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(EditAccountDetails.this, DeleteAccount.class);
+                Intent i = new Intent(context, DeleteAccount.class);
                 startActivity(i);
             }
         });
@@ -80,10 +81,10 @@ public class EditAccountDetails extends AppCompatActivity {
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(EditAccountDetails.this, R.color.colorPrimaryDarkTheme));
-            changeProfilePic.setTextColor(ContextCompat.getColor(EditAccountDetails.this, R.color.colorDarkThemeText));
-            buttonSave.setTextColor(ContextCompat.getColor(EditAccountDetails.this, R.color.colorDarkThemeText));
-            buttonDelete.setTextColor(ContextCompat.getColor(EditAccountDetails.this, R.color.colorDarkThemeText));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            changeProfilePic.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            buttonSave.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            buttonDelete.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
         }
 
         mStorageRef = FirebaseStorage.getInstance().getReference("Users/" + mCurrentUserId + "/Profile_Pic");
@@ -182,6 +183,7 @@ public class EditAccountDetails extends AppCompatActivity {
                         }
                     });
         }
-        Toasty.success(EditAccountDetails.this, "Profile Updated", Toast.LENGTH_LONG, true).show();
+        finish();
+        Toasty.success(context, "Profile Updated", Toast.LENGTH_LONG, true).show();
     }
 }

@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import androidx.core.app.NotificationCompat;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +21,7 @@ import sibApi.SmtpApi;
 import sibModel.SendSmtpEmail;
 import sibModel.SendSmtpEmailSender;
 import sibModel.SendSmtpEmailTo;
+import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class AlertReceiver extends BroadcastReceiver {
@@ -33,8 +35,16 @@ public class AlertReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
         mContext = context;
-        sendMail();
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        boolean guestAccountOn = sharedPreferences.getBoolean("guestAccount", false);
+
+        if(!guestAccountOn){
+            sendMail();
+        }
+
         createNotificationChannel();
         sendNotification();
     }

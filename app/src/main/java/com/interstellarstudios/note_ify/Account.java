@@ -1,8 +1,11 @@
 package com.interstellarstudios.note_ify;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +29,7 @@ import es.dmoral.toasty.Toasty;
 
 public class Account extends AppCompatActivity {
 
+    private Context context = this;
     private FirebaseAuth mFireBaseAuth;
     private FirebaseUser mUser;
     private String mCurrentUserId;
@@ -81,20 +85,7 @@ public class Account extends AppCompatActivity {
         buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, Object> userToken = new HashMap<>();
-                userToken.put("User_Token_ID", "");
-
-                DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
-                userTokenDocumentPath.set(userToken);
-
-                mFireBaseAuth.signOut();
-
-                Intent i = new Intent(Account.this, Register.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
-                Account.this.finish();
-
-                Toasty.success(Account.this, "You have been signed out.", Toast.LENGTH_LONG, true).show();
+                logOut();
             }
         });
 
@@ -102,7 +93,7 @@ public class Account extends AppCompatActivity {
         editAccountDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Account.this, EditAccountDetails.class);
+                Intent i = new Intent(context, EditAccountDetails.class);
                 startActivity(i);
             }
         });
@@ -116,5 +107,36 @@ public class Account extends AppCompatActivity {
             buttonLogout.setTextColor(ContextCompat.getColor(Account.this, R.color.colorDarkThemeText));
             textViewUserEmail.setTextColor(ContextCompat.getColor(Account.this, R.color.colorDarkThemeText));
         }
+    }
+
+    private void logOut() {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Log out")
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Map<String, Object> userToken = new HashMap<>();
+                        userToken.put("User_Token_ID", "");
+
+                        DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
+                        userTokenDocumentPath.set(userToken);
+
+                        mFireBaseAuth.signOut();
+
+                        Intent i = new Intent(Account.this, Register.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
+                        Account.this.finish();
+
+                        Toasty.success(context, "You have been signed out.", Toast.LENGTH_LONG, true).show();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
     }
 }
