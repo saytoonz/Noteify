@@ -327,6 +327,7 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
                 String fromEmailAddress = note.getFromEmailAddress();
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
+                String attachmentName = note.getAttachmentName();
 
                 Intent i = new Intent(Shared.this, EditSharedNote.class);
                 i.putExtra("noteId", noteId);
@@ -336,6 +337,7 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
                 i.putExtra("fromEmailAddress", fromEmailAddress);
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
+                i.putExtra("attachmentName", attachmentName);
                 startActivity(i);
             }
         });

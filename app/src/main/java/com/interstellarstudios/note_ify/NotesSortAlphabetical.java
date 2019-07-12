@@ -358,6 +358,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
                 int priority = note.getPriority();
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
+                String attachmentName = note.getAttachmentName();
 
                 Intent i = new Intent(NotesSortAlphabetical.this, EditNote.class);
                 i.putExtra("folderId", folderId);
@@ -367,6 +368,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
                 i.putExtra("priority", priority);
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
+                i.putExtra("attachmentName", attachmentName);
                 startActivity(i);
             }
         });

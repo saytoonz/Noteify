@@ -329,6 +329,7 @@ public class SharedSortPriority extends AppCompatActivity implements NavigationV
                 String fromEmailAddress = note.getFromEmailAddress();
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
+                String attachmentName = note.getAttachmentName();
 
                 Intent i = new Intent(SharedSortPriority.this, EditSharedNote.class);
                 i.putExtra("noteId", noteId);
@@ -338,6 +339,7 @@ public class SharedSortPriority extends AppCompatActivity implements NavigationV
                 i.putExtra("fromEmailAddress", fromEmailAddress);
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
+                i.putExtra("attachmentName", attachmentName);
                 startActivity(i);
             }
         });

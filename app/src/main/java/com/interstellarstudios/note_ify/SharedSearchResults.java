@@ -277,6 +277,7 @@ public class SharedSearchResults extends AppCompatActivity implements Navigation
                 String fromEmailAddress = note.getFromEmailAddress();
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
+                String attachmentName = note.getAttachmentName();
 
                 Intent i = new Intent(SharedSearchResults.this, EditSharedNote.class);
                 i.putExtra("noteId", noteId);
@@ -286,6 +287,7 @@ public class SharedSearchResults extends AppCompatActivity implements Navigation
                 i.putExtra("fromEmailAddress", fromEmailAddress);
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
+                i.putExtra("attachmentName", attachmentName);
                 startActivity(i);
             }
         });

@@ -327,6 +327,7 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
                 String fromEmailAddress = note.getFromEmailAddress();
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
+                String attachmentName = note.getAttachmentName();
 
                 Intent i = new Intent(SharedSortAlphabetical.this, EditSharedNote.class);
                 i.putExtra("noteId", noteId);
@@ -336,6 +337,7 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
                 i.putExtra("fromEmailAddress", fromEmailAddress);
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
+                i.putExtra("attachmentName", attachmentName);
                 startActivity(i);
             }
         });

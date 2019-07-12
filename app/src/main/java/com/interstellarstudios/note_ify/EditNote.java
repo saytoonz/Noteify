@@ -45,7 +45,6 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -74,7 +73,6 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     private Context mContext = this;
-    private FirebaseAnalytics mFireBaseAnalytics;
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -97,7 +95,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     private TextView attachmentTextView;
     private ImageView attachment_icon;
     private String sharedNoteId = UUID.randomUUID().toString();
-    private String attachment_name = "";
     private String filePath;
     private String fileName;
     private String title;
@@ -106,15 +103,17 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     private String lowerCaseTitle;
     private String sharedUserEmail;
     private String currentUserEmail;
-    private String attachmentUrl;
     private int updatedRevision;
+    private String folderId;
+    private String noteId;
+    private String attachmentUrl = "";
+    private String attachment_name = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_note);
 
-        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
         FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
 
@@ -124,22 +123,35 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             currentUserEmail = mUser.getEmail();
         }
 
-        final Bundle analyticsBundle = new Bundle();
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         TextView priorityTextView = findViewById(R.id.priorityTextView);
         HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
         ImageView buttonBackground = findViewById(R.id.buttonBackground);
+        editTextTitle = findViewById(R.id.edit_text_title);
+        numberPickerPriority = findViewById(R.id.number_picker_priority);
+        sharedUserEmailInput = findViewById(R.id.sharedUserEmail);
+        attachmentTextView = findViewById(R.id.attachment_textview);
+        attachment_icon = findViewById(R.id.attachment_icon);
+
+        String bundleTitle;
+        String bundleDescription;
+        int bundlePriority;
 
         Bundle bundle = getIntent().getExtras();
-        String bundleTitle = bundle.getString("title");
-        String bundleDescription = bundle.getString("description");
-        int bundlePriority = bundle.getInt("priority");
-        final String attachmentUrl = bundle.getString("attachmentUrl");
-        int revision = bundle.getInt("revision");
-        updatedRevision = revision + 1;
+        if (bundle != null) {
+            folderId = bundle.getString("folderId");
+            noteId = bundle.getString("noteId");
+            bundleTitle = bundle.getString("title");
+            bundleDescription = bundle.getString("description");
+            bundlePriority = bundle.getInt("priority");
+            attachmentUrl = bundle.getString("attachmentUrl");
+            int revision = bundle.getInt("revision");
+            updatedRevision = revision + 1;
+        } else {
+            return;
+        }
 
         TextView toolbarContacts = toolbar.findViewById(R.id.toolbar_contacts);
         toolbarContacts.setOnClickListener(new View.OnClickListener() {
@@ -157,18 +169,8 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         toolbarSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 saveNote();
-
-                sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
-                SendMail.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
-
                 saveSharedNote();
-
-                attachment_name = attachmentTextView.getText().toString();
-                if (!attachment_name.equals("")) {
-                    attachmentUpload();
-                }
             }
         });
 
@@ -434,21 +436,22 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             download_icon.setVisibility(View.VISIBLE);
             download_textview.setVisibility(View.VISIBLE);
 
+            if(bundle.getString("attachmentName") != null) {
+                attachment_name = bundle.getString("attachmentName");
+            }
+
+            attachmentTextView.setVisibility(View.VISIBLE);
+            attachment_icon.setVisibility(View.VISIBLE);
+            attachmentTextView.setText(attachment_name);
+
             download_textview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(attachmentUrl));
                     startActivity(browserIntent);
-                    mFireBaseAnalytics.logEvent("download_attachment", analyticsBundle);
                 }
             });
         }
-
-        editTextTitle = findViewById(R.id.edit_text_title);
-        numberPickerPriority = findViewById(R.id.number_picker_priority);
-        sharedUserEmailInput = findViewById(R.id.sharedUserEmail);
-        attachmentTextView = findViewById(R.id.attachment_textview);
-        attachment_icon = findViewById(R.id.attachment_icon);
 
         numberPickerPriority.setMinValue(1);
         numberPickerPriority.setMaxValue(10);
@@ -491,8 +494,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-        Bundle analyticsBundle = new Bundle();
-
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
@@ -504,8 +505,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
         String reminderDateString = DateFormat.getDateInstance().format(c.getTime());
         Toasty.success(EditNote.this, "Reminder set for 06:00 on " + reminderDateString, Toast.LENGTH_LONG, true).show();
-
-        mFireBaseAnalytics.logEvent("reminder_set", analyticsBundle);
     }
 
     private void startAlarm(Calendar c) {
@@ -671,8 +670,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
-            final Bundle analyticsBundle = new Bundle();
-
             mImageUri = data.getData();
 
             progressDialog.setMessage("Uploading Image");
@@ -711,7 +708,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                                     downloadUrl = downloadUri.toString();
                                     mEditor.insertImage(downloadUrl, "image_upload");
 
-                                    mFireBaseAnalytics.logEvent("image_uploaded", analyticsBundle);
                                     progressDialog.dismiss();
                                 }
                             }
@@ -727,9 +723,8 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
             filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
             fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-            attachmentTextView.setVisibility(View.VISIBLE);
-            attachment_icon.setVisibility(View.VISIBLE);
-            attachmentTextView.setText(fileName);
+
+            attachmentUpload();
         }
 
         if (requestCode == CONTACT_PICKER_RESULT && resultCode == RESULT_OK) {
@@ -758,8 +753,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         }
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-            final Bundle analyticsBundle = new Bundle();
 
             galleryAddPic();
             mImageUri = Uri.fromFile(photoFile);
@@ -800,7 +793,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                                     downloadUrl = downloadUri.toString();
                                     mEditor.insertImage(downloadUrl, "image_upload");
 
-                                    mFireBaseAnalytics.logEvent("camera_image_uploaded", analyticsBundle);
                                     progressDialog.dismiss();
                                 }
                             }
@@ -817,15 +809,12 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
     private void attachmentUpload() {
 
-        Bundle bundle = getIntent().getExtras();
-        final String folderId = bundle.getString("folderId");
-        final String noteId = bundle.getString("noteId");
-        int revision = bundle.getInt("revision");
-        final int updatedRevision = revision + 1;
-
         final Uri file = Uri.fromFile(new File(filePath));
         StorageReference AttachmentStorageRef = FirebaseStorage.getInstance().getReference("Users/" + mCurrentUserId + "/Attachments");
         final StorageReference fileReference = AttachmentStorageRef.child(fileName);
+
+        progressDialog.setMessage("Uploading Attachment");
+        progressDialog.show();
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -849,32 +838,13 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                                 Uri downloadUri = task.getResult();
                                 attachmentUrl = downloadUri.toString();
 
-                                final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(noteId);
-                                documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl));
+                                attachmentTextView.setVisibility(View.VISIBLE);
+                                attachment_icon.setVisibility(View.VISIBLE);
+                                attachmentTextView.setText(fileName);
 
-                                sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
-                                if (sharedUserEmail.trim().isEmpty()) {
-                                    return;
-                                }
+                                attachment_name = fileName;
 
-                                DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
-                                userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            DocumentSnapshot document = task.getResult();
-
-                                            if (document.exists()) {
-
-                                                UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
-                                                String sharedUserId = userDetails.getUserId();
-
-                                                final DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
-                                                sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl));
-                                            }
-                                        }
-                                    }
-                                });
+                                progressDialog.dismiss();
                             }
                         }
                     });
@@ -964,15 +934,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
     private void saveNote() {
 
-        Bundle analyticsBundle = new Bundle();
-
-        Bundle bundle = getIntent().getExtras();
-        String folderId = bundle.getString("folderId");
-        String noteId = bundle.getString("noteId");
-        int revision = bundle.getInt("revision");
-        final int updatedRevision = revision + 1;
-        final String attachmentUrl = bundle.getString("attachmentUrl");
-
         title = editTextTitle.getText().toString();
         description = mEditor.getHtml();
         priority = numberPickerPriority.getValue();
@@ -984,19 +945,13 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         }
 
         DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(noteId);
-        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl));
+        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name));
 
         Toasty.success(EditNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
-        mFireBaseAnalytics.logEvent("edit_note_save_called", analyticsBundle);
     }
 
     private void saveSharedNote() {
-
-        final Bundle analyticsBundle = new Bundle();
-
-        Bundle bundle = getIntent().getExtras();
-        final String attachmentUrl = bundle.getString("attachmentUrl");
 
         sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
         if (sharedUserEmail.trim().isEmpty()) {
@@ -1019,16 +974,21 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                         CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Notifications").collection("Notifications");
                         notificationPath.add(notificationMessage);
 
-                        final DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
-                        sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl));
+                        DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
+                        sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl, attachment_name));
+
+                        attachment_name = attachmentTextView.getText().toString();
+                        if (!attachment_name.equals("")) {
+                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentUrl, attachment_name);
+                        } else {
+                            SendMail.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+                        }
 
                         Toasty.success(EditNote.this, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
-                        mFireBaseAnalytics.logEvent("edit_share_called", analyticsBundle);
                     } else {
                         Toasty.success(EditNote.this, "Note emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
-                        mFireBaseAnalytics.logEvent("edit_share_email_only_called", analyticsBundle);
                     }
                 } else {
                     Toasty.error(EditNote.this, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();

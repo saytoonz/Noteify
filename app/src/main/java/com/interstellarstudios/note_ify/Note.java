@@ -10,12 +10,13 @@ public class Note {
     private String fromEmailAddress;
     private int revision;
     private String attachmentUrl;
+    private String attachmentName;
 
     public Note() {
         //empty constructor needed
     }
 
-    public Note(String title, String lowercasetitle, String description, int priority, String date, String fromEmailAddress, int revision, String attachmentUrl) {
+    public Note(String title, String lowercasetitle, String description, int priority, String date, String fromEmailAddress, int revision, String attachmentUrl, String attachmentName) {
 
         this.title = title;
         this.lowercasetitle = lowercasetitle;
@@ -25,6 +26,7 @@ public class Note {
         this.fromEmailAddress = fromEmailAddress;
         this.revision = revision;
         this.attachmentUrl = attachmentUrl;
+        this.attachmentName = attachmentName;
     }
 
     public String getTitle() {
@@ -57,5 +59,9 @@ public class Note {
 
     public String getAttachmentUrl() {
         return attachmentUrl;
+    }
+
+    public String getAttachmentName() {
+        return attachmentName;
     }
 }

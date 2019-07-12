@@ -359,6 +359,7 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
                 int priority = note.getPriority();
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
+                String attachmentName = note.getAttachmentName();
 
                 Intent i = new Intent(Notes.this, EditNote.class);
                 i.putExtra("folderId", folderId);
@@ -368,6 +369,8 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
                 i.putExtra("priority", priority);
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
+                i.putExtra("attachmentName", attachmentName);
+                i.putExtra("attachmentName", attachmentName);
                 startActivity(i);
             }
         });

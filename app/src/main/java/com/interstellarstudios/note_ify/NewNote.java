@@ -45,7 +45,6 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -69,13 +68,11 @@ import java.util.Map;
 import java.util.UUID;
 import es.dmoral.toasty.Toasty;
 import jp.wasabeef.richeditor.RichEditor;
-
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     private Context mContext = this;
-    private FirebaseAnalytics mFireBaseAnalytics;
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -97,7 +94,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     private ProgressDialog progressDialog;
     private TextView attachmentTextView;
     private ImageView attachment_icon;
-    private String attachment_name = "";
     private String filePath;
     private String fileName;
     private String localNoteId = UUID.randomUUID().toString();
@@ -110,14 +106,14 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     private String sharedUserEmail;
     private String currentUserEmail;
     private int updatedRevision = 1;
-    private String attachmentUrl;
+    private String attachmentUrl = "";
+    private String attachment_name = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_note);
 
-        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
         FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
 
@@ -127,12 +123,24 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             currentUserEmail = mUser.getEmail();
         }
 
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            folderId = bundle.getString("folderId");
+        } else {
+            return;
+        }
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         TextView priorityTextView = findViewById(R.id.priorityTextView);
         HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
         ImageView buttonBackground = findViewById(R.id.buttonBackground);
+        editTextTitle = findViewById(R.id.edit_text_title);
+        numberPickerPriority = findViewById(R.id.number_picker_priority);
+        sharedUserEmailInput = findViewById(R.id.sharedUserEmail);
+        attachmentTextView = findViewById(R.id.attachment_textview);
+        attachment_icon = findViewById(R.id.attachment_icon);
 
         TextView toolbarContacts = toolbar.findViewById(R.id.toolbar_contacts);
         toolbarContacts.setOnClickListener(new View.OnClickListener() {
@@ -150,18 +158,8 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         toolbarSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 saveNote();
-
-                sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
-                SendMail.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
-
                 saveSharedNote();
-
-                attachment_name = attachmentTextView.getText().toString();
-                if (!attachment_name.equals("")) {
-                    attachmentUpload();
-                }
             }
         });
 
@@ -418,12 +416,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             }
         });
 
-        editTextTitle = findViewById(R.id.edit_text_title);
-        numberPickerPriority = findViewById(R.id.number_picker_priority);
-        sharedUserEmailInput = findViewById(R.id.sharedUserEmail);
-        attachmentTextView = findViewById(R.id.attachment_textview);
-        attachment_icon = findViewById(R.id.attachment_icon);
-
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd\nHH:mm");
         noteDate = sdf.format(calendar.getTime());
@@ -461,8 +453,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-        Bundle analyticsBundle = new Bundle();
-
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
@@ -474,8 +464,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
         String reminderDateString = DateFormat.getDateInstance().format(c.getTime());
         Toasty.success(NewNote.this, "Reminder set for 06:00 on " + reminderDateString, Toast.LENGTH_LONG, true).show();
-
-        mFireBaseAnalytics.logEvent("reminder_set", analyticsBundle);
     }
 
     private void startAlarm(Calendar c) {
@@ -639,8 +627,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
-            final Bundle analyticsBundle = new Bundle();
-
             mImageUri = data.getData();
 
             progressDialog.setMessage("Uploading Image");
@@ -679,7 +665,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                                     downloadUrl = downloadUri.toString();
                                     mEditor.insertImage(downloadUrl, "image_upload");
 
-                                    mFireBaseAnalytics.logEvent("image_uploaded", analyticsBundle);
                                     progressDialog.dismiss();
                                 }
                             }
@@ -695,9 +680,8 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
             filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
             fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-            attachmentTextView.setVisibility(View.VISIBLE);
-            attachment_icon.setVisibility(View.VISIBLE);
-            attachmentTextView.setText(fileName);
+
+            attachmentUpload();
         }
 
         if (requestCode == CONTACT_PICKER_RESULT && resultCode == RESULT_OK) {
@@ -723,8 +707,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         }
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-            final Bundle analyticsBundle = new Bundle();
 
             galleryAddPic();
             mImageUri = Uri.fromFile(photoFile);
@@ -765,7 +747,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                                     downloadUrl = downloadUri.toString();
                                     mEditor.insertImage(downloadUrl, "image_upload");
 
-                                    mFireBaseAnalytics.logEvent("camera_image_uploaded", analyticsBundle);
                                     progressDialog.dismiss();
                                 }
                             }
@@ -785,6 +766,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         final Uri file = Uri.fromFile(new File(filePath));
         StorageReference AttachmentStorageRef = FirebaseStorage.getInstance().getReference("Users/" + mCurrentUserId + "/Attachments");
         final StorageReference fileReference = AttachmentStorageRef.child(fileName);
+
+        progressDialog.setMessage("Uploading Attachment");
+        progressDialog.show();
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -808,32 +792,13 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                                 Uri downloadUri = task.getResult();
                                 attachmentUrl = downloadUri.toString();
 
-                                final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(localNoteId);
-                                documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl));
+                                attachmentTextView.setVisibility(View.VISIBLE);
+                                attachment_icon.setVisibility(View.VISIBLE);
+                                attachmentTextView.setText(fileName);
 
-                                sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
-                                if (sharedUserEmail.trim().isEmpty()) {
-                                    return;
-                                }
+                                attachment_name = fileName;
 
-                                DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
-                                userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            DocumentSnapshot document = task.getResult();
-
-                                            if (document.exists()) {
-
-                                                UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
-                                                String sharedUserId = userDetails.getUserId();
-
-                                                final DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
-                                                sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl));
-                                            }
-                                        }
-                                    }
-                                });
+                                progressDialog.dismiss();
                             }
                         }
                     });
@@ -923,16 +888,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
     private void saveNote() {
 
-        Bundle analyticsBundle = new Bundle();
-
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            folderId = bundle.getString("folderId");
-        } else {
-            return;
-        }
-
         title = editTextTitle.getText().toString();
         description = mEditor.getHtml();
         priority = numberPickerPriority.getValue();
@@ -947,17 +902,14 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         DocumentReference folderPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId);
         folderPath.set(new Collection(folderId, lowerCaseFolder, noteDate));
 
-        final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(localNoteId);
-        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, ""));
+        DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(localNoteId);
+        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name));
 
         Toasty.success(NewNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
-        mFireBaseAnalytics.logEvent("save_note_called", analyticsBundle);
     }
 
     private void saveSharedNote() {
-
-        final Bundle analyticsBundle = new Bundle();
 
         sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
         if (sharedUserEmail.trim().isEmpty()) {
@@ -981,15 +933,20 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                         notificationPath.add(notificationMessage);
 
                         DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
-                        sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, ""));
+                        sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl, attachment_name));
+
+                        attachment_name = attachmentTextView.getText().toString();
+                        if (!attachment_name.equals("")) {
+                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentUrl, attachment_name);
+                        } else {
+                            SendMail.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+                        }
 
                         Toasty.success(NewNote.this, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
-                        mFireBaseAnalytics.logEvent("note_share_called", analyticsBundle);
                     } else {
                         Toasty.success(NewNote.this, "Note emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
-                        mFireBaseAnalytics.logEvent("note_share_email_only_called", analyticsBundle);
                     }
                 } else {
                     Toasty.error(NewNote.this, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
@@ -1021,7 +978,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         }
 
         final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts").collection("Drafts").document(localNoteId);
-        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, ""));
+        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name));
 
         Toasty.success(NewNote.this, "Note saved to Drafts", Toast.LENGTH_LONG, true).show();
         finish();
