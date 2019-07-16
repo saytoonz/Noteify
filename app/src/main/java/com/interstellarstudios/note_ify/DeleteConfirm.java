@@ -1,5 +1,6 @@
 package com.interstellarstudios.note_ify;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import es.dmoral.toasty.Toasty;
 
 public class DeleteConfirm extends AppCompatActivity {
 
+    private Context context = this;
     private FirebaseAuth mFireBaseAuth;
 
     @Override
@@ -44,11 +46,11 @@ public class DeleteConfirm extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    Intent i = new Intent(DeleteConfirm.this, Register.class);
+                                    Intent i = new Intent(context, Register.class);
                                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(i);
-                                    DeleteConfirm.this.finish();
-                                    Toasty.success(DeleteConfirm.this, "Your Account has been Deleted", Toast.LENGTH_LONG, true).show();
+                                    finish();
+                                    Toasty.success(context, "Your Account has been Deleted", Toast.LENGTH_LONG, true).show();
                                 }
                             }
                         });
@@ -60,10 +62,10 @@ public class DeleteConfirm extends AppCompatActivity {
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(DeleteConfirm.this, R.color.colorPrimaryDarkTheme));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             logoImageView.setImageResource(R.drawable.name_logo);
-            descriptionTextView.setTextColor(ContextCompat.getColor(DeleteConfirm.this, R.color.colorDarkThemeText));
-            confirm_delete.setTextColor(ContextCompat.getColor(DeleteConfirm.this, R.color.colorDarkThemeText));
+            descriptionTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            confirm_delete.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
         }
     }
 }

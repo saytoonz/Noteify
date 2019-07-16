@@ -264,7 +264,8 @@ public class SharedGroceryList extends AppCompatActivity implements NavigationVi
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(SharedGroceryList.this, NewNotebookNote.class);
+            Intent i = new Intent(SharedGroceryList.this, NewNote.class);
+            i.putExtra("folderId", "Notebook");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(SharedGroceryList.this, Home.class);

@@ -102,16 +102,16 @@ public class Account extends AppCompatActivity {
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(Account.this, R.color.colorPrimaryDarkTheme));
-            editAccountDetails.setTextColor(ContextCompat.getColor(Account.this, R.color.colorDarkThemeText));
-            buttonLogout.setTextColor(ContextCompat.getColor(Account.this, R.color.colorDarkThemeText));
-            textViewUserEmail.setTextColor(ContextCompat.getColor(Account.this, R.color.colorDarkThemeText));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            editAccountDetails.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            buttonLogout.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textViewUserEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
         }
     }
 
     private void logOut() {
 
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(context)
                 .setTitle("Log out")
                 .setMessage("Are you sure you want to log out?")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -125,10 +125,10 @@ public class Account extends AppCompatActivity {
 
                         mFireBaseAuth.signOut();
 
-                        Intent i = new Intent(Account.this, Register.class);
+                        Intent i = new Intent(context, Register.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(i);
-                        Account.this.finish();
+                        finish();
 
                         Toasty.success(context, "You have been signed out.", Toast.LENGTH_LONG, true).show();
                     }

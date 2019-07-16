@@ -264,7 +264,8 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(GroceryList.this, NewNotebookNote.class);
+            Intent i = new Intent(GroceryList.this, NewNote.class);
+            i.putExtra("folderId", "Notebook");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(GroceryList.this, Home.class);

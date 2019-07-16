@@ -369,6 +369,7 @@ public class NotesSortPriority extends AppCompatActivity implements NavigationVi
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
+                i.putExtra("collectionId", "Main");
                 startActivity(i);
             }
         });

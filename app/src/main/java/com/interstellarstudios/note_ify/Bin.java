@@ -46,6 +46,7 @@ import es.dmoral.toasty.Toasty;
 
 public class Bin extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Context context = this;
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
     private NoteAdapter adapter;
@@ -74,7 +75,8 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Bin.this, NewNotebookNote.class);
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", "Notebook");
                 startActivity(i);
             }
         });
@@ -99,7 +101,7 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
                             String searchInput = searchField.getText().toString().toLowerCase();
-                            Intent i = new Intent(Bin.this, BinSearchResults.class);
+                            Intent i = new Intent(context, BinSearchResults.class);
                             i.putExtra("searchInput", searchInput);
                             startActivity(i);
                             return true;
@@ -116,7 +118,7 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
             @Override
             public void onClick(View view) {
                 String searchInput = searchField.getText().toString().toLowerCase();
-                Intent i = new Intent(Bin.this, BinSearchResults.class);
+                Intent i = new Intent(context, BinSearchResults.class);
                 i.putExtra("searchInput", searchInput);
                 startActivity(i);
             }
@@ -151,16 +153,16 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(Bin.this, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Bin" + "</font>"));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
-            searchField.setTextColor(ContextCompat.getColor(Bin.this, R.color.colorDarkThemeText));
-            searchField.setHintTextColor(ContextCompat.getColor(Bin.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
-            emptyViewText.setTextColor(ContextCompat.getColor(Bin.this, R.color.colorDarkThemeText));
+            searchField.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            searchField.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
         }
 
         setUpRecyclerView();
@@ -181,13 +183,12 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
 
     private void setUpRecyclerView() {
 
-        Context context = this;
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
         final Drawable swipeBackground = new ColorDrawable(Color.parseColor("#e22018"));
         final Drawable swipeBackground2 = new ColorDrawable(Color.parseColor("#3bbe19"));
-        final Drawable deleteForeverIcon = ContextCompat.getDrawable(this, R.drawable.ic_delete_forever);
-        final Drawable restoreIcon = ContextCompat.getDrawable(this, R.drawable.ic_restore);
+        final Drawable deleteForeverIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete_forever);
+        final Drawable restoreIcon = ContextCompat.getDrawable(context, R.drawable.ic_restore);
 
         CollectionReference notebookRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Bin");
         Query query = notebookRef.orderBy("date", Query.Direction.DESCENDING);
@@ -200,7 +201,7 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
 
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
 
         notebookRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -294,7 +295,7 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
         adapter.setOnItemClickListener(new NoteAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
-                Toasty.info(Bin.this, "Restore a Note to edit it", Toast.LENGTH_LONG, true).show();
+                Toasty.info(context, "Restore a Note to edit it", Toast.LENGTH_LONG, true).show();
             }
         });
     }
@@ -327,30 +328,31 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(Bin.this, NewNotebookNote.class);
+            Intent i = new Intent(context, NewNote.class);
+            i.putExtra("folderId", "Notebook");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
-            Intent j = new Intent(Bin.this, Home.class);
+            Intent j = new Intent(context, Home.class);
             startActivity(j);
         } else if (id == R.id.nav_share) {
-            Intent j = new Intent(Bin.this, Shared.class);
+            Intent j = new Intent(context, Shared.class);
             startActivity(j);
         } else if (id == R.id.nav_grocery_list) {
-            Intent k = new Intent(Bin.this, GroceryList.class);
+            Intent k = new Intent(context, GroceryList.class);
             startActivity(k);
         } else if (id == R.id.nav_shared_grocery_list) {
-            Intent k = new Intent(Bin.this, SharedGroceryList.class);
+            Intent k = new Intent(context, SharedGroceryList.class);
             startActivity(k);
         } else if (id == R.id.nav_dark) {
 
         } else if (id == R.id.nav_settings) {
-            Intent m = new Intent(Bin.this, Settings.class);
+            Intent m = new Intent(context, Settings.class);
             startActivity(m);
         } else if (id == R.id.nav_account) {
-            Intent n = new Intent(Bin.this, Account.class);
+            Intent n = new Intent(context, Account.class);
             startActivity(n);
         } else if (id == R.id.nav_information) {
-            Intent o = new Intent(Bin.this, Information.class);
+            Intent o = new Intent(context, Information.class);
             startActivity(o);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

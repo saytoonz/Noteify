@@ -84,7 +84,8 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Shared.this, NewNotebookNote.class);
+                Intent i = new Intent(Shared.this, NewNote.class);
+                i.putExtra("folderId", "Notebook");
                 startActivity(i);
             }
         });
@@ -329,7 +330,7 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
                 String attachmentUrl = note.getAttachmentUrl();
                 String attachmentName = note.getAttachmentName();
 
-                Intent i = new Intent(Shared.this, EditSharedNote.class);
+                Intent i = new Intent(Shared.this, EditNote.class);
                 i.putExtra("noteId", noteId);
                 i.putExtra("title", title);
                 i.putExtra("description", description);
@@ -338,6 +339,8 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
+                i.putExtra("collectionId", "Public");
+                i.putExtra("folderId", "Shared");
                 startActivity(i);
             }
         });
@@ -371,7 +374,8 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(Shared.this, NewNotebookNote.class);
+            Intent i = new Intent(Shared.this, NewNote.class);
+            i.putExtra("folderId", "Notebook");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(Shared.this, Home.class);

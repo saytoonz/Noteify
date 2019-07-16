@@ -84,7 +84,8 @@ public class SharedSortPriority extends AppCompatActivity implements NavigationV
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(SharedSortPriority.this, NewNotebookNote.class);
+                Intent i = new Intent(SharedSortPriority.this, NewNote.class);
+                i.putExtra("folderId", "Notebook");
                 startActivity(i);
             }
         });
@@ -331,7 +332,7 @@ public class SharedSortPriority extends AppCompatActivity implements NavigationV
                 String attachmentUrl = note.getAttachmentUrl();
                 String attachmentName = note.getAttachmentName();
 
-                Intent i = new Intent(SharedSortPriority.this, EditSharedNote.class);
+                Intent i = new Intent(SharedSortPriority.this, EditNote.class);
                 i.putExtra("noteId", noteId);
                 i.putExtra("title", title);
                 i.putExtra("description", description);
@@ -340,6 +341,8 @@ public class SharedSortPriority extends AppCompatActivity implements NavigationV
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
+                i.putExtra("collectionId", "Public");
+                i.putExtra("folderId", "Shared");
                 startActivity(i);
             }
         });
@@ -373,7 +376,8 @@ public class SharedSortPriority extends AppCompatActivity implements NavigationV
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(SharedSortPriority.this, NewNotebookNote.class);
+            Intent i = new Intent(SharedSortPriority.this, NewNote.class);
+            i.putExtra("folderId", "Notebook");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(SharedSortPriority.this, Home.class);

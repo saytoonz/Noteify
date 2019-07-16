@@ -85,6 +85,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         holder.textViewDate.setText(model.getDate());
         holder.textViewFromUserEmail.setText(model.getFromEmailAddress());
         holder.textViewRevision.setText("Revision: " + model.getRevision());
+        holder.attachmentName.setText(model.getAttachmentName());
 
         String attachmentURL = model.getAttachmentUrl();
         if (!attachmentURL.equals("")) {
@@ -161,10 +162,10 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         TextView textViewRevision;
         ImageView attachment_icon;
         CardView cardView;
+        TextView attachmentName;
 
         public NoteHolder(View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.text_view_title);
 
             String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.colorLightThemeText));
             String colorLightThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.cardBackground));
@@ -173,12 +174,14 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             mEditor.setBackgroundColor(Color.parseColor(colorLightThemeCardBackgroundString));
             mEditor.setEditorFontColor(Color.parseColor(colorLightThemeTextString));
 
+            textViewTitle = itemView.findViewById(R.id.text_view_title);
             textViewPriority = itemView.findViewById(R.id.text_view_priority);
             textViewDate = itemView.findViewById(R.id.text_view_date);
             textViewFromUserEmail = itemView.findViewById(R.id.fromUserEmail);
             textViewRevision = itemView.findViewById(R.id.revision);
             attachment_icon = itemView.findViewById(R.id.attachment_icon);
             cardView = itemView.findViewById(R.id.cardView);
+            attachmentName = itemView.findViewById(R.id.attachmentName);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

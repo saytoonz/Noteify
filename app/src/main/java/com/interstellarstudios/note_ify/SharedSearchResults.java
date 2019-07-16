@@ -75,7 +75,8 @@ public class SharedSearchResults extends AppCompatActivity implements Navigation
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(SharedSearchResults.this, NewNotebookNote.class);
+                Intent i = new Intent(SharedSearchResults.this, NewNote.class);
+                i.putExtra("folderId", "Notebook");
                 startActivity(i);
             }
         });
@@ -279,7 +280,7 @@ public class SharedSearchResults extends AppCompatActivity implements Navigation
                 String attachmentUrl = note.getAttachmentUrl();
                 String attachmentName = note.getAttachmentName();
 
-                Intent i = new Intent(SharedSearchResults.this, EditSharedNote.class);
+                Intent i = new Intent(SharedSearchResults.this, EditNote.class);
                 i.putExtra("noteId", noteId);
                 i.putExtra("title", title);
                 i.putExtra("description", description);
@@ -288,6 +289,8 @@ public class SharedSearchResults extends AppCompatActivity implements Navigation
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
+                i.putExtra("collectionId", "Public");
+                i.putExtra("folderId", "Shared");
                 startActivity(i);
             }
         });
@@ -321,7 +324,8 @@ public class SharedSearchResults extends AppCompatActivity implements Navigation
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(SharedSearchResults.this, NewNotebookNote.class);
+            Intent i = new Intent(SharedSearchResults.this, NewNote.class);
+            i.putExtra("folderId", "Notebook");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(SharedSearchResults.this, Home.class);

@@ -312,6 +312,7 @@ public class NotesSearchResults extends AppCompatActivity implements NavigationV
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
+                i.putExtra("collectionId", "Main");
                 startActivity(i);
             }
         });

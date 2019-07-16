@@ -1,5 +1,6 @@
 package com.interstellarstudios.note_ify;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -24,7 +25,7 @@ import es.dmoral.toasty.Toasty;
 
 public class NewCollection extends AppCompatActivity {
 
-    private FirebaseAuth mFireBaseAuth;
+    private Context context = this;
     private FirebaseFirestore mFireBaseFireStore;
     private EditText mNewFolder;
     private String mFolderDate;
@@ -35,8 +36,12 @@ public class NewCollection extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_collection);
 
-        mFireBaseAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
+
+        if (mFireBaseAuth.getCurrentUser() != null) {
+            mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
+        }
 
         int colorLightThemeText = getResources().getColor(R.color.colorLightThemeText);
         String colorLightThemeTextString = Integer.toString(colorLightThemeText);
@@ -62,37 +67,38 @@ public class NewCollection extends AppCompatActivity {
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(NewCollection.this, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "New Folder" + "</font>"));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
-            mNewFolder.setTextColor(ContextCompat.getColor(NewCollection.this, R.color.colorDarkThemeText));
-            mNewFolder.setHintTextColor(ContextCompat.getColor(NewCollection.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-            ImageViewCompat.setImageTintList(folderImageView, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
-            buttonSave.setTextColor(ContextCompat.getColor(NewCollection.this, R.color.colorDarkThemeText));
+            mNewFolder.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            mNewFolder.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            ImageViewCompat.setImageTintList(folderImageView, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            buttonSave.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
         }
     }
 
     private void saveFolder() {
 
-        String folder = mNewFolder.getText().toString();
+        String folder = mNewFolder.getText().toString().trim();
         String lowerCaseFolder = folder.toLowerCase();
 
         if (folder.trim().isEmpty()) {
-            Toasty.info(NewCollection.this, "Please enter a folder name", Toast.LENGTH_LONG, true).show();
+            Toasty.info(context, "Please enter a folder name", Toast.LENGTH_LONG, true).show();
             return;
         }
 
-        if (mFireBaseAuth.getCurrentUser() != null) {
-            mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
+        if(folder.contains("/")){
+            Toasty.info(context, "Folder names may not contain a '/'", Toast.LENGTH_LONG, true).show();
+            return;
         }
 
         DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folder);
         documentPath.set(new Collection(folder, lowerCaseFolder, mFolderDate));
 
-        Toasty.success(NewCollection.this, "Folder Created", Toast.LENGTH_LONG, true).show();
+        Toasty.success(context, "Folder Created", Toast.LENGTH_LONG, true).show();
         finish();
     }
 }

@@ -1,6 +1,7 @@
 package com.interstellarstudios.note_ify;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,7 +32,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -56,6 +56,7 @@ import sibModel.SendSmtpEmailTo;
 
 public class Register extends AppCompatActivity {
 
+    private Context context = this;
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
                     "(?=.*[0-9])" +         //at least 1 digit
@@ -88,7 +89,7 @@ public class Register extends AppCompatActivity {
 
         if (mFireBaseAuth.getCurrentUser() != null) {
             finish();
-            Intent i = new Intent(Register.this, Home.class);
+            Intent i = new Intent(context, Home.class);
             startActivity(i);
         }
 
@@ -96,7 +97,7 @@ public class Register extends AppCompatActivity {
         editTextPassword = findViewById(R.id.password);
         editTextConfirmPassword = findViewById(R.id.confirmPassword);
         ImageView logoImageView = findViewById(R.id.logoImageView);
-        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog = new ProgressDialog(context);
 
         Button buttonSignUp = findViewById(R.id.buttonSignup);
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +112,7 @@ public class Register extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                new AlertDialog.Builder(Register.this)
+                new AlertDialog.Builder(context)
                         .setTitle("Are you sure you don't want to register?")
                         .setMessage("You won't be able to log in on another device and see all of your notes and documents.")
                         .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
@@ -131,7 +132,7 @@ public class Register extends AppCompatActivity {
         textViewSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Register.this, SignIn.class));
+                startActivity(new Intent(context, SignIn.class));
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
@@ -158,22 +159,22 @@ public class Register extends AppCompatActivity {
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container2);
-            layout.setBackgroundColor(ContextCompat.getColor(Register.this, R.color.colorPrimaryDarkTheme));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             logoImageView.setImageResource(R.drawable.name_logo);
-            editTextEmail.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            editTextEmail.setHintTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            editTextPassword.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            editTextPassword.setHintTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            editTextConfirmPassword.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            textViewSignIn.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            buttonSignUp.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            switchThemes.setTextColor(ContextCompat.getColor(Register.this, R.color.colorDarkThemeText));
-            buttonGuestMode.setBackgroundColor(ContextCompat.getColor(Register.this, R.color.colorPrimary));
-            buttonGuestMode.setTextColor(ContextCompat.getColor(Register.this, R.color.colorLightThemeText));
+            editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            buttonSignUp.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            buttonGuestMode.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
         }
     }
 
@@ -197,27 +198,27 @@ public class Register extends AppCompatActivity {
         String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            Toasty.info(Register.this, "Please enter your email address", Toast.LENGTH_LONG, true).show();
+            Toasty.info(context, "Please enter your email address", Toast.LENGTH_LONG, true).show();
             return;
         }
 
         else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toasty.info(Register.this, "Please enter a valid email address", Toast.LENGTH_LONG, true).show();
+            Toasty.info(context, "Please enter a valid email address", Toast.LENGTH_LONG, true).show();
             return;
         }
 
         else if (TextUtils.isEmpty(password)) {
-            Toasty.info(Register.this, "Please enter a password", Toast.LENGTH_LONG, true).show();
+            Toasty.info(context, "Please enter a password", Toast.LENGTH_LONG, true).show();
             return;
         }
 
         else if (!PASSWORD_PATTERN.matcher(password).matches()) {
-            Toasty.info(Register.this, "Your password must be at least 8 characters and must contain at least 1 number", Toast.LENGTH_LONG, true).show();
+            Toasty.info(context, "Your password must be at least 8 characters and must contain at least 1 number", Toast.LENGTH_LONG, true).show();
             return;
         }
 
         else if (!password.equals(confirmPassword)) {
-            Toasty.info(Register.this, "Please enter the same password in the confirm password field", Toast.LENGTH_LONG, true).show();
+            Toasty.info(context, "Please enter the same password in the confirm password field", Toast.LENGTH_LONG, true).show();
             return;
         }
 
@@ -265,16 +266,16 @@ public class Register extends AppCompatActivity {
 
                             saveNonGuestPreferences();
 
-                            Intent i = new Intent(Register.this, Home.class);
+                            Intent i = new Intent(context, Home.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
-                            Register.this.finish();
+                            finish();
 
                             sendMail();
 
-                            Toasty.success(Register.this, "Registration Successful", Toast.LENGTH_LONG, true).show();
+                            Toasty.success(context, "Registration Successful", Toast.LENGTH_LONG, true).show();
                         } else {
-                            Toasty.error(Register.this, "Registration error, please try again.", Toast.LENGTH_LONG, true).show();
+                            Toasty.error(context, "Registration error, please try again.", Toast.LENGTH_LONG, true).show();
                         }
                         mProgressDialog.dismiss();
                     }
@@ -334,13 +335,12 @@ public class Register extends AppCompatActivity {
 
                             saveGuestPreferences();
 
-                            Intent i = new Intent(Register.this, Home.class);
+                            Intent i = new Intent(context, Home.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
-                            Register.this.finish();
-
+                            finish();
                         } else {
-                            Toasty.error(Register.this, "Registration error, please try again.", Toast.LENGTH_LONG, true).show();
+                            Toasty.error(context, "Registration error, please try again.", Toast.LENGTH_LONG, true).show();
                         }
                         mProgressDialog.dismiss();
                     }

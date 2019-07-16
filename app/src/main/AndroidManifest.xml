@@ -44,10 +44,12 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".SignIn"
+            android:screenOrientation="portrait"
             android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Register"
+            android:screenOrientation="portrait"
             android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
@@ -60,10 +62,12 @@
         <activity
             android:name=".NewNote"
             android:label=""
+            android:screenOrientation="portrait"
             android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ForgotPassword"
+            android:screenOrientation="portrait"
             android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
@@ -72,6 +76,7 @@
         <activity
             android:name=".EditNote"
             android:label=""
+            android:screenOrientation="portrait"
             android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
@@ -89,21 +94,11 @@
             android:label="New Folder"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".NewNotebookNote"
-            android:label=""
-            android:theme="@style/SubTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
             android:name=".Settings"
             android:label="Settings"
             android:theme="@style/SubTheme" />
         <activity
             android:name=".DeleteAccount"
-            android:theme="@style/SubTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".EditSharedNote"
-            android:label=""
             android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity

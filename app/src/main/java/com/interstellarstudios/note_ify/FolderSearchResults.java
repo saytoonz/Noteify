@@ -75,7 +75,8 @@ public class FolderSearchResults extends AppCompatActivity implements Navigation
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(FolderSearchResults.this, NewNotebookNote.class);
+                Intent i = new Intent(FolderSearchResults.this, NewNote.class);
+                i.putExtra("folderId", "Notebook");
                 startActivity(i);
             }
         });
@@ -234,7 +235,8 @@ public class FolderSearchResults extends AppCompatActivity implements Navigation
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(FolderSearchResults.this, NewNotebookNote.class);
+            Intent i = new Intent(FolderSearchResults.this, NewNote.class);
+            i.putExtra("folderId", "Notebook");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(FolderSearchResults.this, Home.class);

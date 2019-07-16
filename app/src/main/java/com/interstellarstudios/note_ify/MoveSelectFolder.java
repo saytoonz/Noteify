@@ -67,7 +67,8 @@ public class MoveSelectFolder extends AppCompatActivity implements NavigationVie
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MoveSelectFolder.this, NewNotebookNote.class);
+                Intent i = new Intent(MoveSelectFolder.this, NewNote.class);
+                i.putExtra("folderId", "Notebook");
                 startActivity(i);
             }
         });
@@ -206,7 +207,8 @@ public class MoveSelectFolder extends AppCompatActivity implements NavigationVie
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(MoveSelectFolder.this, NewNotebookNote.class);
+            Intent i = new Intent(MoveSelectFolder.this, NewNote.class);
+            i.putExtra("folderId", "Notebook");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(MoveSelectFolder.this, Home.class);

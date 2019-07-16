@@ -105,6 +105,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     private String currentUserEmail;
     private int updatedRevision;
     private String folderId;
+    private String collectionId;
     private String noteId;
     private String attachmentUrl = "";
     private String attachment_name = "";
@@ -141,6 +142,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
+            collectionId = bundle.getString("collectionId");
             folderId = bundle.getString("folderId");
             noteId = bundle.getString("noteId");
             bundleTitle = bundle.getString("title");
@@ -944,7 +946,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             return;
         }
 
-        DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(noteId);
+        DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection(collectionId).document(folderId).collection(folderId).document(noteId);
         documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name));
 
         Toasty.success(EditNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();

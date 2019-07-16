@@ -11,7 +11,7 @@
     app:cardBackgroundColor="@color/cardBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/relativeLayout"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp">
@@ -27,7 +27,7 @@
             android:textColor="@color/colorLightThemeText"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/attachment_icon"
+            app:layout_constraintEnd_toStartOf="@+id/attachmentName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -92,6 +92,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/text_view_title"
             app:srcCompat="@drawable/ic_attachment" />
+
+        <TextView
+            android:id="@+id/attachmentName"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
+            android:gravity="right|center_vertical"
+            android:text="Attachment.file"
+            android:textColor="@color/colorAccent"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/attachment_icon"
+            app:layout_constraintEnd_toStartOf="@+id/attachment_icon"
+            app:layout_constraintTop_toTopOf="@+id/attachment_icon" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

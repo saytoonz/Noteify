@@ -371,6 +371,7 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
                 i.putExtra("attachmentName", attachmentName);
+                i.putExtra("collectionId", "Main");
                 startActivity(i);
             }
         });
