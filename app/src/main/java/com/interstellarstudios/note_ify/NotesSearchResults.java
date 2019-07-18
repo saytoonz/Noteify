@@ -302,6 +302,9 @@ public class NotesSearchResults extends AppCompatActivity implements NavigationV
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
                 String attachmentName = note.getAttachmentName();
+                String audioDownloadUrl = note.getAudioUrl();
+                String audioZipDownloadUrl = note.getAudioZipUrl();
+                String audioZipFileName = note.getAudioZipName();
 
                 Intent i = new Intent(NotesSearchResults.this, EditNote.class);
                 i.putExtra("folderId", folderId);
@@ -313,6 +316,9 @@ public class NotesSearchResults extends AppCompatActivity implements NavigationV
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
                 i.putExtra("collectionId", "Main");
+                i.putExtra("audioDownloadUrl", audioDownloadUrl);
+                i.putExtra("audioZipDownloadUrl", audioZipDownloadUrl);
+                i.putExtra("audioZipFileName", audioZipFileName);
                 startActivity(i);
             }
         });

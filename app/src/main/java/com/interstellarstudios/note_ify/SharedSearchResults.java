@@ -279,6 +279,9 @@ public class SharedSearchResults extends AppCompatActivity implements Navigation
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
                 String attachmentName = note.getAttachmentName();
+                String audioDownloadUrl = note.getAudioUrl();
+                String audioZipDownloadUrl = note.getAudioZipUrl();
+                String audioZipFileName = note.getAudioZipName();
 
                 Intent i = new Intent(SharedSearchResults.this, EditNote.class);
                 i.putExtra("noteId", noteId);
@@ -291,6 +294,9 @@ public class SharedSearchResults extends AppCompatActivity implements Navigation
                 i.putExtra("attachmentName", attachmentName);
                 i.putExtra("collectionId", "Public");
                 i.putExtra("folderId", "Shared");
+                i.putExtra("audioDownloadUrl", audioDownloadUrl);
+                i.putExtra("audioZipDownloadUrl", audioZipDownloadUrl);
+                i.putExtra("audioZipFileName", audioZipFileName);
                 startActivity(i);
             }
         });

@@ -20,14 +20,14 @@
             android:id="@+id/text_view_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Title"
             android:textColor="@color/colorLightThemeText"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/attachmentName"
+            app:layout_constraintEnd_toStartOf="@+id/fromUserEmail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,7 +35,7 @@
             android:id="@+id/mEditor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_view_title" />
@@ -44,34 +44,35 @@
             android:id="@+id/text_view_priority"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="Priority"
             android:textColor="@color/colorLightThemeText"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toTopOf="@+id/revision"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:textSize="12sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mEditor" />
 
         <TextView
             android:id="@+id/text_view_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:text="Date"
             android:textColor="@color/colorLightThemeText"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fromUserEmail" />
+            app:layout_constraintTop_toBottomOf="@+id/mEditor" />
 
         <TextView
             android:id="@+id/fromUserEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="From User Email"
             android:textColor="@color/colorLightThemeText"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mEditor" />
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/text_view_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/text_view_title" />
 
         <TextView
             android:id="@+id/revision"
@@ -79,31 +80,56 @@
             android:layout_height="wrap_content"
             android:text="Revision"
             android:textColor="@color/colorLightThemeText"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:textSize="12sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_priority" />
 
         <ImageView
             android:id="@+id/attachment_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/text_view_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/text_view_title"
+            android:layout_marginTop="16dp"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/revision"
             app:srcCompat="@drawable/ic_attachment" />
 
         <TextView
             android:id="@+id/attachmentName"
             android:layout_width="100dp"
             android:layout_height="20dp"
-            android:gravity="right|center_vertical"
+            android:gravity="center_vertical"
             android:text="Attachment.file"
             android:textColor="@color/colorAccent"
             android:textSize="12sp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/attachment_icon"
-            app:layout_constraintEnd_toStartOf="@+id/attachment_icon"
+            app:layout_constraintStart_toEndOf="@+id/attachment_icon"
             app:layout_constraintTop_toTopOf="@+id/attachment_icon" />
+
+        <ImageView
+            android:id="@+id/audio_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@+id/audio_text"
+            app:layout_constraintTop_toBottomOf="@+id/revision"
+            app:srcCompat="@drawable/ic_play_green" />
+
+        <TextView
+            android:id="@+id/audio_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Play audio file"
+            android:textColor="@color/colorAccent"
+            android:textSize="12sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/audio_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/audio_icon" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

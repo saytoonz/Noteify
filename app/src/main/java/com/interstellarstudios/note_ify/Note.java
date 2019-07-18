@@ -11,12 +11,15 @@ public class Note {
     private int revision;
     private String attachmentUrl;
     private String attachmentName;
+    private String audioUrl;
+    private String audioZipUrl;
+    private String audioZipName;
 
     public Note() {
         //empty constructor needed
     }
 
-    public Note(String title, String lowercasetitle, String description, int priority, String date, String fromEmailAddress, int revision, String attachmentUrl, String attachmentName) {
+    public Note(String title, String lowercasetitle, String description, int priority, String date, String fromEmailAddress, int revision, String attachmentUrl, String attachmentName, String audioUrl, String audioZipUrl, String audioZipName) {
 
         this.title = title;
         this.lowercasetitle = lowercasetitle;
@@ -27,6 +30,9 @@ public class Note {
         this.revision = revision;
         this.attachmentUrl = attachmentUrl;
         this.attachmentName = attachmentName;
+        this.audioUrl = audioUrl;
+        this.audioZipUrl = audioZipUrl;
+        this.audioZipName = audioZipName;
     }
 
     public String getTitle() {
@@ -63,5 +69,17 @@ public class Note {
 
     public String getAttachmentName() {
         return attachmentName;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public String getAudioZipUrl() {
+        return audioZipUrl;
+    }
+
+    public String getAudioZipName() {
+        return audioZipName;
     }
 }

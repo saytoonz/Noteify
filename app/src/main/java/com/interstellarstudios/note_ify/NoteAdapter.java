@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,11 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
 
     @Override
     protected void onBindViewHolder(@NonNull NoteHolder holder, int position, @NonNull Note model) {
+
+        holder.attachmentName.setVisibility(View.GONE);
+        holder.attachment_icon.setVisibility(View.GONE);
+        holder.playIcon.setVisibility(View.GONE);
+        holder.playText.setVisibility(View.GONE);
 
         holder.textViewTitle.setText(model.getTitle());
         holder.mEditor.setHtml(model.getDescription());
@@ -87,9 +93,52 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         holder.textViewRevision.setText("Revision: " + model.getRevision());
         holder.attachmentName.setText(model.getAttachmentName());
 
-        String attachmentURL = model.getAttachmentUrl();
-        if (!attachmentURL.equals("")) {
+        final String attachmentURL = model.getAttachmentUrl();
+        if (attachmentURL != null && !attachmentURL.equals("")) {
+
+            holder.attachmentName.setVisibility(View.VISIBLE);
+            holder.attachmentName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(attachmentURL));
+                    mContext.startActivity(browserIntent);
+                }
+            });
+
             holder.attachment_icon.setVisibility(View.VISIBLE);
+            holder.attachment_icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(attachmentURL));
+                    mContext.startActivity(browserIntent);
+                }
+            });
+        }
+
+        final String audioDownloadUrl = model.getAudioUrl();
+        if (audioDownloadUrl != null && !audioDownloadUrl.equals("")) {
+
+            holder.playIcon.setVisibility(View.VISIBLE);
+            holder.playIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(audioDownloadUrl));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.setDataAndType(Uri.parse(audioDownloadUrl), "audio/*");
+                    mContext.startActivity(intent);
+                }
+            });
+
+            holder.playText.setVisibility(View.VISIBLE);
+            holder.playText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(audioDownloadUrl));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.setDataAndType(Uri.parse(audioDownloadUrl), "audio/*");
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 
@@ -163,6 +212,8 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         ImageView attachment_icon;
         CardView cardView;
         TextView attachmentName;
+        ImageView playIcon;
+        TextView playText;
 
         public NoteHolder(View itemView) {
             super(itemView);
@@ -182,6 +233,8 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             attachment_icon = itemView.findViewById(R.id.attachment_icon);
             cardView = itemView.findViewById(R.id.cardView);
             attachmentName = itemView.findViewById(R.id.attachmentName);
+            playIcon = itemView.findViewById(R.id.audio_icon);
+            playText = itemView.findViewById(R.id.audio_text);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

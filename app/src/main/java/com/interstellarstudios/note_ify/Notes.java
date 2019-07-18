@@ -360,6 +360,9 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
                 String attachmentName = note.getAttachmentName();
+                String audioDownloadUrl = note.getAudioUrl();
+                String audioZipDownloadUrl = note.getAudioZipUrl();
+                String audioZipFileName = note.getAudioZipName();
 
                 Intent i = new Intent(Notes.this, EditNote.class);
                 i.putExtra("folderId", folderId);
@@ -372,6 +375,9 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
                 i.putExtra("attachmentName", attachmentName);
                 i.putExtra("attachmentName", attachmentName);
                 i.putExtra("collectionId", "Main");
+                i.putExtra("audioDownloadUrl", audioDownloadUrl);
+                i.putExtra("audioZipDownloadUrl", audioZipDownloadUrl);
+                i.putExtra("audioZipFileName", audioZipFileName);
                 startActivity(i);
             }
         });

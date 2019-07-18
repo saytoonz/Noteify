@@ -62,12 +62,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import es.dmoral.toasty.Toasty;
 import jp.wasabeef.richeditor.RichEditor;
+import sibModel.SendSmtpEmailAttachment;
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
@@ -79,6 +84,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     private static final int CONTACT_PICKER_RESULT = 2;
     private static final int REQUEST_IMAGE_CAPTURE = 3;
     private static final int PICK_DOCUMENT_REQUEST = 4;
+    private static final int AUDIO_RECORD_REQUEST = 5;
     private Uri mImageUri;
     private EditText editTextTitle;
     private NumberPicker numberPickerPriority;
@@ -109,6 +115,12 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     private String noteId;
     private String attachmentUrl = "";
     private String attachment_name = "";
+    private ImageView playAudioIcon;
+    private TextView playAudioText;
+    private Uri audioFileUri;
+    private String audioDownloadUrl = "";
+    private String audioZipDownloadUrl = "";
+    private String audioZipFileName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,8 +145,19 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         editTextTitle = findViewById(R.id.edit_text_title);
         numberPickerPriority = findViewById(R.id.number_picker_priority);
         sharedUserEmailInput = findViewById(R.id.sharedUserEmail);
+        ImageView download_icon = findViewById(R.id.download_icon);
+        TextView download_textview = findViewById(R.id.download_textview);
         attachmentTextView = findViewById(R.id.attachment_textview);
         attachment_icon = findViewById(R.id.attachment_icon);
+        playAudioText = findViewById(R.id.audio_textview);
+        playAudioIcon = findViewById(R.id.play_icon);
+
+        download_icon.setVisibility(View.GONE);
+        download_textview.setVisibility(View.GONE);
+        attachment_icon.setVisibility(View.GONE);
+        attachmentTextView.setVisibility(View.GONE);
+        playAudioText.setVisibility(View.GONE);
+        playAudioIcon.setVisibility(View.GONE);
 
         String bundleTitle;
         String bundleDescription;
@@ -149,6 +172,10 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             bundleDescription = bundle.getString("description");
             bundlePriority = bundle.getInt("priority");
             attachmentUrl = bundle.getString("attachmentUrl");
+            attachment_name = bundle.getString("attachmentName");
+            audioDownloadUrl = bundle.getString("audioDownloadUrl");
+            audioZipDownloadUrl = bundle.getString("audioZipDownloadUrl");
+            audioZipFileName = bundle.getString("audioZipFileName");
             int revision = bundle.getInt("revision");
             updatedRevision = revision + 1;
         } else {
@@ -212,6 +239,28 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                             .withHiddenFiles(true)
                             .start();
                 }
+            }
+        });
+
+        ImageView button_audio = findViewById(R.id.button_audio);
+        button_audio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordAudio();
+            }
+        });
+
+        playAudioIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playAudioFile();
+            }
+        });
+
+        playAudioText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playAudioFile();
             }
         });
 
@@ -430,17 +479,14 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             }
         });
 
-        ImageView download_icon = findViewById(R.id.download_icon);
-        TextView download_textview = findViewById(R.id.download_textview);
+        if (attachment_name == null) {
+            attachment_name = "";
+        }
 
-        if (!attachmentUrl.equals("")) {
+        if (attachmentUrl != null && !attachmentUrl.equals("")) {
 
             download_icon.setVisibility(View.VISIBLE);
             download_textview.setVisibility(View.VISIBLE);
-
-            if(bundle.getString("attachmentName") != null) {
-                attachment_name = bundle.getString("attachmentName");
-            }
 
             attachmentTextView.setVisibility(View.VISIBLE);
             attachment_icon.setVisibility(View.VISIBLE);
@@ -453,6 +499,20 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                     startActivity(browserIntent);
                 }
             });
+        }
+
+        if (audioDownloadUrl != null && !audioDownloadUrl.equals("")){
+
+            playAudioText.setVisibility(View.VISIBLE);
+            playAudioIcon.setVisibility(View.VISIBLE);
+        }
+
+        if (audioZipFileName == null) {
+            audioZipFileName = "";
+        }
+
+        if (audioZipDownloadUrl == null) {
+            audioZipDownloadUrl = "";
         }
 
         numberPickerPriority.setMinValue(1);
@@ -491,6 +551,137 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             horizontalScrollView.setBackgroundColor(ContextCompat.getColor(EditNote.this, R.color.colorPrimaryDarkTheme));
             buttonBackground.setBackgroundColor(ContextCompat.getColor(EditNote.this, R.color.buttonBackground));
         }
+    }
+
+    private void recordAudio() {
+
+        Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, AUDIO_RECORD_REQUEST);
+        } else {
+            Toasty.error(mContext, "No audio recorder installed", Toast.LENGTH_LONG, true).show();
+        }
+    }
+
+    private void playAudioFile() {
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(audioDownloadUrl));
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setDataAndType(Uri.parse(audioDownloadUrl), "audio/*");
+        startActivity(intent);
+    }
+
+    private void uploadAudioFile() {
+
+        progressDialog.setMessage("Uploading Audio File");
+        progressDialog.show();
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    InputStream audioStream = getContentResolver().openInputStream(audioFileUri);
+                    byte[] audioData = getBytes(audioStream);
+                    byte[] zippedAudioFile = zipBytes("audio_file.m4a", audioData);
+
+                    StorageReference audioStorageRef = FirebaseStorage.getInstance().getReference("Users/" + mCurrentUserId + "/Audio");
+                    final StorageReference fileReference = audioStorageRef.child(System.currentTimeMillis() + ".zip");
+
+                    UploadTask uploadTask = fileReference.putBytes(zippedAudioFile);
+                    Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                        @Override
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
+                            return fileReference.getDownloadUrl();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+
+                                Uri downloadUri = task.getResult();
+                                audioZipDownloadUrl = downloadUri.toString();
+                                audioZipFileName = "audio_file.zip";
+                            }
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    InputStream audioStream = getContentResolver().openInputStream(audioFileUri);
+                    byte[] audioData = getBytes(audioStream);
+
+                    StorageReference audioStorageRef = FirebaseStorage.getInstance().getReference("Users/" + mCurrentUserId + "/Audio");
+                    final StorageReference fileReference = audioStorageRef.child(System.currentTimeMillis() + ".m4a");
+
+                    UploadTask uploadTask = fileReference.putBytes(audioData);
+                    Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                        @Override
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
+                            return fileReference.getDownloadUrl();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+
+                                Uri downloadUri = task.getResult();
+                                audioDownloadUrl = downloadUri.toString();
+
+                                playAudioIcon.setVisibility(View.VISIBLE);
+                                playAudioText.setVisibility(View.VISIBLE);
+                                playAudioText.setText("Play Audio File");
+
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread2.start();
+    }
+
+    public static byte[] zipBytes(String filename, byte[] input) throws IOException {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        ZipEntry entry = new ZipEntry(filename);
+        entry.setSize(input.length);
+        zos.putNextEntry(entry);
+        zos.write(input);
+        zos.closeEntry();
+        zos.close();
+        return baos.toByteArray();
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 
     @Override
@@ -807,6 +998,12 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             });
             thread.start();
         }
+
+        if (requestCode == AUDIO_RECORD_REQUEST && resultCode == RESULT_OK) {
+
+            audioFileUri = data.getData();
+            uploadAudioFile();
+        }
     }
 
     private void attachmentUpload() {
@@ -947,7 +1144,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         }
 
         DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection(collectionId).document(folderId).collection(folderId).document(noteId);
-        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name));
+        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
 
         Toasty.success(EditNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
@@ -977,13 +1174,27 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                         notificationPath.add(notificationMessage);
 
                         DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
-                        sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl, attachment_name));
+                        sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
 
+                        List<SendSmtpEmailAttachment> attachmentList = new ArrayList<>();
                         attachment_name = attachmentTextView.getText().toString();
-                        if (!attachment_name.equals("")) {
-                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentUrl, attachment_name);
-                        } else {
+
+                        if (attachment_name.equals("") && audioZipFileName.equals("")) {
                             SendMail.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+                        }
+                        if (!audioZipFileName.equals("") && attachment_name.equals("")) {
+                            attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
+
+                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                        } else if (audioZipFileName.equals("") && !attachment_name.equals("")) {
+                            attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
+
+                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                        } else {
+                            attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
+                            attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
+
+                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         }
 
                         Toasty.success(EditNote.this, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();

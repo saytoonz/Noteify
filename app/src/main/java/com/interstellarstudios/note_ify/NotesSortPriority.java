@@ -359,6 +359,9 @@ public class NotesSortPriority extends AppCompatActivity implements NavigationVi
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
                 String attachmentName = note.getAttachmentName();
+                String audioDownloadUrl = note.getAudioUrl();
+                String audioZipDownloadUrl = note.getAudioZipUrl();
+                String audioZipFileName = note.getAudioZipName();
 
                 Intent i = new Intent(NotesSortPriority.this, EditNote.class);
                 i.putExtra("folderId", folderId);
@@ -370,6 +373,9 @@ public class NotesSortPriority extends AppCompatActivity implements NavigationVi
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
                 i.putExtra("collectionId", "Main");
+                i.putExtra("audioDownloadUrl", audioDownloadUrl);
+                i.putExtra("audioZipDownloadUrl", audioZipDownloadUrl);
+                i.putExtra("audioZipFileName", audioZipFileName);
                 startActivity(i);
             }
         });

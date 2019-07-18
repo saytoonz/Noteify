@@ -17,7 +17,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class SendMailWithAttachment {
 
-    public static void sendMail(Context context, final String sharedUserEmail, final String currentUserEmail, final String title, final String description, final int priority, final int updatedRevision, final String noteDate, final String attachmentUrl, final String attachmentName) {
+    public static void sendMail(Context context, final String sharedUserEmail, final String currentUserEmail, final String title, final String description, final int priority, final int updatedRevision, final String noteDate, List<SendSmtpEmailAttachment> attachmentList) {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean guestAccountOn = sharedPreferences.getBoolean("guestAccount", false);
@@ -31,9 +31,6 @@ public class SendMailWithAttachment {
 
         List<SendSmtpEmailTo> emailArrayList = new ArrayList<>();
         emailArrayList.add(new SendSmtpEmailTo().email(sharedUserEmail));
-
-        List<SendSmtpEmailAttachment> attachmentList = new ArrayList<>();
-        attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachmentName));
 
         final SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
         sendSmtpEmail.sender(new SendSmtpEmailSender().email("note-ify@interstellarstudios.co.uk").name("Note-ify"));

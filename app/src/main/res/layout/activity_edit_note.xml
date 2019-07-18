@@ -106,6 +106,31 @@
                 app:layout_constraintTop_toBottomOf="@+id/priorityTextView" />
 
             <TextView
+                android:id="@+id/download_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Download Attachment"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="@+id/edit_text_title"
+                app:layout_constraintStart_toEndOf="@+id/download_icon"
+                app:layout_constraintTop_toBottomOf="@+id/edit_text_title" />
+
+            <ImageView
+                android:id="@+id/download_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/download_textview"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/download_textview"
+                app:srcCompat="@drawable/ic_download" />
+
+            <TextView
                 android:id="@+id/attachment_textview"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -113,7 +138,7 @@
                 android:layout_marginEnd="8dp"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="@+id/edit_text_title"
                 app:layout_constraintStart_toEndOf="@+id/attachment_icon"
                 app:layout_constraintTop_toBottomOf="@+id/download_textview" />
@@ -123,47 +148,47 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/attachment_textview"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/attachment_textview"
                 app:srcCompat="@drawable/ic_attachment" />
 
             <TextView
-                android:id="@+id/download_textview"
+                android:id="@+id/audio_textview"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="Download Attachment"
+                android:text="Play audio file"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/download_icon"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="@+id/edit_text_title"
-                app:layout_constraintStart_toEndOf="@+id/download_icon"
-                app:layout_constraintTop_toTopOf="@+id/download_icon" />
+                app:layout_constraintStart_toEndOf="@+id/play_icon"
+                app:layout_constraintTop_toBottomOf="@+id/attachment_textview" />
 
             <ImageView
-                android:id="@+id/download_icon"
+                android:id="@+id/play_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:visibility="gone"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/audio_textview"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edit_text_title"
-                app:srcCompat="@drawable/ic_download" />
+                app:layout_constraintTop_toTopOf="@+id/audio_textview"
+                app:srcCompat="@drawable/ic_play_green" />
 
             <jp.wasabeef.richeditor.RichEditor
                 android:id="@+id/mEditor"
                 android:layout_width="0dp"
                 android:layout_height="2048dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/attachment_textview" />
+                app:layout_constraintTop_toBottomOf="@+id/audio_textview" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -429,48 +454,54 @@
         android:id="@+id/button_choose_image"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_camera"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/buttonBackground"
+        app:layout_constraintTop_toTopOf="@+id/buttonBackground"
         app:srcCompat="@drawable/ic_image_green" />
 
     <ImageView
         android:id="@+id/button_camera"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_attachment"
+        app:layout_constraintEnd_toStartOf="@+id/button_audio"
         app:layout_constraintStart_toEndOf="@+id/button_choose_image"
+        app:layout_constraintTop_toTopOf="@+id/buttonBackground"
         app:srcCompat="@drawable/ic_camera_green" />
+
+    <ImageView
+        android:id="@+id/button_audio"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBackground"
+        app:layout_constraintEnd_toStartOf="@+id/button_attachment"
+        app:layout_constraintStart_toEndOf="@+id/button_camera"
+        app:layout_constraintTop_toTopOf="@+id/buttonBackground"
+        app:srcCompat="@drawable/ic_voice_green" />
 
     <ImageView
         android:id="@+id/button_attachment"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_reminder"
-        app:layout_constraintStart_toEndOf="@+id/button_camera"
+        app:layout_constraintStart_toEndOf="@+id/button_audio"
+        app:layout_constraintTop_toTopOf="@+id/buttonBackground"
         app:srcCompat="@drawable/ic_attachment" />
 
     <ImageView
         android:id="@+id/button_reminder"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/buttonBackground"
         app:layout_constraintStart_toEndOf="@+id/button_attachment"
+        app:layout_constraintTop_toTopOf="@+id/buttonBackground"
         app:srcCompat="@drawable/ic_reminder_green" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
