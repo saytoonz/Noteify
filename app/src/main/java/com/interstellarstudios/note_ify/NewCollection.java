@@ -43,9 +43,10 @@ public class NewCollection extends AppCompatActivity {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        int colorLightThemeText = getResources().getColor(R.color.colorLightThemeText);
-        String colorLightThemeTextString = Integer.toString(colorLightThemeText);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorLightThemeTextString + "\">" + "New Folder" + "</font>"));
+        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "New Folder" + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
 
         Button buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(new View.OnClickListener() {
@@ -68,10 +69,6 @@ public class NewCollection extends AppCompatActivity {
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "New Folder" + "</font>"));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
             mNewFolder.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             mNewFolder.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));

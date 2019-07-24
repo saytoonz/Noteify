@@ -83,9 +83,10 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             currentUserEmail = mUser.getEmail();
         }
 
-        int colorLightThemeText = getResources().getColor(R.color.colorLightThemeText);
-        String colorLightThemeTextString = Integer.toString(colorLightThemeText);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorLightThemeTextString + "\">" + "Grocery List" + "</font>"));
+        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Grocery List" + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.drawer_view);
@@ -186,10 +187,6 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         if (switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(GroceryList.this, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Grocery List" + "</font>"));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
             mEditTextName.setTextColor(ContextCompat.getColor(GroceryList.this, R.color.colorDarkThemeText));
             mEditTextName.setHintTextColor(ContextCompat.getColor(GroceryList.this, R.color.colorDarkThemeText));
             DrawableCompat.setTint(mEditTextName.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
@@ -290,6 +287,9 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         } else if (id == R.id.nav_information) {
             Intent o = new Intent(GroceryList.this, Information.class);
             startActivity(o);
+        } else if (id == R.id.nav_faq) {
+            Intent p = new Intent(GroceryList.this, FAQ.class);
+            startActivity(p);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

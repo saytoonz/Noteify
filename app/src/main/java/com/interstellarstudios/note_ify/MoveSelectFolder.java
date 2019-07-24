@@ -59,9 +59,10 @@ public class MoveSelectFolder extends AppCompatActivity implements NavigationVie
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        int colorLightThemeText = getResources().getColor(R.color.colorLightThemeText);
-        String colorLightThemeTextString = Integer.toString(colorLightThemeText);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorLightThemeTextString + "\">" + "Move Note" + "</font>"));
+        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Move Note" + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -112,10 +113,6 @@ public class MoveSelectFolder extends AppCompatActivity implements NavigationVie
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(MoveSelectFolder.this, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Move Note" + "</font>"));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
             ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
         }
 
@@ -236,6 +233,9 @@ public class MoveSelectFolder extends AppCompatActivity implements NavigationVie
         } else if (id == R.id.nav_information) {
             Intent o = new Intent(MoveSelectFolder.this, Information.class);
             startActivity(o);
+        } else if (id == R.id.nav_faq) {
+            Intent p = new Intent(MoveSelectFolder.this, FAQ.class);
+            startActivity(p);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

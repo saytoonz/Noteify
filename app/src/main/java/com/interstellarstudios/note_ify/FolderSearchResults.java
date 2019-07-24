@@ -67,9 +67,10 @@ public class FolderSearchResults extends AppCompatActivity implements Navigation
             }
         });
 
-        int colorLightThemeText = getResources().getColor(R.color.colorLightThemeText);
-        String colorLightThemeTextString = Integer.toString(colorLightThemeText);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorLightThemeTextString + "\">" + "Search Results" + "</font>"));
+        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Search Results" + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -108,10 +109,6 @@ public class FolderSearchResults extends AppCompatActivity implements Navigation
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(FolderSearchResults.this, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Search Results" + "</font>"));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
             ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
         }
 
@@ -264,6 +261,9 @@ public class FolderSearchResults extends AppCompatActivity implements Navigation
         } else if (id == R.id.nav_information) {
             Intent o = new Intent(FolderSearchResults.this, Information.class);
             startActivity(o);
+        } else if (id == R.id.nav_faq) {
+            Intent p = new Intent(FolderSearchResults.this, FAQ.class);
+            startActivity(p);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

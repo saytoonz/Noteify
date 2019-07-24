@@ -67,9 +67,10 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        int colorLightThemeText = getResources().getColor(R.color.colorLightThemeText);
-        String colorLightThemeTextString = Integer.toString(colorLightThemeText);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorLightThemeTextString + "\">" + "Bin" + "</font>"));
+        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Bin" + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -154,10 +155,6 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Bin" + "</font>"));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
             searchField.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             searchField.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -354,6 +351,9 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
         } else if (id == R.id.nav_information) {
             Intent o = new Intent(context, Information.class);
             startActivity(o);
+        } else if (id == R.id.nav_faq) {
+            Intent p = new Intent(context, FAQ.class);
+            startActivity(p);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

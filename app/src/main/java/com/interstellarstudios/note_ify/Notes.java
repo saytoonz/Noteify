@@ -73,9 +73,10 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
             return;
         }
 
-        int colorLightThemeText = getResources().getColor(R.color.colorLightThemeText);
-        String colorLightThemeTextString = Integer.toString(colorLightThemeText);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorLightThemeTextString + "\">" + (folderId + " (Sort: Newest to Oldest)") + "</font>"));
+        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + (folderId + " (Sort: Newest to Oldest)") + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -163,10 +164,6 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(Notes.this, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + (folderId + " (Sort: Newest to Oldest)") + "</font>"));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
             searchField.setTextColor(ContextCompat.getColor(Notes.this, R.color.colorDarkThemeText));
             searchField.setHintTextColor(ContextCompat.getColor(Notes.this, R.color.colorDarkThemeText));
             DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
@@ -431,6 +428,9 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
         } else if (id == R.id.nav_information) {
             Intent o = new Intent(Notes.this, Information.class);
             startActivity(o);
+        } else if (id == R.id.nav_faq) {
+            Intent p = new Intent(Notes.this, FAQ.class);
+            startActivity(p);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

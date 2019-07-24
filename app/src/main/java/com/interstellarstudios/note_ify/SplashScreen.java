@@ -14,9 +14,9 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchOnOff = sharedPreferences.getBoolean("switchSecurity", false);
+        boolean securitySwitchOn = sharedPreferences.getBoolean("switchSecurity", false);
 
-        if (switchOnOff) {
+        if (securitySwitchOn) {
             EasySplashScreen config = new EasySplashScreen(SplashScreen.this)
                     .withFullScreen()
                     .withTargetActivity(FingerprintLogin.class)

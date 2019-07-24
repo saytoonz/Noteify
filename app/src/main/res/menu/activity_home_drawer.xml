@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
@@ -36,8 +36,8 @@
             <item
                 android:id="@+id/nav_dark"
                 android:icon="@drawable/ic_dark"
-                app:actionLayout="@layout/drawer_switch"
-                android:title="Dark Theme" />
+                android:title="Dark Theme"
+                app:actionLayout="@layout/drawer_switch" />
         </menu>
     </item>
 
@@ -51,10 +51,19 @@
                 android:id="@+id/nav_account"
                 android:icon="@drawable/ic_account"
                 android:title="Account" />
+        </menu>
+    </item>
+
+    <item android:title="Information">
+        <menu>
             <item
                 android:id="@+id/nav_information"
                 android:icon="@drawable/ic_info"
-                android:title="Information" />
+                android:title="Noticeboard" />
+            <item
+                android:id="@+id/nav_faq"
+                android:icon="@drawable/ic_help"
+                android:title="FAQ" />
         </menu>
     </item>
 

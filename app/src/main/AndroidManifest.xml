@@ -18,6 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".FAQ"></activity>
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -83,9 +84,7 @@
             android:name=".EditAccountDetails"
             android:label="@string/manifest_activity_name_edit_account_details"
             android:theme="@style/SubTheme" />
-        <activity android:name=".PrivacyPolicy" />
         <activity android:name=".BinSearchResults" />
-        <activity android:name=".TermsOfService" />
         <activity
             android:name=".FingerprintLogin"
             android:theme="@style/SubTheme" />
@@ -153,9 +152,20 @@
             android:name=".AlertReceiver"
             android:enabled="true" />
 
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
     </application>
 
 </manifest>
