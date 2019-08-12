@@ -8,6 +8,31 @@
     android:background="@color/colorPrimary"
     tools:context=".Settings">
 
+    <ImageView
+        android:id="@+id/settingsIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:tint="@color/colorLightThemeText"
+        app:layout_constraintBottom_toBottomOf="@+id/settingsHeading"
+        app:layout_constraintEnd_toStartOf="@+id/settingsHeading"
+        app:layout_constraintTop_toTopOf="@+id/settingsHeading"
+        app:srcCompat="@drawable/ic_settings" />
+
+    <TextView
+        android:id="@+id/settingsHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="Settings"
+        android:textColor="@color/colorLightThemeText"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Switch
         android:id="@+id/switchPriorityColor"
         android:layout_width="wrap_content"
@@ -55,7 +80,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="Fingerprint or passcode is required on App start"
+        android:text="Add an extra layer of security with fingerprint/passcode authentication"
         android:textColor="@color/colorLightThemeText"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/switchSecurity"
@@ -90,30 +115,5 @@
         app:layout_constraintEnd_toStartOf="@+id/switchPriorityColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/priorityTextView" />
-
-    <TextView
-        android:id="@+id/settingsHeading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Settings"
-        android:textColor="@color/colorLightThemeText"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/settingsIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:tint="@color/colorLightThemeText"
-        app:layout_constraintBottom_toBottomOf="@+id/settingsHeading"
-        app:layout_constraintEnd_toStartOf="@+id/settingsHeading"
-        app:layout_constraintTop_toTopOf="@+id/settingsHeading"
-        app:srcCompat="@drawable/ic_settings" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.interstellarstudios.note_ify">
+
+    <uses-sdk tools:overrideLibrary="me.aflak.libraries" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
@@ -18,8 +21,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FAQ"></activity>
-        <activity android:name=".SplashScreen">
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:name=".SplashScreen"
+            android:theme="@style/SubTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,14 +43,11 @@
                 <data android:scheme="http" />
             </intent-filter>
         </activity>
+        <activity android:name=".Notes" />
+        <activity android:name=".NotesSortAlphabetical" />
+        <activity android:name=".NotesSortPriority" />
         <activity
-            android:name=".Notes"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".NotesSortAlphabetical"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".NotesSortPriority"
+            android:name=".Search"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".SignIn"
@@ -58,7 +64,6 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Account"
-            android:label="@string/manifest_activity_name_account"
             android:theme="@style/SubTheme" />
         <activity
             android:name=".NewNote"
@@ -71,9 +76,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Bin"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".Bin" />
         <activity
             android:name=".EditNote"
             android:label=""
@@ -81,44 +84,23 @@
             android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".EditAccountDetails"
-            android:label="@string/manifest_activity_name_edit_account_details"
+            android:name=".NewCollection"
+            android:label="New Folder" />
+        <activity
+            android:name=".Settings"
             android:theme="@style/SubTheme" />
-        <activity android:name=".BinSearchResults" />
         <activity
             android:name=".FingerprintLogin"
             android:theme="@style/SubTheme" />
-        <activity
-            android:name=".NewCollection"
-            android:label="New Folder"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Settings"
-            android:label="Settings"
-            android:theme="@style/SubTheme" />
-        <activity
-            android:name=".DeleteAccount"
-            android:theme="@style/SubTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".DeleteConfirm"
-            android:theme="@style/SubTheme" />
-        <activity android:name=".SharedSearchResults" />
-        <activity
-            android:name=".SharedSortAlphabetical"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".SharedSortPriority"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".SharedSortAlphabetical" />
+        <activity android:name=".SharedSortPriority" />
         <activity android:name=".MoveSelectFolder" />
-        <activity android:name=".FolderSearchResults" />
-        <activity
-            android:name=".Home"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".Home" />
+        <activity android:name=".Themes" />
         <activity
             android:name=".Information"
             android:theme="@style/SubTheme" />
-        <activity android:name=".NotesSearchResults" />
+        <activity android:name=".FAQ" />
         <activity
             android:name=".SharedGroceryList"
             android:windowSoftInputMode="stateHidden|adjustResize">
@@ -128,9 +110,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Shared"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+        <activity android:name=".Shared">
             <intent-filter>
                 <action android:name="com.interstellarstudios.note_ify.FirebasePushNotifications.TARGETNOTIFICATION" />
 

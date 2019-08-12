@@ -24,7 +24,7 @@ public class SendMailGrocery {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
 
         ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-        apiKey.setApiKey("API KEY GOES HERE");
+        apiKey.setApiKey("YOUR API KEY HERE");
 
         final SmtpApi apiInstance = new SmtpApi();
 

@@ -47,7 +47,7 @@ public class WebsiteFragment extends Fragment {
         });
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = getView().findViewById(R.id.container2);

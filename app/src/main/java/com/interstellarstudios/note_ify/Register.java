@@ -22,12 +22,18 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -75,9 +81,11 @@ public class Register extends AppCompatActivity {
     private ProgressDialog mProgressDialog;
     private FirebaseAuth mFireBaseAuth;
     private FirebaseFirestore mFireBaseFireStore;
-    private String mCurrentUserID;
+    private String mCurrentUserId;
     private String mCurrentUserEmail;
     private FirebaseUser mCurrentUser;
+    private GoogleSignInClient mGoogleSignInClient;
+    private static final int RC_SIGN_IN = 9001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +104,9 @@ public class Register extends AppCompatActivity {
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPassword = findViewById(R.id.password);
         editTextConfirmPassword = findViewById(R.id.confirmPassword);
-        ImageView logoImageView = findViewById(R.id.logoImageView);
         mProgressDialog = new ProgressDialog(context);
 
-        Button buttonSignUp = findViewById(R.id.buttonSignup);
+        final Button buttonSignUp = findViewById(R.id.buttonSignup);
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,7 +114,7 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        Button buttonGuestMode = findViewById(R.id.buttonGuestMode);
+        final Button buttonGuestMode = findViewById(R.id.buttonGuestMode);
         buttonGuestMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,7 +135,15 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        TextView textViewSignIn = findViewById(R.id.textViewSignin);
+        ImageView googleSignUp = findViewById(R.id.google_sign_in);
+        googleSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                googleSignIn();
+            }
+        });
+
+        final TextView textViewSignIn = findViewById(R.id.textViewSignin);
         textViewSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,30 +152,25 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        switchThemes = findViewById(R.id.switchThemes);
-        switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                savePreferences();
-            }
-        });
-
-        switchThemes.setOnClickListener(new View.OnClickListener() {
+        final TextView textViewSignIn2 = findViewById(R.id.textViewSignin2);
+        textViewSignIn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
-                startActivity(getIntent());
+                startActivity(new Intent(context, SignIn.class));
+                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
 
+        switchThemes = findViewById(R.id.switchThemes);
+
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
+
         switchThemes.setChecked(switchThemesOnOff);
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container2);
             layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            logoImageView.setImageResource(R.drawable.name_logo);
             editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -171,11 +181,65 @@ public class Register extends AppCompatActivity {
             editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
             textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textViewSignIn2.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             buttonSignUp.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             buttonGuestMode.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
             buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
         }
+
+        switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ConstraintLayout layout = findViewById(R.id.container2);
+                    layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    textViewSignIn2.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    buttonSignUp.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    buttonGuestMode.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+
+                    savePreferences();
+                } else {
+                    ConstraintLayout layout = findViewById(R.id.container2);
+                    layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    textViewSignIn2.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    buttonSignUp.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    buttonGuestMode.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+                    savePreferences();
+                }
+            }
+        });
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     public void savePreferences() {
@@ -191,9 +255,92 @@ public class Register extends AppCompatActivity {
         prefsEditor.apply();
     }
 
+    private void googleSignIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                if (account != null) {
+                    fireBaseAuthWithGoogle(account);
+                }
+            } catch (ApiException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void fireBaseAuthWithGoogle(GoogleSignInAccount acct) {
+
+        mProgressDialog.setMessage("Signing in with Google");
+        mProgressDialog.show();
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mFireBaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            Calendar calendar = Calendar.getInstance();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd\nHH:mm");
+                            String date = sdf.format(calendar.getTime());
+
+                            if (mFireBaseAuth.getCurrentUser() != null) {
+                                mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
+                                mCurrentUser = mFireBaseAuth.getCurrentUser();
+                                mCurrentUserEmail = mCurrentUser.getEmail();
+                            }
+
+                            DocumentReference NotebookDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Notebook");
+                            DocumentReference SharedDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Public").document("Shared");
+                            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
+                            NotebookDocumentPath.set(new Collection("Notebook", date));
+                            SharedDocumentPath.set(new Collection("Shared", ""));
+                            DraftsDocumentPath.set(new Collection("Drafts", date));
+
+                            DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
+                            userMapPath.set(new UserDetailsModel(mCurrentUserId));
+
+                            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                @Override
+                                public void onSuccess(InstanceIdResult instanceIdResult) {
+                                    String deviceToken = instanceIdResult.getToken();
+
+                                    Map<String, Object> userToken = new HashMap<>();
+                                    userToken.put("User_Token_ID", deviceToken);
+
+                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
+                                    userTokenDocumentPath.set(userToken);
+                                }
+                            });
+
+                            saveNonGuestPreferences();
+
+                            Intent i = new Intent(context, Home.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
+                            finish();
+
+                            Toasty.success(context, "Google Sign In Successful", Toast.LENGTH_LONG, true).show();
+                        } else {
+                            Toasty.error(context, "Google Sign In Failed", Toast.LENGTH_LONG, true).show();
+                        }
+                        mProgressDialog.dismiss();
+                    }
+                });
+    }
+
     private void registerUser() {
 
-        String email = editTextEmail.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim().toLowerCase();
         String password = editTextPassword.getText().toString().trim();
         String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
@@ -236,20 +383,20 @@ public class Register extends AppCompatActivity {
                             String date = sdf.format(calendar.getTime());
 
                             if (mFireBaseAuth.getCurrentUser() != null) {
-                                mCurrentUserID = mFireBaseAuth.getCurrentUser().getUid();
+                                mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
                                 mCurrentUser = mFireBaseAuth.getCurrentUser();
                                 mCurrentUserEmail = mCurrentUser.getEmail();
                             }
 
-                            DocumentReference NotebookDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Notebook");
-                            DocumentReference SharedDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared");
-                            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Drafts");
-                            NotebookDocumentPath.set(new Collection("Notebook", "notebook", date));
-                            SharedDocumentPath.set(new Collection("Shared", "shared", ""));
-                            DraftsDocumentPath.set(new Collection("Drafts", "drafts", date));
+                            DocumentReference NotebookDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Notebook");
+                            DocumentReference SharedDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Public").document("Shared");
+                            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
+                            NotebookDocumentPath.set(new Collection("Notebook", date));
+                            SharedDocumentPath.set(new Collection("Shared", ""));
+                            DraftsDocumentPath.set(new Collection("Drafts", date));
 
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
-                            userMapPath.set(new UserDetailsModel(mCurrentUserID));
+                            userMapPath.set(new UserDetailsModel(mCurrentUserId));
 
                             FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                                 @Override
@@ -259,7 +406,7 @@ public class Register extends AppCompatActivity {
                                     Map<String, Object> userToken = new HashMap<>();
                                     userToken.put("User_Token_ID", deviceToken);
 
-                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("User_Details").document("User_Token");
+                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
                                     userTokenDocumentPath.set(userToken);
                                 }
                             });
@@ -305,20 +452,20 @@ public class Register extends AppCompatActivity {
                             String date = sdf.format(calendar.getTime());
 
                             if (mFireBaseAuth.getCurrentUser() != null) {
-                                mCurrentUserID = mFireBaseAuth.getCurrentUser().getUid();
+                                mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
                                 mCurrentUser = mFireBaseAuth.getCurrentUser();
                                 mCurrentUserEmail = mCurrentUser.getEmail();
                             }
 
-                            DocumentReference NotebookDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Notebook");
-                            DocumentReference SharedDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Public").document("Shared");
-                            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Drafts");
-                            NotebookDocumentPath.set(new Collection("Notebook", "notebook", date));
-                            SharedDocumentPath.set(new Collection("Shared", "shared", ""));
-                            DraftsDocumentPath.set(new Collection("Drafts", "drafts", date));
+                            DocumentReference NotebookDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Notebook");
+                            DocumentReference SharedDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Public").document("Shared");
+                            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
+                            NotebookDocumentPath.set(new Collection("Notebook", date));
+                            SharedDocumentPath.set(new Collection("Shared", ""));
+                            DraftsDocumentPath.set(new Collection("Drafts", date));
 
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
-                            userMapPath.set(new UserDetailsModel(mCurrentUserID));
+                            userMapPath.set(new UserDetailsModel(mCurrentUserId));
 
                             FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                                 @Override
@@ -328,7 +475,7 @@ public class Register extends AppCompatActivity {
                                     Map<String, Object> userToken = new HashMap<>();
                                     userToken.put("User_Token_ID", deviceToken);
 
-                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("User_Details").document("User_Token");
+                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
                                     userTokenDocumentPath.set(userToken);
                                 }
                             });
@@ -387,7 +534,7 @@ public class Register extends AppCompatActivity {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
 
         ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-        apiKey.setApiKey("API KEY GOES HERE");
+        apiKey.setApiKey("YOUR API KEY HERE");
 
         final SmtpApi apiInstance = new SmtpApi();
 

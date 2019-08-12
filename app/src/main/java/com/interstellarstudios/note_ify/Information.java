@@ -47,7 +47,7 @@ public class Information extends AppCompatActivity {
         setContentView(R.layout.activity_information);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnNavigationItemSelectedListener(navListener);

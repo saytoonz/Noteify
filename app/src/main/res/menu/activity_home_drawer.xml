@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
@@ -9,6 +8,10 @@
             android:id="@+id/nav_new_note"
             android:icon="@drawable/note_placeholder"
             android:title="New Note" />
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@drawable/ic_search"
+            android:title="All Notes" />
         <item
             android:id="@+id/nav_folders"
             android:icon="@drawable/ic_folder"
@@ -31,13 +34,12 @@
             android:title="Bin" />
     </group>
 
-    <item android:title="Themes">
+    <item android:title="Appearance">
         <menu>
             <item
-                android:id="@+id/nav_dark"
-                android:icon="@drawable/ic_dark"
-                android:title="Dark Theme"
-                app:actionLayout="@layout/drawer_switch" />
+                android:id="@+id/nav_themes"
+                android:icon="@drawable/ic_themes"
+                android:title="Themes" />
         </menu>
     </item>
 

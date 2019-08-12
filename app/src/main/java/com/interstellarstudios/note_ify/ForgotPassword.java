@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,7 +32,6 @@ public class ForgotPassword extends AppCompatActivity {
         mFireBaseAuth = FirebaseAuth.getInstance();
 
         editTextEmail = findViewById(R.id.editTextEmail);
-        ImageView logoImageView = findViewById(R.id.logoImageView);
 
         Button buttonSendLink = findViewById(R.id.buttonSendLink);
         buttonSendLink.setOnClickListener(new View.OnClickListener() {
@@ -52,12 +50,11 @@ public class ForgotPassword extends AppCompatActivity {
         });
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(ForgotPassword.this, R.color.colorPrimaryDarkTheme));
-            logoImageView.setImageResource(R.drawable.name_logo);
             editTextEmail.setTextColor(ContextCompat.getColor(ForgotPassword.this, R.color.colorDarkThemeText));
             editTextEmail.setHintTextColor(ContextCompat.getColor(ForgotPassword.this, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
@@ -68,7 +65,7 @@ public class ForgotPassword extends AppCompatActivity {
 
     private void sendLink(){
 
-        String email = editTextEmail.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim().toLowerCase();
 
         if(TextUtils.isEmpty(email)){
             Toasty.info(ForgotPassword.this, "Please enter your registered email address", Toast.LENGTH_LONG, true).show();

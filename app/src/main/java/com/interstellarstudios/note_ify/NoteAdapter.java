@@ -41,7 +41,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
     public NoteAdapter(@NonNull FirestoreRecyclerOptions<Note> options, SharedPreferences sharedPreferences, Context context) {
         super(options);
         switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
-        switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
         mContext = context;
     }
 
@@ -171,7 +171,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         String date = sdf.format(calendar.getTime());
 
         DocumentReference RestoredDocumentPath = db.collection("Users").document(current_user_id).collection("Main").document("Restored");
-        RestoredDocumentPath.set(new Collection("Restored", "restored", date));
+        RestoredDocumentPath.set(new Collection("Restored", date));
 
         getSnapshots().getSnapshot(position).getReference();
 
@@ -203,6 +203,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
     }
 
     class NoteHolder extends RecyclerView.ViewHolder {
+
         TextView textViewTitle;
         RichEditor mEditor;
         TextView textViewPriority;

@@ -38,7 +38,7 @@ public class FAQ extends AppCompatActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);

@@ -50,7 +50,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="63" />
+                                                <entry key="scalingPercent" value="60" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -62,9 +62,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundColor" value="ffffff" />
+                                      <entry key="backgroundColor" value="02a72f" />
                                       <entry key="backgroundImage" value="D:\Downloads\background.jpg" />
-                                      <entry key="foregroundImage" value="D:\Development\Images\n_logo.png" />
+                                      <entry key="foregroundImage" value="D:\Development\Note-ify Assets\n_logo_white.png" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -166,7 +166,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_language_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_brush_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -176,7 +176,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_website" />
+                            <entry key="outputName" value="ic_themes" />
                             <entry key="sourceFile" value="C:\Users\craig" />
                           </map>
                         </option>

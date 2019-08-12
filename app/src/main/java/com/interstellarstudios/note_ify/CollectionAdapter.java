@@ -34,7 +34,7 @@ public class CollectionAdapter extends FirestoreRecyclerAdapter <Collection, Col
 
     public CollectionAdapter(@NonNull FirestoreRecyclerOptions<Collection> options, SharedPreferences sharedPreferences, Context context) {
         super(options);
-        switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
         mContext = context;
     }
 
@@ -80,6 +80,7 @@ public class CollectionAdapter extends FirestoreRecyclerAdapter <Collection, Col
     }
 
     class CollectionHolder extends RecyclerView.ViewHolder {
+
         TextView folder;
         TextView folderDate;
         ImageView folderImageView;

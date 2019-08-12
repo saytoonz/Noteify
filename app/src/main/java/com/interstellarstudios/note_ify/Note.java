@@ -2,11 +2,12 @@ package com.interstellarstudios.note_ify;
 
 public class Note {
 
+    private String noteId;
+    private String folderId;
     private String title;
     private String description;
     private int priority;
     private String date;
-    private String lowercasetitle;
     private String fromEmailAddress;
     private int revision;
     private String attachmentUrl;
@@ -19,10 +20,11 @@ public class Note {
         //empty constructor needed
     }
 
-    public Note(String title, String lowercasetitle, String description, int priority, String date, String fromEmailAddress, int revision, String attachmentUrl, String attachmentName, String audioUrl, String audioZipUrl, String audioZipName) {
+    public Note(String noteId, String folderId, String title, String description, int priority, String date, String fromEmailAddress, int revision, String attachmentUrl, String attachmentName, String audioUrl, String audioZipUrl, String audioZipName) {
 
+        this.noteId = noteId;
+        this.folderId = folderId;
         this.title = title;
-        this.lowercasetitle = lowercasetitle;
         this.description = description;
         this.priority = priority;
         this.date = date;
@@ -35,12 +37,16 @@ public class Note {
         this.audioZipName = audioZipName;
     }
 
-    public String getTitle() {
-        return title;
+    public String getNoteId() {
+        return noteId;
     }
 
-    public String getLowerCaseTitle() {
-        return lowercasetitle;
+    public String getFolderId() {
+        return folderId;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getDescription() {

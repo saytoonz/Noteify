@@ -12,25 +12,18 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Html;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -43,16 +36,17 @@ import hotchemi.android.rate.AppRate;
 
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Context context = this;
     private CollectionAdapter adapter;
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
-    private EditText searchField;
-    private SwitchCompat switchThemes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
         AppRate.with(this)
                 .setInstallDays(7)
@@ -68,16 +62,16 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
-        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Folders" + "</font>"));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
+        //String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
+        String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + "#000000" + "\">" + "Folders" + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorLightThemeString)));
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
+        final ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
         navDrawerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,29 +83,18 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Home.this, NewNote.class);
+                Intent i = new Intent(context, NewNote.class);
                 i.putExtra("folderId", "Notebook");
                 startActivity(i);
             }
         });
 
-        searchField = findViewById(R.id.searchField);
-        searchField.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    switch (keyCode) {
-                        case KeyEvent.KEYCODE_DPAD_CENTER:
-                        case KeyEvent.KEYCODE_ENTER:
-                            String searchInput = searchField.getText().toString().toLowerCase();
-                            Intent i = new Intent(Home.this, FolderSearchResults.class);
-                            i.putExtra("searchInput", searchInput);
-                            startActivity(i);
-                            return true;
-                        default:
-                            break;
-                    }
-                }
-                return false;
+        TextView searchTextView = findViewById(R.id.searchTextView);
+        searchTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, Search.class);
+                startActivity(i);
             }
         });
 
@@ -119,9 +102,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String searchInput = searchField.getText().toString().toLowerCase();
-                Intent i = new Intent(Home.this, FolderSearchResults.class);
-                i.putExtra("searchInput", searchInput);
+                Intent i = new Intent(context, Search.class);
                 startActivity(i);
             }
         });
@@ -130,7 +111,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         newFolderText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Home.this, NewCollection.class);
+                Intent i = new Intent(context, NewCollection.class);
                 startActivity(i);
             }
         });
@@ -139,66 +120,31 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         newFolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Home.this, NewCollection.class);
+                Intent i = new Intent(context, NewCollection.class);
                 startActivity(i);
             }
         });
 
-        Menu menu = navigationView.getMenu();
-        MenuItem menuItem = menu.findItem(R.id.nav_dark);
-        View actionView = MenuItemCompat.getActionView(menuItem);
-
-        switchThemes = actionView.findViewById(R.id.drawer_switch);
-        switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                savePreferences();
-            }
-        });
-
-        switchThemes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                startActivity(getIntent());
-            }
-        });
-
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
-        switchThemes.setChecked(switchThemesOnOff);
-
-        if(switchThemesOnOff) {
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
+        if (switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(Home.this, R.color.colorPrimaryDarkTheme));
-            searchField.setTextColor(ContextCompat.getColor(Home.this, R.color.colorDarkThemeText));
-            searchField.setHintTextColor(ContextCompat.getColor(Home.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            searchTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Folders" + "</font>"));
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
         }
         setUpRecyclerView();
     }
 
-    public void savePreferences() {
-
-        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = myPrefs.edit();
-
-        if (switchThemes.isChecked()) {
-            prefsEditor.putBoolean("switchThemes", true);
-        } else {
-            prefsEditor.putBoolean("switchThemes", false);
-        }
-        prefsEditor.apply();
-    }
-
     private void setUpRecyclerView() {
 
-        Context context = this;
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
         final Drawable swipeBackground = new ColorDrawable(Color.parseColor("#e22018"));
-        final Drawable deleteIcon = ContextCompat.getDrawable(this, R.drawable.ic_delete_forever);
+        final Drawable deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete_forever);
 
         CollectionReference folderRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main");
         Query query = folderRef.orderBy("folder", Query.Direction.ASCENDING);
@@ -211,7 +157,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
@@ -258,7 +204,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
 
                 String folderId = documentSnapshot.getId();
-                Intent i = new Intent(Home.this, Notes.class);
+                Intent i = new Intent(context, Notes.class);
                 i.putExtra("folderId", folderId);
                 startActivity(i);
             }
@@ -293,32 +239,38 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(Home.this, NewNote.class);
+            Intent i = new Intent(context, NewNote.class);
             i.putExtra("folderId", "Notebook");
             startActivity(i);
+        } else if (id == R.id.nav_search) {
+            Intent i = new Intent(context, Search.class);
+            startActivity(i);
         } else if (id == R.id.nav_share) {
-            Intent j = new Intent(Home.this, Shared.class);
+            Intent j = new Intent(context, Shared.class);
             startActivity(j);
         } else if (id == R.id.nav_grocery_list) {
-            Intent k = new Intent(Home.this, GroceryList.class);
+            Intent k = new Intent(context, GroceryList.class);
             startActivity(k);
         } else if (id == R.id.nav_shared_grocery_list) {
-            Intent k = new Intent(Home.this, SharedGroceryList.class);
+            Intent k = new Intent(context, SharedGroceryList.class);
             startActivity(k);
         } else if (id == R.id.nav_bin) {
-            Intent l = new Intent(Home.this, Bin.class);
+            Intent l = new Intent(context, Bin.class);
+            startActivity(l);
+        } else if (id == R.id.nav_themes) {
+            Intent l = new Intent(context, Themes.class);
             startActivity(l);
         } else if (id == R.id.nav_settings) {
-            Intent m = new Intent(Home.this, Settings.class);
+            Intent m = new Intent(context, Settings.class);
             startActivity(m);
         } else if (id == R.id.nav_account) {
-            Intent n = new Intent(Home.this, Account.class);
+            Intent n = new Intent(context, Account.class);
             startActivity(n);
         } else if (id == R.id.nav_information) {
-            Intent o = new Intent(Home.this, Information.class);
+            Intent o = new Intent(context, Information.class);
             startActivity(o);
         } else if (id == R.id.nav_faq) {
-            Intent p = new Intent(Home.this, FAQ.class);
+            Intent p = new Intent(context, FAQ.class);
             startActivity(p);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -326,3 +278,5 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         return true;
     }
 }
+
+

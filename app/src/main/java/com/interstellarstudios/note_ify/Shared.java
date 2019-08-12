@@ -12,16 +12,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.widget.ImageViewCompat;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Html;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,8 +25,6 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -44,18 +38,19 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 public class Shared extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Context context = this;
     private String mCurrentUserID;
     private FirebaseFirestore mFireBaseFireStore;
     private NoteAdapter adapter;
-    private EditText searchField;
     private ImageView emptyView;
     private TextView emptyViewText;
-    private SwitchCompat switchThemes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shared);
+        setContentView(R.layout.activity_notes);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
         FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
@@ -64,16 +59,16 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
             mCurrentUserID = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
-        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">Shared (Sort: Newest to Oldest)</font>"));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
+        //String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
+        String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + "#000000" + "\">" + "Shared (Sort: New to Old)" + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorLightThemeString)));
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
+        final ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
         navDrawerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,23 +86,12 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
             }
         });
 
-        searchField = findViewById(R.id.searchField);
-        searchField.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    switch (keyCode) {
-                        case KeyEvent.KEYCODE_DPAD_CENTER:
-                        case KeyEvent.KEYCODE_ENTER:
-                            String searchInput = searchField.getText().toString().toLowerCase();
-                            Intent i = new Intent(Shared.this, SharedSearchResults.class);
-                            i.putExtra("searchInput", searchInput);
-                            startActivity(i);
-                            return true;
-                        default:
-                            break;
-                    }
-                }
-                return false;
+        TextView searchTextView = findViewById(R.id.searchTextView);
+        searchTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, Search.class);
+                startActivity(i);
             }
         });
 
@@ -115,9 +99,7 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String searchInput = searchField.getText().toString().toLowerCase();
-                Intent i = new Intent(Shared.this, SharedSearchResults.class);
-                i.putExtra("searchInput", searchInput);
+                Intent i = new Intent(context, Search.class);
                 startActivity(i);
             }
         });
@@ -125,54 +107,19 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
         emptyView = findViewById(R.id.emptyView);
         emptyViewText = findViewById(R.id.emptyViewText);
 
-        Menu menu = navigationView.getMenu();
-        MenuItem menuItem = menu.findItem(R.id.nav_dark);
-        View actionView = MenuItemCompat.getActionView(menuItem);
-
-        switchThemes = actionView.findViewById(R.id.drawer_switch);
-        switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                savePreferences();
-            }
-        });
-
-        switchThemes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                startActivity(getIntent());
-            }
-        });
-
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
-        switchThemes.setChecked(switchThemesOnOff);
-
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(Shared.this, R.color.colorPrimaryDarkTheme));
-            searchField.setTextColor(ContextCompat.getColor(Shared.this, R.color.colorDarkThemeText));
-            searchField.setHintTextColor(ContextCompat.getColor(Shared.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
-            emptyViewText.setTextColor(ContextCompat.getColor(Shared.this, R.color.colorDarkThemeText));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            searchTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">Shared (Sort: New to Old)</font>"));
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
         }
-
         setUpRecyclerView();
-    }
-
-    public void savePreferences() {
-
-        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = myPrefs.edit();
-
-        if (switchThemes.isChecked()) {
-            prefsEditor.putBoolean("switchThemes", true);
-        } else {
-            prefsEditor.putBoolean("switchThemes", false);
-        }
-        prefsEditor.apply();
     }
 
     @Override
@@ -227,7 +174,9 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(queryDocumentSnapshots.isEmpty()){
                     recyclerView.setVisibility(View.INVISIBLE);
+                    emptyView.setImageResource(R.drawable.ic_share);
                     emptyView.setVisibility(View.VISIBLE);
+                    emptyViewText.setText("Notes shared with you will appear here.");
                     emptyViewText.setVisibility(View.VISIBLE);
                 }
             }
@@ -322,7 +271,6 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
                 String title = note.getTitle();
                 String description = note.getDescription();
                 int priority = note.getPriority();
-                String fromEmailAddress = note.getFromEmailAddress();
                 int revision = note.getRevision();
                 String attachmentUrl = note.getAttachmentUrl();
                 String attachmentName = note.getAttachmentName();
@@ -335,11 +283,9 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
                 i.putExtra("title", title);
                 i.putExtra("description", description);
                 i.putExtra("priority", priority);
-                i.putExtra("fromEmailAddress", fromEmailAddress);
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
-                i.putExtra("collectionId", "Public");
                 i.putExtra("folderId", "Shared");
                 i.putExtra("audioDownloadUrl", audioDownloadUrl);
                 i.putExtra("audioZipDownloadUrl", audioZipDownloadUrl);
@@ -380,6 +326,9 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
             Intent i = new Intent(Shared.this, NewNote.class);
             i.putExtra("folderId", "Notebook");
             startActivity(i);
+        } else if (id == R.id.nav_search) {
+            Intent i = new Intent(context, Search.class);
+            startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(Shared.this, Home.class);
             startActivity(j);
@@ -392,8 +341,9 @@ public class Shared extends AppCompatActivity implements NavigationView.OnNaviga
         } else if (id == R.id.nav_bin) {
             Intent l = new Intent(Shared.this, Bin.class);
             startActivity(l);
-        } else if (id == R.id.nav_dark) {
-
+        } else if (id == R.id.nav_themes) {
+            Intent l = new Intent(context, Themes.class);
+            startActivity(l);
         } else if (id == R.id.nav_settings) {
             Intent m = new Intent(Shared.this, Settings.class);
             startActivity(m);

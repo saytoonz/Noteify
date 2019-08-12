@@ -24,7 +24,7 @@ public class GroceryListAdapter extends FirestoreRecyclerAdapter<GroceryItem, Gr
     public GroceryListAdapter(@NonNull FirestoreRecyclerOptions<GroceryItem> options, SharedPreferences sharedPreferences, Context context) {
         super(options);
 
-        switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
         mContext = context;
     }
 

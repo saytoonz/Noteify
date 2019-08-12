@@ -100,7 +100,7 @@ public class PrivacyPolicyFragment extends Fragment {
         privacyPolicy.setText(policyText);
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = getView().findViewById(R.id.container);

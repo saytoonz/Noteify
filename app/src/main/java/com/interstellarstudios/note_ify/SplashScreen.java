@@ -17,6 +17,7 @@ public class SplashScreen extends AppCompatActivity {
         boolean securitySwitchOn = sharedPreferences.getBoolean("switchSecurity", false);
 
         if (securitySwitchOn) {
+
             EasySplashScreen config = new EasySplashScreen(SplashScreen.this)
                     .withFullScreen()
                     .withTargetActivity(FingerprintLogin.class)
@@ -26,7 +27,9 @@ public class SplashScreen extends AppCompatActivity {
 
             View easySplashScreen = config.create();
             setContentView(easySplashScreen);
+
         } else {
+
             EasySplashScreen config = new EasySplashScreen(SplashScreen.this)
                     .withFullScreen()
                     .withTargetActivity(Register.class)

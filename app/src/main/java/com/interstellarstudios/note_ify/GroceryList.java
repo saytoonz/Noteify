@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -11,24 +12,22 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,12 +52,11 @@ import es.dmoral.toasty.Toasty;
 
 public class GroceryList extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Context mContext = this;
+    private Context context = this;
     private ArrayList<String> groceryArrayList = new ArrayList<>();
     private EditText mEditTextName;
     private TextView mTextViewAmount;
     private int mAmount = 0;
-    private SwitchCompat switchThemes;
     private EditText mSharedUserEmailText;
     private FirebaseFirestore mFireBaseFireStore;
     private String mSharedUserId;
@@ -83,10 +81,10 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             currentUserEmail = mUser.getEmail();
         }
 
-        String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
-        String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Grocery List" + "</font>"));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
+        //String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
+        String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + "#000000" + "\">" + "Grocery List" + "</font>"));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorLightThemeString)));
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.drawer_view);
@@ -96,11 +94,11 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toasty.success(GroceryList.this, "Swipe left or right to remove an item", Toast.LENGTH_LONG, true).show();
+                Toasty.success(context, "Swipe left or right to remove an item", Toast.LENGTH_LONG, true).show();
             }
         });
 
-        ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
+        final ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
         navDrawerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,7 +125,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
                             shareGroceryList();
-                            Toasty.success(GroceryList.this, "Grocery list shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                            Toasty.success(context, "Grocery list shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                             return true;
                         default:
                             break;
@@ -137,7 +135,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        Button buttonIncrease = findViewById(R.id.button_increase);
+        final Button buttonIncrease = findViewById(R.id.button_increase);
         buttonIncrease.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,7 +143,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        Button buttonDecrease = findViewById(R.id.button_decrease);
+        final Button buttonDecrease = findViewById(R.id.button_decrease);
         buttonDecrease.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,56 +159,25 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        Menu menu = navigationView.getMenu();
-        MenuItem menuItem = menu.findItem(R.id.nav_dark);
-        View actionView = MenuItemCompat.getActionView(menuItem);
-
-        switchThemes = actionView.findViewById(R.id.drawer_switch);
-        switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                savePreferences();
-            }
-        });
-
-        switchThemes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                startActivity(getIntent());
-            }
-        });
-
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
-        switchThemes.setChecked(switchThemesOnOff);
-
-        if (switchThemesOnOff) {
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
+        if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(GroceryList.this, R.color.colorPrimaryDarkTheme));
-            mEditTextName.setTextColor(ContextCompat.getColor(GroceryList.this, R.color.colorDarkThemeText));
-            mEditTextName.setHintTextColor(ContextCompat.getColor(GroceryList.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(mEditTextName.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            mTextViewAmount.setTextColor(ContextCompat.getColor(GroceryList.this, R.color.colorDarkThemeText));
-            buttonIncrease.setTextColor(ContextCompat.getColor(GroceryList.this, R.color.colorLightThemeText));
-            buttonIncrease.setBackgroundColor(ContextCompat.getColor(GroceryList.this, R.color.colorDarkThemeText));
-            buttonDecrease.setTextColor(ContextCompat.getColor(GroceryList.this, R.color.colorLightThemeText));
-            buttonDecrease.setBackgroundColor(ContextCompat.getColor(GroceryList.this, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            mEditTextName.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            mEditTextName.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(mEditTextName.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            mTextViewAmount.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            buttonIncrease.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            buttonIncrease.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            buttonDecrease.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            buttonDecrease.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Grocery List" + "</font>"));
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
         }
         setUpRecyclerView();
-    }
-
-    public void savePreferences() {
-
-        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = myPrefs.edit();
-
-        if (switchThemes.isChecked()) {
-            prefsEditor.putBoolean("switchThemes", true);
-        } else {
-            prefsEditor.putBoolean("switchThemes", false);
-        }
-        prefsEditor.apply();
     }
 
     private void increase() {
@@ -261,34 +228,38 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         int id = item.getItemId();
 
         if (id == R.id.nav_new_note) {
-            Intent i = new Intent(GroceryList.this, NewNote.class);
+            Intent i = new Intent(context, NewNote.class);
             i.putExtra("folderId", "Notebook");
             startActivity(i);
+        } else if (id == R.id.nav_search) {
+            Intent i = new Intent(context, Search.class);
+            startActivity(i);
         } else if (id == R.id.nav_folders) {
-            Intent j = new Intent(GroceryList.this, Home.class);
+            Intent j = new Intent(context, Home.class);
             startActivity(j);
         } else if (id == R.id.nav_share) {
-            Intent j = new Intent(GroceryList.this, Shared.class);
+            Intent j = new Intent(context, Shared.class);
             startActivity(j);
         } else if (id == R.id.nav_shared_grocery_list) {
-            Intent k = new Intent(GroceryList.this, SharedGroceryList.class);
+            Intent k = new Intent(context, SharedGroceryList.class);
             startActivity(k);
         } else if (id == R.id.nav_bin) {
-            Intent l = new Intent(GroceryList.this, Bin.class);
+            Intent l = new Intent(context, Bin.class);
             startActivity(l);
-        } else if (id == R.id.nav_dark) {
-
+        } else if (id == R.id.nav_themes) {
+            Intent l = new Intent(context, Themes.class);
+            startActivity(l);
         } else if (id == R.id.nav_settings) {
-            Intent m = new Intent(GroceryList.this, Settings.class);
+            Intent m = new Intent(context, Settings.class);
             startActivity(m);
         } else if (id == R.id.nav_account) {
-            Intent n = new Intent(GroceryList.this, Account.class);
+            Intent n = new Intent(context, Account.class);
             startActivity(n);
         } else if (id == R.id.nav_information) {
-            Intent o = new Intent(GroceryList.this, Information.class);
+            Intent o = new Intent(context, Information.class);
             startActivity(o);
         } else if (id == R.id.nav_faq) {
-            Intent p = new Intent(GroceryList.this, FAQ.class);
+            Intent p = new Intent(context, FAQ.class);
             startActivity(p);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -298,7 +269,6 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
 
     private void setUpRecyclerView() {
 
-        Context context = this;
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
         final CollectionReference groceryListRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Grocery_List").collection("Grocery_List");
@@ -312,7 +282,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
 
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
@@ -356,7 +326,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
 
     private void shareGroceryList() {
 
-        sharedUserEmail = mSharedUserEmailText.getText().toString().trim();
+        sharedUserEmail = mSharedUserEmailText.getText().toString().trim().toLowerCase();
 
         if (sharedUserEmail.trim().isEmpty()) {
             return;
@@ -378,10 +348,10 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                                 groceryArrayList.add(setItem);
                             }
                             if(groceryArrayList.isEmpty()) {
-                                Toasty.info(GroceryList.this, "This grocery list is empty", Toast.LENGTH_LONG, true).show();
+                                Toasty.info(context, "This grocery list is empty", Toast.LENGTH_LONG, true).show();
                             } else {
-                                SendMailGrocery.sendMail(mContext, sharedUserEmail, currentUserEmail, groceryArrayList);
-                                Toasty.success(GroceryList.this, "Grocery List shared with and emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                                SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
+                                Toasty.success(context, "Grocery List shared with and emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                             }
                         }
                     }
@@ -445,5 +415,22 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
                 }
             }
         });
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
     }
 }

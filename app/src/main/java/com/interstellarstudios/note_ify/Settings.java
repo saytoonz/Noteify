@@ -1,8 +1,8 @@
 package com.interstellarstudios.note_ify;
 
 import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -18,9 +18,9 @@ import es.dmoral.toasty.Toasty;
 
 public class Settings extends AppCompatActivity {
 
+    private Context context = this;
     private Switch switchSecurity;
     private Switch switchPriorityColor;
-    private FingerprintManager fingerprintManager;
     private KeyguardManager keyguardManager;
 
     @Override
@@ -28,30 +28,43 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        TextView settingsHeading = findViewById(R.id.settingsHeading);
-        TextView fingerprintTextView = findViewById(R.id.fingerprintTextView);
-        TextView fingerprintDescription = findViewById(R.id.fingerprintDescription);
-        TextView priorityTextView = findViewById(R.id.priorityTextView);
-        TextView priorityDescription = findViewById(R.id.priorityDescription);
-        ImageView settingsIcon = findViewById(R.id.settingsIcon);
+        final TextView settingsHeading = findViewById(R.id.settingsHeading);
+        final TextView fingerprintTextView = findViewById(R.id.fingerprintTextView);
+        final TextView fingerprintDescription = findViewById(R.id.fingerprintDescription);
+        final TextView priorityTextView = findViewById(R.id.priorityTextView);
+        final TextView priorityDescription = findViewById(R.id.priorityDescription);
+        final ImageView settingsIcon = findViewById(R.id.settingsIcon);
 
         switchSecurity = findViewById(R.id.switchSecurity);
+        switchPriorityColor = findViewById(R.id.switchPriorityColor);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        boolean switchSecurityOnOff = sharedPreferences.getBoolean("switchSecurity", false);
+        boolean switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
+
+        switchSecurity.setChecked(switchSecurityOnOff);
+        switchPriorityColor.setChecked(switchPriorityOnOff);
+
         switchSecurity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                        fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
                         keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
 
-                        if (!keyguardManager.isKeyguardSecure()){
-                            Toasty.error(Settings.this, "A PIN, password or pattern is required to use this feature.\nGo to 'Settings -> Security -> Screenlock' to set up a lock screen.", Toast.LENGTH_LONG, true).show();
-                        } else {
-                            savePreferences();
+                        if (keyguardManager != null) {
+                            if (!keyguardManager.isKeyguardSecure()){
+                                Toasty.error(context, "A PIN, password or pattern is required to use this feature.\nGo to 'Settings -> Security -> Screenlock' to set up a lock screen.", Toast.LENGTH_LONG, true).show();
+                                switchSecurity.setChecked(false);
+                            } else {
+                                savePreferences();
+                            }
                         }
                     } else {
-                        Toasty.error(Settings.this, "This feature is not supported on the installed version of Android.", Toast.LENGTH_LONG, true).show();
+                        Toasty.error(context, "This feature is supported on Android 6.0 (Marshmallow) and up", Toast.LENGTH_LONG, true).show();
+                        switchSecurity.setChecked(false);
                     }
                 } else {
                     savePreferences();
@@ -59,7 +72,6 @@ public class Settings extends AppCompatActivity {
             }
         });
 
-        switchPriorityColor = findViewById(R.id.switchPriorityColor);
         switchPriorityColor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -67,23 +79,15 @@ public class Settings extends AppCompatActivity {
             }
         });
 
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchSecurityOnOff = sharedPreferences.getBoolean("switchSecurity", false);
-        boolean switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
-
-        switchSecurity.setChecked(switchSecurityOnOff);
-        switchPriorityColor.setChecked(switchPriorityOnOff);
-
         if(switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(Settings.this, R.color.colorPrimaryDarkTheme));
-            settingsHeading.setTextColor(ContextCompat.getColor(Settings.this, R.color.colorDarkThemeText));
-            fingerprintTextView.setTextColor(ContextCompat.getColor(Settings.this, R.color.colorDarkThemeText));
-            fingerprintDescription.setTextColor(ContextCompat.getColor(Settings.this, R.color.colorDarkThemeText));
-            priorityTextView.setTextColor(ContextCompat.getColor(Settings.this, R.color.colorDarkThemeText));
-            priorityDescription.setTextColor(ContextCompat.getColor(Settings.this, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(settingsIcon, ContextCompat.getColorStateList(this, R.color.colorDarkThemeText));
+            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            settingsHeading.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            fingerprintTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            fingerprintDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            priorityDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(settingsIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
         }
     }
 

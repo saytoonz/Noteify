@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,11 +11,34 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:tint="@color/colorLightThemeText"
-        app:layout_constraintBottom_toBottomOf="@+id/searchField"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/searchField"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_menu" />
+
+    <TextView
+        android:id="@+id/searchTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Search"
+        android:textColor="@color/colorLightThemeText"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/searchButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/searchButton" />
+
+    <ImageView
+        android:id="@+id/searchButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navDrawerMenu"
+        app:layout_constraintEnd_toStartOf="@+id/searchTextView"
+        app:layout_constraintTop_toTopOf="@+id/navDrawerMenu"
+        app:layout_constraintVertical_bias="0.39"
+        app:srcCompat="@drawable/ic_search" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -30,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchField" />
+        app:layout_constraintTop_toBottomOf="@+id/navDrawerMenu" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -42,36 +64,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/recycler_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add" />
-
-    <EditText
-        android:id="@+id/searchField"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:hint="Search Folder Notes by Title"
-        android:inputType="text"
-        android:text=""
-        android:textColor="@color/colorLightThemeText"
-        android:textColorHint="@color/colorLightThemeText"
-        android:textSize="14sp"
-        app:backgroundTint="@color/colorLightThemeText"
-        app:layout_constraintEnd_toStartOf="@+id/searchButton"
-        app:layout_constraintStart_toEndOf="@+id/navDrawerMenu"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/searchButton"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/searchField"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/searchField"
-        app:layout_constraintTop_toTopOf="@+id/searchField"
-        app:srcCompat="@drawable/ic_search" />
 
     <ImageView
         android:id="@+id/emptyView"

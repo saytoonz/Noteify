@@ -1,6 +1,7 @@
 package com.interstellarstudios.note_ify;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
@@ -17,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.exifinterface.media.ExifInterface;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -32,7 +34,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -90,9 +94,9 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     private NumberPicker numberPickerPriority;
     private String noteDate;
     private EditText sharedUserEmailInput;
-    private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
-    private static final int MY_CAMERA_REQUEST_CODE = 2;
-    private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 3;
+    private static final int PERMISSION_READ_CONTACTS_REQUEST = 11;
+    private static final int PERMISSION_USE_CAMERA_REQUEST = 12;
+    private static final int PERMISSION_WRITE_EXTERNAL_STORAGE_REQUEST = 13;
     private String pathToFile;
     private File photoFile = null;
     private RichEditor mEditor;
@@ -106,12 +110,10 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     private String title;
     private String description;
     private int priority;
-    private String lowerCaseTitle;
     private String sharedUserEmail;
     private String currentUserEmail;
     private int updatedRevision;
     private String folderId;
-    private String collectionId;
     private String noteId;
     private String attachmentUrl = "";
     private String attachment_name = "";
@@ -121,6 +123,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     private String audioDownloadUrl = "";
     private String audioZipDownloadUrl = "";
     private String audioZipFileName = "";
+    private String localNoteId = UUID.randomUUID().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +143,10 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         setSupportActionBar(toolbar);
 
         TextView priorityTextView = findViewById(R.id.priorityTextView);
-        HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
+
+        final HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
+        horizontalScrollView.setVisibility(View.GONE);
+
         ImageView buttonBackground = findViewById(R.id.buttonBackground);
         editTextTitle = findViewById(R.id.edit_text_title);
         numberPickerPriority = findViewById(R.id.number_picker_priority);
@@ -151,6 +157,8 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         attachment_icon = findViewById(R.id.attachment_icon);
         playAudioText = findViewById(R.id.audio_textview);
         playAudioIcon = findViewById(R.id.play_icon);
+        mEditor = findViewById(R.id.mEditor);
+
 
         download_icon.setVisibility(View.GONE);
         download_textview.setVisibility(View.GONE);
@@ -165,7 +173,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            collectionId = bundle.getString("collectionId");
             folderId = bundle.getString("folderId");
             noteId = bundle.getString("noteId");
             bundleTitle = bundle.getString("title");
@@ -181,6 +188,17 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         } else {
             return;
         }
+
+        mEditor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus){
+                    horizontalScrollView.setVisibility(View.VISIBLE);
+                } else {
+                    horizontalScrollView.setVisibility(View.GONE);
+                }
+            }
+        });
 
         TextView toolbarContacts = toolbar.findViewById(R.id.toolbar_contacts);
         toolbarContacts.setOnClickListener(new View.OnClickListener() {
@@ -200,6 +218,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             public void onClick(View v) {
                 saveNote();
                 saveSharedNote();
+                hideKeyboard(EditNote.this);
             }
         });
 
@@ -275,7 +294,6 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
         String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimary));
         String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorLightThemeText));
-        mEditor = findViewById(R.id.mEditor);
         mEditor.setEditorFontColor(Color.parseColor(colorLightThemeTextString));
         mEditor.setEditorFontSize(16);
         mEditor.setBackgroundColor(Color.parseColor(colorLightThemeString));
@@ -529,7 +547,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         progressDialog = new ProgressDialog(this);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         if (switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
@@ -717,7 +735,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSIONS_REQUEST);
+                            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACTS_REQUEST);
                         }
                     }
                 })
@@ -737,7 +755,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+                            requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_USE_CAMERA_REQUEST);
                         }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -756,7 +774,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
+                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_REQUEST);
                         }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -771,7 +789,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                                            @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
 
-        if (requestCode == READ_CONTACTS_PERMISSIONS_REQUEST) {
+        if (requestCode == PERMISSION_READ_CONTACTS_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toasty.success(EditNote.this, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
@@ -783,7 +801,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-        if (requestCode == MY_CAMERA_REQUEST_CODE) {
+        if (requestCode == PERMISSION_USE_CAMERA_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toasty.success(EditNote.this, "Camera permission granted", Toast.LENGTH_LONG, true).show();
@@ -794,7 +812,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-        if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST) {
+        if (requestCode == PERMISSION_WRITE_EXTERNAL_STORAGE_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toasty.success(EditNote.this, "External storage permission granted", Toast.LENGTH_LONG, true).show();
@@ -842,7 +860,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         File f = new File(pathToFile);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
+        sendBroadcast(mediaScanIntent);
     }
 
     public void doLaunchContactPicker() {
@@ -861,7 +879,10 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+
+            mEditor.focusEditor();
+            mEditor.requestFocus();
 
             mImageUri = data.getData();
 
@@ -948,6 +969,10 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
             galleryAddPic();
+
+            mEditor.focusEditor();
+            mEditor.requestFocus();
+
             mImageUri = Uri.fromFile(photoFile);
 
             progressDialog.setMessage("Uploading Image");
@@ -1001,8 +1026,10 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
         if (requestCode == AUDIO_RECORD_REQUEST && resultCode == RESULT_OK) {
 
-            audioFileUri = data.getData();
-            uploadAudioFile();
+            if (data != null) {
+                audioFileUri = data.getData();
+                uploadAudioFile();
+            }
         }
     }
 
@@ -1136,15 +1163,22 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         title = editTextTitle.getText().toString();
         description = mEditor.getHtml();
         priority = numberPickerPriority.getValue();
-        lowerCaseTitle = title.toLowerCase();
 
         if (title.trim().isEmpty()) {
             Toasty.info(EditNote.this, "Please enter a title", Toast.LENGTH_LONG, true).show();
             return;
         }
 
-        DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection(collectionId).document(folderId).collection(folderId).document(noteId);
-        documentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
+        if (folderId.equals("Bin")) {
+            DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Bin").document(noteId);
+            documentPath.set(new Note(noteId, "", title, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
+        } else if (folderId.equals("Shared")) {
+            DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Public").document("Shared").collection("Shared").document(noteId);
+            documentPath.set(new Note(noteId, "", title, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
+        } else {
+            DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(noteId);
+            documentPath.set(new Note(noteId, "", title, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
+        }
 
         Toasty.success(EditNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
@@ -1152,7 +1186,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
 
     private void saveSharedNote() {
 
-        sharedUserEmail = sharedUserEmailInput.getText().toString().trim();
+        sharedUserEmail = sharedUserEmailInput.getText().toString().trim().toLowerCase();
         if (sharedUserEmail.trim().isEmpty()) {
             return;
         }
@@ -1174,7 +1208,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                         notificationPath.add(notificationMessage);
 
                         DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
-                        sharedDocumentPath.set(new Note(title, lowerCaseTitle, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
+                        sharedDocumentPath.set(new Note(sharedNoteId, "", title, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
 
                         List<SendSmtpEmailAttachment> attachmentList = new ArrayList<>();
                         attachment_name = attachmentTextView.getText().toString();
@@ -1209,5 +1243,56 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
+        DraftsDocumentPath.set(new Collection("Drafts", noteDate));
+
+        saveDraft();
+    }
+
+    private void saveDraft() {
+
+        title = editTextTitle.getText().toString();
+        description = mEditor.getHtml();
+        priority = numberPickerPriority.getValue();
+
+        final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts").collection("Drafts").document(localNoteId);
+        documentPath.set(new Note(localNoteId, "", title, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
+
+        Toasty.success(mContext, "Note saved to Drafts", Toast.LENGTH_LONG, true).show();
+        finish();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

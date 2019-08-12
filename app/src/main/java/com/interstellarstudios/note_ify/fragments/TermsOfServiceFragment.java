@@ -73,7 +73,7 @@ public class TermsOfServiceFragment extends Fragment {
         termsOfService.setText(termsText);
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
+        boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         if(switchThemesOnOff) {
             ConstraintLayout layout = getView().findViewById(R.id.container);
