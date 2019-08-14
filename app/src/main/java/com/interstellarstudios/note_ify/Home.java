@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -137,6 +140,25 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
         }
         setUpRecyclerView();
+
+        DocumentReference detailsRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("This User");
+        detailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Details details = document.toObject(Details.class);
+                        String profilePicURL = details.getProfilePic();
+
+                        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor prefsEditor = myPrefs.edit();
+                        prefsEditor.putString("profilePicUrl", profilePicURL);
+                        prefsEditor.apply();
+                    }
+                }
+            }
+        });
     }
 
     private void setUpRecyclerView() {

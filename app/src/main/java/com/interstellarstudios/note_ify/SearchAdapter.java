@@ -235,6 +235,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             NewsList.clear();
             NewsList.addAll((List) results.values);

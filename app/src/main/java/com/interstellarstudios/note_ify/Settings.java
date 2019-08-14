@@ -3,6 +3,8 @@ package com.interstellarstudios.note_ify;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -42,6 +44,20 @@ public class Settings extends AppCompatActivity {
         boolean switchSecurityOnOff = sharedPreferences.getBoolean("switchSecurity", false);
         boolean switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
+
+        TextView versionText = findViewById(R.id.version_text);
+
+        PackageManager manager = context.getPackageManager();
+        PackageInfo info = null;
+        try {
+            info = manager.getPackageInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(info != null) {
+            String version = "Version " + info.versionName;
+            versionText.setText(version);
+        }
 
         switchSecurity.setChecked(switchSecurityOnOff);
         switchPriorityColor.setChecked(switchPriorityOnOff);
@@ -88,6 +104,7 @@ public class Settings extends AppCompatActivity {
             priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             priorityDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(settingsIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            versionText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
         }
     }
 

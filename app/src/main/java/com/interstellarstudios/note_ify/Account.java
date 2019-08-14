@@ -1,6 +1,5 @@
 package com.interstellarstudios.note_ify;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,26 +9,34 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import es.dmoral.toasty.Toasty;
@@ -42,8 +49,8 @@ public class Account extends AppCompatActivity {
     private String mCurrentUserId;
     private ImageView mProfilePic;
     private FirebaseFirestore mFireBaseFireStore;
-    private Uri mImageUri;
     private static final int PICK_IMAGE_REQUEST = 1;
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,20 @@ public class Account extends AppCompatActivity {
         TextView textViewUserEmail = findViewById(R.id.textViewUserEmail);
 
         mProfilePic = findViewById(R.id.profile_pic);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(context);
+        if (acct != null) {
+            Uri personPhoto = acct.getPhotoUrl();
+            if (personPhoto != null) {
+                Picasso.get().load(personPhoto).into(mProfilePic);
+            }
+        } else {
+            String profilePicURL = sharedPreferences.getString("profilePicUrl", "Profile Pic Not Uploaded");
+
+            if (!profilePicURL.equals("Profile Pic Not Uploaded")) {
+                Picasso.get().load(profilePicURL).into(mProfilePic);
+            }
+        }
+
         mProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,30 +93,12 @@ public class Account extends AppCompatActivity {
 
         boolean guestAccountOn = sharedPreferences.getBoolean("guestAccount", false);
 
-        if(guestAccountOn) {
+        if (guestAccountOn) {
             String guestAccount = "Guest Account";
             textViewUserEmail.setText(guestAccount);
         } else {
             textViewUserEmail.setText(mUser.getEmail());
         }
-
-        DocumentReference detailsRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("This User");
-        detailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Details details = document.toObject(Details.class);
-                        String profilePicURL = details.getProfilePic();
-
-                        if (profilePicURL != null && !profilePicURL.equals("Profile Pic Not Uploaded")) {
-                            Picasso.get().load(profilePicURL).into(mProfilePic);
-                        }
-                    }
-                }
-            }
-        });
 
         Button buttonLogout = findViewById(R.id.buttonLogout);
         buttonLogout.setOnClickListener(new View.OnClickListener() {
@@ -107,12 +110,19 @@ public class Account extends AppCompatActivity {
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
-        if(switchThemesOnOff) {
+        if (switchThemesOnOff) {
             ConstraintLayout layout = findViewById(R.id.container);
             layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             buttonLogout.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             textViewUserEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
         }
+
+        // Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
     }
 
     private void openFileChooser() {
@@ -128,51 +138,71 @@ public class Account extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
-            mImageUri = data.getData();
-            Picasso.get().load(mImageUri).into(mProfilePic);
+            Uri imageUri = data.getData();
+            Picasso.get().load(imageUri).into(mProfilePic);
 
-            uploadProfilePic();
+            byte[] compressedImage = compressImageUri(imageUri);
+            uploadProfilePic(compressedImage);
         }
     }
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
+    private byte[] compressImageUri(Uri imageUri) {
+
+        InputStream imageStream = null;
+        try {
+            imageStream = getContentResolver().openInputStream(
+                    imageUri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Bitmap bmp = BitmapFactory.decodeStream(imageStream);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 10, stream);
+        byte[] byteArray = stream.toByteArray();
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return byteArray;
     }
 
-    private void uploadProfilePic() {
+    private void uploadProfilePic(byte[] compressedImage) {
 
-        final DocumentReference detailsRef = FirebaseFirestore.getInstance()
-                .collection("Users").document(mCurrentUserId).collection("User_Details").document("This User");
+        final DocumentReference detailsRef = FirebaseFirestore.getInstance().collection("Users").document(mCurrentUserId).collection("User_Details").document("This User");
 
-        if (mImageUri != null) {
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference("Users/" + mCurrentUserId + "/Profile_Pic");
-            final StorageReference fileReference = storageRef.child("profile_pic." + getFileExtension(mImageUri));
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("Users/" + mCurrentUserId + "/Profile_Pic");
+        final StorageReference fileReference = storageRef.child("profile_pic.jpeg");
 
-            UploadTask uploadTask = fileReference.putFile(mImageUri);
-
-            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-                    return fileReference.getDownloadUrl();
+        UploadTask uploadTask = fileReference.putBytes(compressedImage);
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
                 }
-            })
-                    .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            if (task.isSuccessful()) {
+                return fileReference.getDownloadUrl();
+            }
+        })
+                .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
 
-                                Uri downloadUri = task.getResult();
-                                String downloadURL = downloadUri.toString();
-                                detailsRef.set(new Details(downloadURL));
-                            }
+                            Uri downloadUri = task.getResult();
+                            String downloadURL = downloadUri.toString();
+                            detailsRef.set(new Details(downloadURL));
+
+                            SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+                            SharedPreferences.Editor prefsEditor = myPrefs.edit();
+                            prefsEditor.putString("profilePicUrl", downloadURL);
+                            prefsEditor.apply();
                         }
-                    });
-        }
+                    }
+                });
     }
 
     private void logOut() {
@@ -188,6 +218,11 @@ public class Account extends AppCompatActivity {
 
                         DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
                         userTokenDocumentPath.set(userToken);
+
+                        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(context);
+                        if (acct != null) {
+                            mGoogleSignInClient.signOut();
+                        }
 
                         mFireBaseAuth.signOut();
 
