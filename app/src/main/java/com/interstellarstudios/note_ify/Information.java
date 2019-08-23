@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -58,10 +59,20 @@ public class Information extends AppCompatActivity {
                     new TermsOfServiceFragment()).commit();
         }
 
-        if(switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+        Window window = this.getWindow();
+        View container = findViewById(R.id.container);
+
+        if (switchThemesOnOff) {
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
             bottomNav.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
     }
 }

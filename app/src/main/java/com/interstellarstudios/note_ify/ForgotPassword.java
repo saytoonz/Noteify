@@ -1,15 +1,16 @@
 package com.interstellarstudios.note_ify;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import es.dmoral.toasty.Toasty;
 
 public class ForgotPassword extends AppCompatActivity {
 
+    private Context context = this;
     private EditText editTextEmail;
     private FirebaseAuth mFireBaseAuth;
 
@@ -52,14 +54,25 @@ public class ForgotPassword extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
+        Window window = this.getWindow();
+        View container = findViewById(R.id.container);
+
         if(switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(ForgotPassword.this, R.color.colorPrimaryDarkTheme));
-            editTextEmail.setTextColor(ContextCompat.getColor(ForgotPassword.this, R.color.colorDarkThemeText));
-            editTextEmail.setHintTextColor(ContextCompat.getColor(ForgotPassword.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            textViewSignIn.setTextColor(ContextCompat.getColor(ForgotPassword.this, R.color.colorDarkThemeText));
-            buttonSendLink.setTextColor(ContextCompat.getColor(ForgotPassword.this, R.color.colorDarkThemeText));
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
+            editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            buttonSendLink.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
     }
 
@@ -68,7 +81,7 @@ public class ForgotPassword extends AppCompatActivity {
         String email = editTextEmail.getText().toString().trim().toLowerCase();
 
         if(TextUtils.isEmpty(email)){
-            Toasty.info(ForgotPassword.this, "Please enter your registered email address", Toast.LENGTH_LONG, true).show();
+            Toasty.info(context, "Please enter your registered email address", Toast.LENGTH_LONG, true).show();
             return;
         }
 
@@ -77,10 +90,10 @@ public class ForgotPassword extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toasty.success(ForgotPassword.this, "Password reset email sent", Toast.LENGTH_LONG, true).show();
+                            Toasty.success(context, "Password reset email sent", Toast.LENGTH_LONG, true).show();
                             onBackPressed();
                         }else{
-                            Toasty.error(ForgotPassword.this, "Error sending password reset email", Toast.LENGTH_LONG, true).show();
+                            Toasty.error(context, "Error sending password reset email", Toast.LENGTH_LONG, true).show();
                         }
                     }
                 });
@@ -89,7 +102,7 @@ public class ForgotPassword extends AppCompatActivity {
     @Override
     public void onBackPressed () {
         super.onBackPressed();
-        Intent i = new Intent(ForgotPassword.this, SignIn.class);
+        Intent i = new Intent(context, SignIn.class);
         startActivity(i);
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }

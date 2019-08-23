@@ -13,11 +13,17 @@
     <string name="notification_channel_name">Reminder Notification</string>
     <string name="notification_channel_description">Notifications for Reminders set when creating notes.</string>
 
+    <string name="main_menu_icon_content_description">Menu icon</string>
     <string name="underline_checkbox"><u>U</u></string>
-    <string name="strikethrough_checkbox"><strike>S</strike></string>
-    <string name="dark_theme_switch_text">Dark Theme</string>
+    <string name="strike_through_checkbox"><strike>S</strike></string>
+    <string name="dark_theme_switch_text">Dark Theme " "</string>
+    <string name="share_via_whatsapp">Share via WhatsApp</string>
+    <string name="whatsapp_icon_content_description">WhatsApp icon</string>
 
-    <string name="register_logo_content_description">Logo</string>
+    <string name="toolbar_save">Save</string>
+    <string name="toolbar_contacts">Contacts</string>
+
+    <string name="register_logo_content_description">Note-ify Logo</string>
     <string name="register_enter_email_hint">Enter Email Address</string>
     <string name="register_enter_password_hint">Enter Password</string>
     <string name="register_confirm_password_hint">Confirm Password</string>
@@ -28,16 +34,16 @@
     <string name="register_already_registered">Already registered?</string>
     <string name="register_sign_in_here_bold">Sign in here</string>
 
-    <string name="sign_in_enter_email_address_hint">Enter Email Address</string>
     <string name="sign_in_sign_in_button">Sign In</string>
-    <string name="sign_in_go_to_register">Need an account? Register here</string>
-    <string name="sign_in_enter_password_hint">Enter Password</string>
+    <string name="sign_in_go_to_register">Need an account?</string>
     <string name="sign_in_go_to_forgot_password_text">Forgot password?</string>
+    <string name="sign_in_need_an_account_link">Register here</string>
+    <string name="sign_in_forgot_password_link">Click here</string>
 
-    <string name="forgot_password_enter_email_text">Enter Email Address</string>
     <string name="forgot_password_send_link_button">Send Link</string>
-    <string name="forgot_password_back_to_sign_in">Click here to get back to sign in</string>
+    <string name="forgot_password_back_to_sign_in">Back to sign in</string>
 
+    <string name="account_profile_pic_content_description">Profile picture</string>
     <string name="account_email_address_place_holder">email@address.com</string>
     <string name="account_log_out_button">Log Out</string>
 
@@ -49,9 +55,15 @@
     <string name="edit_note_priority_text">Priority</string>
     <string name="edit_note_title_text">Title</string>
 
+    <string name="search_field_hint">Search by Title or Description</string>
+    <string name="search_icon_content_description">Search icon</string>
+
     <string name="grocery_add_item_input_text">Item Name</string>
     <string name="grocery_number_counter_default">0</string>
     <string name="grocery_minus_button">-</string>
     <string name="grocery_plus_button">+</string>
     <string name="grocery_add_button">add</string>
+    <string name="grocery_list_email_address_share_hint">Email Address to Share with</string>
+    <string name="grocery_list_share_icon_content_description">Share icon</string>
+    <string name="grocery_list_add_item_icon_content_description">Add item icon</string>
 </resources>

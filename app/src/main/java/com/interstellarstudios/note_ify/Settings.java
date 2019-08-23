@@ -5,12 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -54,7 +54,7 @@ public class Settings extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        if(info != null) {
+        if (info != null) {
             String version = "Version " + info.versionName;
             versionText.setText(version);
         }
@@ -65,22 +65,16 @@ public class Settings extends AppCompatActivity {
         switchSecurity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (isChecked) {
+                    keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
 
-                        keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-
-                        if (keyguardManager != null) {
-                            if (!keyguardManager.isKeyguardSecure()){
-                                Toasty.error(context, "A PIN, password or pattern is required to use this feature.\nGo to 'Settings -> Security -> Screenlock' to set up a lock screen.", Toast.LENGTH_LONG, true).show();
-                                switchSecurity.setChecked(false);
-                            } else {
-                                savePreferences();
-                            }
+                    if (keyguardManager != null) {
+                        if (!keyguardManager.isKeyguardSecure()) {
+                            Toasty.error(context, "A PIN, password or pattern is required to use this feature.\nGo to 'Settings -> Security -> Screenlock' to set up a lock screen.", Toast.LENGTH_LONG, true).show();
+                            switchSecurity.setChecked(false);
+                        } else {
+                            savePreferences();
                         }
-                    } else {
-                        Toasty.error(context, "This feature is supported on Android 6.0 (Marshmallow) and up", Toast.LENGTH_LONG, true).show();
-                        switchSecurity.setChecked(false);
                     }
                 } else {
                     savePreferences();
@@ -95,9 +89,14 @@ public class Settings extends AppCompatActivity {
             }
         });
 
-        if(switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+        Window window = this.getWindow();
+        View container = findViewById(R.id.container);
+
+        if (switchThemesOnOff) {
+
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
             settingsHeading.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             fingerprintTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             fingerprintDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -105,6 +104,13 @@ public class Settings extends AppCompatActivity {
             priorityDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(settingsIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
             versionText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
     }
 

@@ -1,31 +1,30 @@
 package com.interstellarstudios.note_ify;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import android.text.Html;
-import android.view.Gravity;
+import android.provider.ContactsContract;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import androidx.core.view.GravityCompat;
-import android.view.MenuItem;
-import com.google.android.material.navigation.NavigationView;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,7 +49,7 @@ import java.util.Map;
 import java.util.UUID;
 import es.dmoral.toasty.Toasty;
 
-public class GroceryList extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class GroceryList extends AppCompatActivity {
 
     private Context context = this;
     private ArrayList<String> groceryArrayList = new ArrayList<>();
@@ -64,6 +63,8 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
     private String currentUserEmail;
     private String mCurrentUserID;
     private GroceryListAdapter adapter;
+    private static final int CONTACT_PICKER_RESULT = 2;
+    private static final int PERMISSION_READ_CONTACTS_REQUEST = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,14 +82,114 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             currentUserEmail = mUser.getEmail();
         }
 
-        //String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
-        String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + "#000000" + "\">" + "Grocery List" + "</font>"));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorLightThemeString)));
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.drawer_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        TextView toolbarContacts = toolbar.findViewById(R.id.toolbar_contacts);
+        toolbarContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                    getPermissionToReadUserContacts();
+                } else {
+                    doLaunchContactPicker();
+                }
+            }
+        });
+
+        TextView whatsAppText = findViewById(R.id.whatsapp_text);
+        whatsAppText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Grocery_List").collection("Grocery_List")
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+
+                                    groceryArrayList.clear();
+
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                        GroceryItem groceryItem = document.toObject(GroceryItem.class);
+                                        String setItem = groceryItem.getItem();
+                                        groceryArrayList.add(setItem);
+                                    }
+
+                                    if (groceryArrayList.isEmpty()) {
+                                        Toasty.info(context, "This grocery list is empty", Toast.LENGTH_LONG, true).show();
+
+                                    } else {
+
+                                        String groceryString  = "Grocery List: \n\n" + groceryArrayList.toString();
+                                        String modGroceryString = groceryString.replaceAll(",", "\n");
+
+                                        Intent whatsAppIntent = new Intent(Intent.ACTION_SEND);
+                                        whatsAppIntent.setType("text/plain"); //html
+                                        whatsAppIntent.setPackage("com.whatsapp");
+                                        whatsAppIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\n\n" + modGroceryString);
+
+                                        try {
+                                            startActivity(whatsAppIntent);
+                                        } catch (android.content.ActivityNotFoundException e) {
+                                            e.printStackTrace();
+                                            Toasty.error(context, "WhatsApp is not installed", Toast.LENGTH_LONG, true).show();
+                                        }
+                                    }
+                                }
+                            }
+                        });
+            }
+        });
+
+        ImageView whatsAppIcon = findViewById(R.id.whatsapp_icon);
+        whatsAppIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document("Grocery_List").collection("Grocery_List")
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+
+                                    groceryArrayList.clear();
+
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                        GroceryItem groceryItem = document.toObject(GroceryItem.class);
+                                        String setItem = groceryItem.getItem();
+                                        groceryArrayList.add(setItem);
+                                    }
+
+                                    if (groceryArrayList.isEmpty()) {
+                                        Toasty.info(context, "This grocery list is empty", Toast.LENGTH_LONG, true).show();
+
+                                    } else {
+
+                                        String groceryString  = "Grocery List: \n\n" + groceryArrayList.toString();
+                                        String modGroceryString = groceryString.replaceAll(",", "\n");
+
+                                        Intent whatsAppIntent = new Intent(Intent.ACTION_SEND);
+                                        whatsAppIntent.setType("text/plain"); //html
+                                        whatsAppIntent.setPackage("com.whatsapp");
+                                        whatsAppIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\n\n" + modGroceryString);
+
+                                        try {
+                                            startActivity(whatsAppIntent);
+                                        } catch (android.content.ActivityNotFoundException e) {
+                                            e.printStackTrace();
+                                            Toasty.error(context, "WhatsApp is not installed", Toast.LENGTH_LONG, true).show();
+                                        }
+                                    }
+                                }
+                            }
+                        });
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -98,17 +199,10 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        final ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
-        navDrawerMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawer.openDrawer(Gravity.LEFT);
-            }
-        });
-
         mEditTextName = findViewById(R.id.grocery_item);
         mTextViewAmount = findViewById(R.id.grocery_amount);
         mSharedUserEmailText = findViewById(R.id.sharedUserEmail);
+        ImageView itemIcon = findViewById(R.id.item_icon);
 
         ImageView shareList = findViewById(R.id.shareIcon);
         shareList.setOnClickListener(new View.OnClickListener() {
@@ -160,9 +254,17 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
         });
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
+
+        Window window = this.getWindow();
+        View container = findViewById(R.id.container);
+
         if(switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
+            toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            toolbarContacts.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             mEditTextName.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             mEditTextName.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(mEditTextName.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -171,13 +273,84 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
             buttonIncrease.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             buttonDecrease.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
             buttonDecrease.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Grocery List" + "</font>"));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
+            itemIcon.setImageResource(R.drawable.ic_grocery_white);
+            DrawableCompat.setTint(mSharedUserEmailText.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
+
         setUpRecyclerView();
+    }
+
+    public void getPermissionToReadUserContacts() {
+
+        new AlertDialog.Builder(context)
+                .setTitle("Permission needed to access contacts")
+                .setMessage("This permission is needed in order to get an email address for a selected contact. Manually enable in Settings > Apps & notifications > Note-ify > Permissions.")
+                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACTS_REQUEST);
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+
+        if (requestCode == PERMISSION_READ_CONTACTS_REQUEST) {
+            if (grantResults.length == 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toasty.success(context, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
+                doLaunchContactPicker();
+            } else {
+                Toasty.error(context, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    public void doLaunchContactPicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, CONTACT_PICKER_RESULT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CONTACT_PICKER_RESULT && resultCode == RESULT_OK) {
+
+            String email = "";
+
+            Uri result = data.getData();
+            String id = result.getLastPathSegment();
+
+            Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID + "=?", new String[]{id}, null);
+
+            if (cursor.moveToFirst()) {
+                email = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+            }
+            if (cursor != null) {
+                cursor.close();
+            }
+            if (email.length() == 0) {
+                Toasty.info(context, "No email address stored for this contact", Toast.LENGTH_LONG, true).show();
+            } else {
+                mSharedUserEmailText.setText(email);
+            }
+        }
     }
 
     private void increase() {
@@ -214,57 +387,7 @@ public class GroceryList extends AppCompatActivity implements NavigationView.OnN
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.nav_new_note) {
-            Intent i = new Intent(context, NewNote.class);
-            i.putExtra("folderId", "Notebook");
-            startActivity(i);
-        } else if (id == R.id.nav_search) {
-            Intent i = new Intent(context, Search.class);
-            startActivity(i);
-        } else if (id == R.id.nav_folders) {
-            Intent j = new Intent(context, Home.class);
-            startActivity(j);
-        } else if (id == R.id.nav_share) {
-            Intent j = new Intent(context, Shared.class);
-            startActivity(j);
-        } else if (id == R.id.nav_shared_grocery_list) {
-            Intent k = new Intent(context, SharedGroceryList.class);
-            startActivity(k);
-        } else if (id == R.id.nav_bin) {
-            Intent l = new Intent(context, Bin.class);
-            startActivity(l);
-        } else if (id == R.id.nav_themes) {
-            Intent l = new Intent(context, Themes.class);
-            startActivity(l);
-        } else if (id == R.id.nav_settings) {
-            Intent m = new Intent(context, Settings.class);
-            startActivity(m);
-        } else if (id == R.id.nav_account) {
-            Intent n = new Intent(context, Account.class);
-            startActivity(n);
-        } else if (id == R.id.nav_information) {
-            Intent o = new Intent(context, Information.class);
-            startActivity(o);
-        } else if (id == R.id.nav_faq) {
-            Intent p = new Intent(context, FAQ.class);
-            startActivity(p);
-        }
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        super.onBackPressed();
     }
 
     private void setUpRecyclerView() {

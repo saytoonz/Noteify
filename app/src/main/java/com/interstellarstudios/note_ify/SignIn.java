@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -126,9 +127,14 @@ public class SignIn extends AppCompatActivity {
 
         switchThemes.setChecked(switchThemesOnOff);
 
-        if(switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container2);
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+        final Window window = this.getWindow();
+        final View container = findViewById(R.id.container2);
+
+        if (switchThemesOnOff) {
+
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
             editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -141,14 +147,24 @@ public class SignIn extends AppCompatActivity {
             textViewForgot2.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             buttonSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
 
         switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    ConstraintLayout layout = findViewById(R.id.container2);
-                    layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    if (container != null) {
+                        container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                        container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    }
                     editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
                     editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
                     DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -163,9 +179,14 @@ public class SignIn extends AppCompatActivity {
                     switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
                     savePreferences();
+
                 } else {
-                    ConstraintLayout layout = findViewById(R.id.container2);
-                    layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+
+                    window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    if (container != null) {
+                        container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                        container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    }
                     editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
                     editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
                     DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
@@ -301,7 +322,7 @@ public class SignIn extends AppCompatActivity {
             return;
         }
 
-        mProgressDialog.setMessage("Signing In");
+        mProgressDialog.setMessage("Signing in");
         mProgressDialog.show();
 
         mFireBaseAuth.signInWithEmailAndPassword(email, password)

@@ -6,10 +6,10 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.interstellarstudios.note_ify"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
-        versionCode 20608
-        versionName "2.6.8"
+        versionCode 20702
+        versionName "2.7.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -44,11 +44,11 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
-    implementation 'com.google.firebase:firebase-core:17.0.1'
-    implementation 'com.google.firebase:firebase-auth:18.1.0'
-    implementation 'com.google.firebase:firebase-firestore:20.2.0'
-    implementation 'com.google.firebase:firebase-storage:18.1.1'
-    implementation 'com.google.firebase:firebase-messaging:19.0.1'
+    implementation 'com.google.firebase:firebase-core:17.1.0'
+    implementation 'com.google.firebase:firebase-auth:19.0.0'
+    implementation 'com.google.firebase:firebase-firestore:21.0.0'
+    implementation 'com.google.firebase:firebase-storage:19.0.0'
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
     implementation 'com.firebaseui:firebase-ui-firestore:4.2.1'
     implementation 'com.firebaseui:firebase-ui-storage:4.2.1'
     implementation 'com.firebaseui:firebase-ui-auth:4.2.1'

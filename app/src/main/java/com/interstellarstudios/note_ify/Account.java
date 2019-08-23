@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Bitmap;
@@ -14,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -77,9 +77,9 @@ public class Account extends AppCompatActivity {
                 Picasso.get().load(personPhoto).into(mProfilePic);
             }
         } else {
-            String profilePicURL = sharedPreferences.getString("profilePicUrl", "Profile Pic Not Uploaded");
+            String profilePicURL = sharedPreferences.getString("profilePicUrl", null);
 
-            if (!profilePicURL.equals("Profile Pic Not Uploaded")) {
+            if (profilePicURL != null) {
                 Picasso.get().load(profilePicURL).into(mProfilePic);
             }
         }
@@ -110,14 +110,25 @@ public class Account extends AppCompatActivity {
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
+        Window window = this.getWindow();
+        View container = findViewById(R.id.container);
+
         if (switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
             buttonLogout.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             textViewUserEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
 
-        // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -225,6 +236,11 @@ public class Account extends AppCompatActivity {
                         }
 
                         mFireBaseAuth.signOut();
+
+                        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor prefsEditor = myPrefs.edit();
+                        prefsEditor.putString("profilePicUrl", null);
+                        prefsEditor.apply();
 
                         Intent i = new Intent(context, Register.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

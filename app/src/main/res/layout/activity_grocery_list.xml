@@ -1,26 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    android:background="@color/colorPrimary">
 
     <include
-        layout="@layout/app_bar_grocery_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_grocery_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/drawer_view"
+    <EditText
+        android:id="@+id/sharedUserEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:autofillHints="email address"
+        android:ems="10"
+        android:hint="@string/grocery_list_email_address_share_hint"
+        android:importantForAutofill="yes"
+        android:inputType="textEmailAddress"
+        android:textColor="@color/colorAccent"
+        android:textColorHint="@color/colorAccent"
+        android:textSize="16sp"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/shareIcon"
+        app:layout_constraintTop_toBottomOf="@+id/whatsapp_text"
+        tools:targetApi="o" />
+
+    <ImageView
+        android:id="@+id/shareIcon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/grocery_list_share_icon_content_description"
+        app:layout_constraintBottom_toBottomOf="@+id/sharedUserEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sharedUserEmail"
+        app:srcCompat="@drawable/ic_share" />
+
+    <EditText
+        android:id="@+id/grocery_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:gravity="bottom"
+        android:hint="@string/grocery_add_item_input_text"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:textColor="@color/colorLightThemeText"
+        android:textColorHint="@color/colorLightThemeText"
+        android:textSize="16sp"
+        app:backgroundTint="@color/colorLightThemeText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/sharedUserEmail"
+        app:layout_constraintTop_toBottomOf="@+id/sharedUserEmail"
+        tools:targetApi="o" />
+
+    <TextView
+        android:id="@+id/grocery_amount"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/colorPrimary"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_notes"
-        app:menu="@menu/activity_home_drawer" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/grocery_number_counter_default"
+        android:textColor="@color/colorLightThemeText"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/grocery_item" />
 
-</androidx.drawerlayout.widget.DrawerLayout>
+    <Button
+        android:id="@+id/button_decrease"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/colorLightThemeText"
+        android:text="@string/grocery_minus_button"
+        android:textColor="@color/colorDarkThemeText"
+        app:layout_constraintBottom_toBottomOf="@+id/grocery_amount"
+        app:layout_constraintEnd_toStartOf="@+id/grocery_amount"
+        app:layout_constraintRight_toLeftOf="@+id/grocery_amount"
+        app:layout_constraintTop_toTopOf="@+id/grocery_amount" />
+
+    <Button
+        android:id="@+id/button_increase"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/colorLightThemeText"
+        android:text="@string/grocery_plus_button"
+        android:textColor="@color/colorDarkThemeText"
+        app:layout_constraintBottom_toBottomOf="@+id/grocery_amount"
+        app:layout_constraintEnd_toStartOf="@+id/button_add"
+        app:layout_constraintLeft_toRightOf="@+id/grocery_amount"
+        app:layout_constraintStart_toEndOf="@+id/grocery_amount"
+        app:layout_constraintTop_toTopOf="@+id/grocery_amount" />
+
+    <Button
+        android:id="@+id/button_add"
+        android:layout_width="70dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/colorAccent"
+        android:text="@string/grocery_add_button"
+        android:textAppearance="@android:style/TextAppearance.Holo.Large"
+        app:layout_constraintBottom_toBottomOf="@+id/button_increase"
+        app:layout_constraintLeft_toRightOf="@+id/button_increase"
+        app:layout_constraintStart_toEndOf="@+id/button_increase"
+        app:layout_constraintTop_toTopOf="@+id/button_increase" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:fadeScrollbars="false"
+        android:scrollbarThumbVertical="@color/colorAccent"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/grocery_amount" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/recycler_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_help" />
+
+    <TextView
+        android:id="@+id/whatsapp_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/share_via_whatsapp"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/whatsapp_icon"
+        app:layout_constraintStart_toStartOf="@+id/sharedUserEmail"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <ImageView
+        android:id="@+id/whatsapp_icon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:contentDescription="@string/whatsapp_icon_content_description"
+        app:layout_constraintBottom_toBottomOf="@+id/whatsapp_text"
+        app:layout_constraintEnd_toEndOf="@+id/shareIcon"
+        app:layout_constraintStart_toStartOf="@+id/shareIcon"
+        app:layout_constraintTop_toTopOf="@+id/whatsapp_text"
+        app:srcCompat="@drawable/whatsapp_icon" />
+
+    <ImageView
+        android:id="@+id/item_icon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:contentDescription="@string/grocery_list_add_item_icon_content_description"
+        app:layout_constraintBottom_toBottomOf="@+id/grocery_item"
+        app:layout_constraintEnd_toEndOf="@+id/shareIcon"
+        app:layout_constraintStart_toStartOf="@+id/shareIcon"
+        app:layout_constraintTop_toTopOf="@+id/grocery_item"
+        app:srcCompat="@drawable/ic_grocery_black" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

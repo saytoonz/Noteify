@@ -4,16 +4,15 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.UserNotAuthenticatedException;
-import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,13 +35,13 @@ import es.dmoral.toasty.Toasty;
 
 public class FingerprintLogin extends AppCompatActivity {
 
+    private Context context = this;
     private static final String KEY_NAME = "my_key";
     private static final byte[] SECRET_BYTE_ARRAY = new byte[] {1, 2, 3, 4, 5, 6};
     private static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS = 1;
     private static final int AUTHENTICATION_DURATION_SECONDS = 3;
     private KeyguardManager mKeyguardManager;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,25 +52,36 @@ public class FingerprintLogin extends AppCompatActivity {
 
         mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
-        if (!mKeyguardManager.isKeyguardSecure()) {
+        if (mKeyguardManager != null && !mKeyguardManager.isKeyguardSecure()) {
             return;
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", false);
 
+        Window window = this.getWindow();
+        View container = findViewById(R.id.container);
+
         if(switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(FingerprintLogin.this, R.color.colorPrimaryDarkTheme));
+
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
             logoImageView.setImageResource(R.drawable.name_logo);
-            informationTextView.setTextColor(ContextCompat.getColor(FingerprintLogin.this, R.color.colorDarkThemeText));
+            informationTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
 
         createKey();
         tryEncrypt();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean tryEncrypt() {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -96,7 +106,6 @@ public class FingerprintLogin extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void createKey() {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -131,10 +140,10 @@ public class FingerprintLogin extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS) {
             if (resultCode == RESULT_OK) {
                 finish();
-                Intent i = new Intent(this, Register.class);
+                Intent i = new Intent(context, Register.class);
                 startActivity(i);
             } else {
-                Toasty.error(FingerprintLogin.this, "Authentication failed.", Toast.LENGTH_LONG, true).show();
+                Toasty.error(context, "Authentication failed.", Toast.LENGTH_LONG, true).show();
             }
         }
     }

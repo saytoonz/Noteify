@@ -24,7 +24,7 @@ public class SendMail {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
 
         ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-        apiKey.setApiKey("YOUR API KEY HERE");
+        apiKey.setApiKey("API KEY GOES HERE");
 
         final SmtpApi apiInstance = new SmtpApi();
 

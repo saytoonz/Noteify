@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +14,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -168,9 +168,14 @@ public class Register extends AppCompatActivity {
 
         switchThemes.setChecked(switchThemesOnOff);
 
-        if(switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container2);
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+        final Window window = this.getWindow();
+        final View container = findViewById(R.id.container2);
+
+        if (switchThemesOnOff) {
+
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
             editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -186,14 +191,24 @@ public class Register extends AppCompatActivity {
             switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             buttonGuestMode.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
             buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
 
         switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    ConstraintLayout layout = findViewById(R.id.container2);
-                    layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    if (container != null) {
+                        container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                        container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    }
                     editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
                     editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
                     DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -211,9 +226,14 @@ public class Register extends AppCompatActivity {
                     buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
 
                     savePreferences();
+
                 } else {
-                    ConstraintLayout layout = findViewById(R.id.container2);
-                    layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+
+                    window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    if (container != null) {
+                        container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                        container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    }
                     editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
                     editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
                     DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
@@ -534,7 +554,7 @@ public class Register extends AppCompatActivity {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
 
         ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-        apiKey.setApiKey("YOUR API KEY HERE");
+        apiKey.setApiKey("API KEY GOES HERE");
 
         final SmtpApi apiInstance = new SmtpApi();
 

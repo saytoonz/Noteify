@@ -1,15 +1,14 @@
 package com.interstellarstudios.note_ify;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.Html;
+import android.view.View;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -32,43 +31,53 @@ public class Themes extends AppCompatActivity {
         switchThemes = findViewById(R.id.switchThemes);
         switchThemes.setChecked(switchThemesOnOff);
 
-        //String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
-        String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + "#000000" + "\">" + "Themes" + "</font>"));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorLightThemeString)));
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        final Window window = this.getWindow();
+        final View container = findViewById(R.id.container);
 
         if (switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Themes" + "</font>"));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
+
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
+            toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             themesTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             themesDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
 
         switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    ConstraintLayout layout = findViewById(R.id.container);
-                    layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-                    String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-                    getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "Themes" + "</font>"));
-                    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
+                    window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    if (container != null) {
+                        container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                        container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    }
+                    toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                    toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
                     themesTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
                     themesDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
                     savePreferences();
                 } else {
-                    ConstraintLayout layout = findViewById(R.id.container);
-                    layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
-                    //String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
-                    getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + "#000000" + "\">" + "Themes" + "</font>"));
-                    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorLightThemeString)));
+                    window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    if (container != null) {
+                        container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                        container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    }
+                    toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
                     themesTextView.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
                     themesDescription.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
 

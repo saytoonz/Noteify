@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar"
+        layout="@layout/toolbar_note"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -41,7 +41,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:ems="10"
                 android:hint="Email Address to Share with"
@@ -53,17 +52,42 @@
                 app:layout_constraintEnd_toStartOf="@+id/number_picker_priority"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/shareIcon"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/whatsapp_text" />
 
             <ImageView
                 android:id="@+id/shareIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/edit_text_title"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/whatsapp_text"
                 app:srcCompat="@drawable/ic_share" />
+
+            <TextView
+                android:id="@+id/whatsapp_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="8dp"
+                android:text="Share via WhatsApp"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/sharedUserEmail"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/whatsapp_icon"
+                app:layout_constraintStart_toStartOf="@+id/sharedUserEmail"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/whatsapp_icon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                app:layout_constraintBottom_toBottomOf="@+id/whatsapp_text"
+                app:layout_constraintEnd_toEndOf="@+id/shareIcon"
+                app:layout_constraintStart_toStartOf="@+id/shareIcon"
+                app:layout_constraintTop_toTopOf="@+id/whatsapp_text"
+                app:srcCompat="@drawable/whatsapp_icon" />
 
             <EditText
                 android:id="@+id/edit_text_title"
@@ -79,6 +103,7 @@
                 android:textStyle="bold"
                 app:backgroundTint="@color/colorPrimary"
                 app:layout_constraintEnd_toStartOf="@+id/number_picker_priority"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/sharedUserEmail" />
 
@@ -92,17 +117,16 @@
                 android:textColor="@color/colorLightThemeText"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/sharedUserEmail" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <NumberPicker
                 android:id="@+id/number_picker_priority"
                 android:layout_width="35dp"
                 android:layout_height="75dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
                 android:background="@color/colorDarkThemeText"
-                app:layout_constraintBottom_toTopOf="@+id/mEditor"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/priorityTextView"
+                app:layout_constraintStart_toStartOf="@+id/priorityTextView"
                 app:layout_constraintTop_toBottomOf="@+id/priorityTextView" />
 
             <TextView
@@ -258,7 +282,7 @@
                 android:layout_margin="16dp"
                 android:layout_weight="1"
                 android:buttonTint="@color/colorAccent"
-                android:text="@string/strikethrough_checkbox"
+                android:text="@string/strike_through_checkbox"
                 android:textColor="@color/colorAccent"
                 android:textSize="14sp" />
 

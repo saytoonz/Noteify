@@ -16,7 +16,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.exifinterface.media.ExifInterface;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -33,9 +32,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -81,7 +82,7 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
-    private Context mContext = this;
+    private Context context = this;
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -171,7 +172,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         mEditor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                if(hasFocus){
+                if (hasFocus) {
                     horizontalScrollView.setVisibility(View.VISIBLE);
                 } else {
                     horizontalScrollView.setVisibility(View.GONE);
@@ -183,7 +184,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         toolbarContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(NewNote.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
                     getPermissionToReadUserContacts();
                 } else {
                     doLaunchContactPicker();
@@ -201,6 +202,52 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             }
         });
 
+        TextView whatsAppText = findViewById(R.id.whatsapp_text);
+        whatsAppText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String title = editTextTitle.getText().toString().trim();
+                String htmlDescription = mEditor.getHtml();
+                String plainTextDescription = Html.fromHtml(htmlDescription).toString();
+
+                Intent whatsAppIntent = new Intent(Intent.ACTION_SEND);
+                whatsAppIntent.setType("text/plain");
+                whatsAppIntent.setPackage("com.whatsapp");
+                whatsAppIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\n\n" + title + "\n\n" + plainTextDescription);
+
+                try {
+                    startActivity(whatsAppIntent);
+                } catch (android.content.ActivityNotFoundException e) {
+                    e.printStackTrace();
+                    Toasty.error(context, "WhatsApp is not installed", Toast.LENGTH_LONG, true).show();
+                }
+            }
+        });
+
+        ImageView whatsAppIcon = findViewById(R.id.whatsapp_icon);
+        whatsAppIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String title = editTextTitle.getText().toString().trim();
+                String htmlDescription = mEditor.getHtml();
+                String plainTextDescription = Html.fromHtml(htmlDescription).toString();
+
+                Intent whatsAppIntent = new Intent(Intent.ACTION_SEND);
+                whatsAppIntent.setType("text/plain");
+                whatsAppIntent.setPackage("com.whatsapp");
+                whatsAppIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\n\n" + title + "\n\n" + plainTextDescription);
+
+                try {
+                    startActivity(whatsAppIntent);
+                } catch (android.content.ActivityNotFoundException e) {
+                    e.printStackTrace();
+                    Toasty.error(context, "WhatsApp is not installed", Toast.LENGTH_LONG, true).show();
+                }
+            }
+        });
+
         ImageView button_choose_image = findViewById(R.id.button_choose_image);
         button_choose_image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,12 +260,12 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         button_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(NewNote.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     getPermissionToUseCamera();
                 }
-                if (ContextCompat.checkSelfPermission(NewNote.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     getPermissionToWriteStorage();
-                } else if (ContextCompat.checkSelfPermission(NewNote.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(NewNote.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     dispatchTakePictureIntent();
                 }
             }
@@ -250,7 +297,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         button_attachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(NewNote.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     getPermissionToWriteStorage();
                 } else {
                     new MaterialFilePicker()
@@ -271,8 +318,8 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             }
         });
 
-        String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimary));
-        String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorLightThemeText));
+        String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
+        String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
         mEditor.setEditorFontColor(Color.parseColor(colorLightThemeTextString));
         mEditor.setEditorFontSize(16);
         mEditor.setBackgroundColor(Color.parseColor(colorLightThemeString));
@@ -288,10 +335,10 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater li = LayoutInflater.from(mContext);
+                LayoutInflater li = LayoutInflater.from(context);
                 View promptsView = li.inflate(R.layout.insert_link_prompt, null);
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setView(promptsView);
 
                 final EditText userInput = promptsView.findViewById(R.id.editTextDialogUserInput);
@@ -482,30 +529,41 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         numberPickerPriority.setMinValue(1);
         numberPickerPriority.setMaxValue(10);
 
-        progressDialog = new ProgressDialog(this);
+        progressDialog = new ProgressDialog(context);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
-        if (switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(NewNote.this, R.color.colorPrimaryDarkTheme));
-            toolbar.setBackgroundColor(ContextCompat.getColor(NewNote.this, R.color.colorPrimaryDarkTheme));
-            toolbarSave.setTextColor(ContextCompat.getColor(NewNote.this, R.color.colorDarkThemeText));
-            toolbarContacts.setTextColor(ContextCompat.getColor(NewNote.this, R.color.colorDarkThemeText));
-            priorityTextView.setTextColor(ContextCompat.getColor(NewNote.this, R.color.colorDarkThemeText));
-            editTextTitle.setTextColor(ContextCompat.getColor(NewNote.this, R.color.colorDarkThemeText));
-            editTextTitle.setHintTextColor(ContextCompat.getColor(NewNote.this, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextTitle.getBackground(), ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-            DrawableCompat.setTint(sharedUserEmailInput.getBackground(), ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
+        Window window = this.getWindow();
+        View container = findViewById(R.id.container);
 
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
+        if (switchThemesOnOff) {
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
+            toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            toolbarSave.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            toolbarContacts.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextTitle.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(editTextTitle.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            DrawableCompat.setTint(sharedUserEmailInput.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+
+            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             mEditor.setEditorFontColor(Color.parseColor(colorDarkThemeTextString));
             mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeString));
 
-            horizontalScrollView.setBackgroundColor(ContextCompat.getColor(NewNote.this, R.color.colorPrimaryDarkTheme));
-            buttonBackground.setBackgroundColor(ContextCompat.getColor(NewNote.this, R.color.buttonBackground));
+            horizontalScrollView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            buttonBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.buttonBackground));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
     }
 
@@ -515,7 +573,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, AUDIO_RECORD_REQUEST);
         } else {
-            Toasty.error(mContext, "No audio recorder installed", Toast.LENGTH_LONG, true).show();
+            Toasty.error(context, "No audio recorder installed", Toast.LENGTH_LONG, true).show();
         }
     }
 
@@ -653,28 +711,24 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         startAlarm(c);
 
         String reminderDateString = DateFormat.getDateInstance().format(c.getTime());
-        Toasty.success(NewNote.this, "Reminder set for 06:00 on " + reminderDateString, Toast.LENGTH_LONG, true).show();
+        Toasty.success(context, "Reminder set for 06:00 on " + reminderDateString, Toast.LENGTH_LONG, true).show();
     }
 
     private void startAlarm(Calendar c) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, AlertReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, i, 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
-        }
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, i, 0);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
     }
 
     public void getPermissionToReadUserContacts() {
 
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(context)
                 .setTitle("Permission needed to access contacts")
                 .setMessage("This permission is needed in order to get an email address for a selected contact. Manually enable in Settings > Apps & notifications > Note-ify > Permissions.")
                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACTS_REQUEST);
-                        }
+                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACTS_REQUEST);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -686,15 +740,13 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
     public void getPermissionToUseCamera() {
 
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(context)
                 .setTitle("Permission needed to access Camera")
                 .setMessage("This permission is needed in order to take a photo immediately for use in Notes. Manually enable in Settings > Apps & notifications > Note-ify > Permissions.")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_USE_CAMERA_REQUEST);
-                        }
+                        requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_USE_CAMERA_REQUEST);
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -705,15 +757,13 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
     public void getPermissionToWriteStorage() {
 
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(context)
                 .setTitle("Permission needed to Write to External Storage")
                 .setMessage("This permission is needed in order save images taken with the camera when accessed by the App. Manually enable in Settings > Apps & notifications > Note-ify > Permissions.")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_REQUEST);
-                        }
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_REQUEST);
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -728,10 +778,10 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         if (requestCode == PERMISSION_READ_CONTACTS_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNote.this, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
+                Toasty.success(context, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
                 doLaunchContactPicker();
             } else {
-                Toasty.error(NewNote.this, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
+                Toasty.error(context, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -740,9 +790,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         if (requestCode == PERMISSION_USE_CAMERA_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNote.this, "Camera permission granted", Toast.LENGTH_LONG, true).show();
+                Toasty.success(context, "Camera permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(NewNote.this, "Camera permission denied", Toast.LENGTH_LONG, true).show();
+                Toasty.error(context, "Camera permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -751,9 +801,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         if (requestCode == PERMISSION_WRITE_EXTERNAL_STORAGE_REQUEST) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(NewNote.this, "External storage permission granted", Toast.LENGTH_LONG, true).show();
+                Toasty.success(context, "External storage permission granted", Toast.LENGTH_LONG, true).show();
             } else {
-                Toasty.error(NewNote.this, "External storage permission denied", Toast.LENGTH_LONG, true).show();
+                Toasty.error(context, "External storage permission denied", Toast.LENGTH_LONG, true).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -768,7 +818,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
             if (photoFile != null) {
                 pathToFile = photoFile.getAbsolutePath();
-                Uri photoURI = FileProvider.getUriForFile(NewNote.this, "com.interstellarstudios.note_ify.fileprovider", photoFile);
+                Uri photoURI = FileProvider.getUriForFile(context, "com.interstellarstudios.note_ify.fileprovider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
@@ -832,7 +882,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                     try {
                         InputStream imageStream = getContentResolver().openInputStream(mImageUri);
                         Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                        selectedImage = handleSamplingAndRotationBitmap(NewNote.this, mImageUri);
+                        selectedImage = handleSamplingAndRotationBitmap(context, mImageUri);
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -894,7 +944,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 cursor.close();
             }
             if (email.length() == 0) {
-                Toasty.info(NewNote.this, "No email address stored for this contact", Toast.LENGTH_LONG, true).show();
+                Toasty.info(context, "No email address stored for this contact", Toast.LENGTH_LONG, true).show();
             } else {
                 sharedUserEmailInput.setText(email);
             }
@@ -918,7 +968,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                     try {
                         InputStream imageStream = getContentResolver().openInputStream(mImageUri);
                         Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                        selectedImage = handleSamplingAndRotationBitmap(NewNote.this, mImageUri);
+                        selectedImage = handleSamplingAndRotationBitmap(context, mImageUri);
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -1099,7 +1149,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         priority = numberPickerPriority.getValue();
 
         if (title.trim().isEmpty()) {
-            Toasty.info(NewNote.this, "Please enter a title", Toast.LENGTH_LONG, true).show();
+            Toasty.info(context, "Please enter a title", Toast.LENGTH_LONG, true).show();
             return;
         }
 
@@ -1109,7 +1159,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(localNoteId);
         documentPath.set(new Note(localNoteId, "", title, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
 
-        Toasty.success(NewNote.this, "Note Saved", Toast.LENGTH_LONG, true).show();
+        Toasty.success(context, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
     }
 
@@ -1143,31 +1193,31 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                         attachment_name = attachmentTextView.getText().toString();
 
                         if (attachment_name.equals("") && audioZipFileName.equals("")) {
-                            SendMail.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+                            SendMail.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
                         }
                         if (!audioZipFileName.equals("") && attachment_name.equals("")) {
                             attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
 
-                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         } else if (audioZipFileName.equals("") && !attachment_name.equals("")) {
                             attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
 
-                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         } else {
                             attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
                             attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
 
-                            SendMailWithAttachment.sendMail(mContext, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         }
 
-                        Toasty.success(NewNote.this, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                        Toasty.success(context, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
                     } else {
-                        Toasty.success(NewNote.this, "Note emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                        Toasty.success(context, "Note emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
                     }
                 } else {
-                    Toasty.error(NewNote.this, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
+                    Toasty.error(context, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
                     finish();
                 }
             }
@@ -1197,7 +1247,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts").collection("Drafts").document(localNoteId);
         documentPath.set(new Note(localNoteId, "", title, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
 
-        Toasty.success(mContext, "Note saved to Drafts", Toast.LENGTH_LONG, true).show();
+        Toasty.success(context, "Note saved to Drafts", Toast.LENGTH_LONG, true).show();
         finish();
     }
 
@@ -1205,17 +1255,17 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             View v = getCurrentFocus();
-            if ( v instanceof EditText) {
+            if (v instanceof EditText) {
                 Rect outRect = new Rect();
                 v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
                     v.clearFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 }
             }
         }
-        return super.dispatchTouchEvent( event );
+        return super.dispatchTouchEvent(event);
     }
 
     public static void hideKeyboard(Activity activity) {

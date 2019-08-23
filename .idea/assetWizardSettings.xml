@@ -166,7 +166,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_brush_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/maps/ic_local_grocery_store_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -176,7 +176,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_themes" />
+                            <entry key="color" value="ffffff" />
+                            <entry key="outputName" value="ic_grocery_white" />
                             <entry key="sourceFile" value="C:\Users\craig" />
                           </map>
                         </option>

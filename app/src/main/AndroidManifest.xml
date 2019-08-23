@@ -20,15 +20,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/NoActionBar">
 
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity
-            android:name=".SplashScreen"
-            android:theme="@style/SubTheme">
+        <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -48,61 +46,63 @@
         <activity android:name=".NotesSortPriority" />
         <activity
             android:name=".Search"
+            android:label="All Notes"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".SignIn"
             android:screenOrientation="portrait"
-            android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Register"
             android:screenOrientation="portrait"
-            android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".GroceryList"
+            android:label="Grocery List"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Account"
-            android:theme="@style/SubTheme" />
+        <activity android:name=".Account" />
         <activity
             android:name=".NewNote"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ForgotPassword"
             android:screenOrientation="portrait"
-            android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".Bin" />
+        <activity
+            android:name=".Bin"
+            android:label="Bin" />
         <activity
             android:name=".EditNote"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/SubTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".NewCollection"
             android:label="New Folder" />
-        <activity
-            android:name=".Settings"
-            android:theme="@style/SubTheme" />
-        <activity
-            android:name=".FingerprintLogin"
-            android:theme="@style/SubTheme" />
+        <activity android:name=".Settings" />
+        <activity android:name=".FingerprintLogin" />
         <activity android:name=".SharedSortAlphabetical" />
         <activity android:name=".SharedSortPriority" />
-        <activity android:name=".MoveSelectFolder" />
-        <activity android:name=".Home" />
-        <activity android:name=".Themes" />
         <activity
-            android:name=".Information"
-            android:theme="@style/SubTheme" />
-        <activity android:name=".FAQ" />
+            android:name=".MoveSelectFolder"
+            android:label="Move Note" />
+        <activity
+            android:name=".Home"
+            android:label="Folders" />
+        <activity
+            android:name=".Themes"
+            android:label="Themes" />
+        <activity android:name=".Information" />
+        <activity
+            android:name=".FAQ"
+            android:label="FAQ" />
         <activity
             android:name=".SharedGroceryList"
+            android:label="Shared Grocery List"
+
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="com.interstellarstudios.note_ify.FirebasePushNotifications.TARGETNOTIFICATION2" />

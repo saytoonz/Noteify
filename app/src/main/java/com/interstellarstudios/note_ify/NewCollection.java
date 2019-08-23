@@ -2,18 +2,16 @@ package com.interstellarstudios.note_ify;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,10 +44,8 @@ public class NewCollection extends AppCompatActivity {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        //String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
-        String colorLightThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + "#000000" + "\">" + "New Folder" + "</font>"));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorLightThemeString)));
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         Button buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(new View.OnClickListener() {
@@ -69,18 +65,27 @@ public class NewCollection extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
+        Window window = this.getWindow();
+        View container = findViewById(R.id.container);
+
         if(switchThemesOnOff) {
-            ConstraintLayout layout = findViewById(R.id.container);
-            layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            if (container != null) {
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            }
             mNewFolder.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             mNewFolder.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             ImageViewCompat.setImageTintList(folderImageView, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
             buttonSave.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorDarkThemeText));
-            String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDarkTheme));
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + colorDarkThemeTextString + "\">" + "New Folder" + "</font>"));
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorDarkThemeString)));
+            toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+        } else {
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
         }
     }
 
