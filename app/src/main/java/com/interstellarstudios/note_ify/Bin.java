@@ -16,7 +16,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import android.view.Gravity;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -97,7 +96,7 @@ public class Bin extends AppCompatActivity implements NavigationView.OnNavigatio
         navDrawerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawer.openDrawer(Gravity.LEFT);
+                drawer.openDrawer(GravityCompat.START);
             }
         });
 

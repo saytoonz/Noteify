@@ -16,7 +16,6 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import android.view.Gravity;
 import android.view.View;
 import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
@@ -110,7 +109,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
         navDrawerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawer.openDrawer(Gravity.LEFT);
+                drawer.openDrawer(GravityCompat.START);
             }
         });
 

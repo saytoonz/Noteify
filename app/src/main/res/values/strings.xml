@@ -22,6 +22,7 @@
 
     <string name="toolbar_save">Save</string>
     <string name="toolbar_contacts">Contacts</string>
+    <string name="toolbar_share">Share</string>
 
     <string name="register_logo_content_description">Note-ify Logo</string>
     <string name="register_enter_email_hint">Enter Email Address</string>

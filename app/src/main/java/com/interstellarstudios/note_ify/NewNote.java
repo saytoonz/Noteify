@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -21,7 +20,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -32,7 +30,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -51,10 +48,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -67,17 +61,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import es.dmoral.toasty.Toasty;
 import jp.wasabeef.richeditor.RichEditor;
-import sibModel.SendSmtpEmailAttachment;
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
@@ -86,7 +75,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int CONTACT_PICKER_RESULT = 2;
     private static final int REQUEST_IMAGE_CAPTURE = 3;
     private static final int PICK_DOCUMENT_REQUEST = 4;
     private static final int AUDIO_RECORD_REQUEST = 5;
@@ -94,8 +82,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     private EditText editTextTitle;
     private NumberPicker numberPickerPriority;
     private String noteDate;
-    private EditText sharedUserEmailInput;
-    private static final int PERMISSION_READ_CONTACTS_REQUEST = 11;
     private static final int PERMISSION_USE_CAMERA_REQUEST = 12;
     private static final int PERMISSION_WRITE_EXTERNAL_STORAGE_REQUEST = 13;
     private String pathToFile;
@@ -108,14 +94,11 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     private String filePath;
     private String fileName;
     private String localNoteId = UUID.randomUUID().toString();
-    private String sharedNoteId = UUID.randomUUID().toString();
     private String folderId;
     private String title;
     private String description;
     private int priority;
-    private String sharedUserEmail;
-    private String currentUserEmail;
-    private int updatedRevision = 1;
+    private int revision = 1;
     private String attachmentUrl = "";
     private String attachment_name = "";
     private ImageView playAudioIcon;
@@ -135,8 +118,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
         if (mFireBaseAuth.getCurrentUser() != null) {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
-            FirebaseUser mUser = mFireBaseAuth.getCurrentUser();
-            currentUserEmail = mUser.getEmail();
         }
 
         Bundle bundle = getIntent().getExtras();
@@ -157,7 +138,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         ImageView buttonBackground = findViewById(R.id.buttonBackground);
         editTextTitle = findViewById(R.id.edit_text_title);
         numberPickerPriority = findViewById(R.id.number_picker_priority);
-        sharedUserEmailInput = findViewById(R.id.sharedUserEmail);
         attachmentTextView = findViewById(R.id.attachment_textview);
         attachment_icon = findViewById(R.id.attachment_icon);
         playAudioText = findViewById(R.id.audio_textview);
@@ -180,71 +160,20 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             }
         });
 
-        TextView toolbarContacts = toolbar.findViewById(R.id.toolbar_contacts);
-        toolbarContacts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                    getPermissionToReadUserContacts();
-                } else {
-                    doLaunchContactPicker();
-                }
-            }
-        });
-
         TextView toolbarSave = toolbar.findViewById(R.id.toolbar_save);
         toolbarSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveNote();
-                saveSharedNote();
                 hideKeyboard(NewNote.this);
             }
         });
 
-        TextView whatsAppText = findViewById(R.id.whatsapp_text);
-        whatsAppText.setOnClickListener(new View.OnClickListener() {
+        TextView toolbarShare = toolbar.findViewById(R.id.toolbar_share);
+        toolbarShare.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
-                String title = editTextTitle.getText().toString().trim();
-                String htmlDescription = mEditor.getHtml();
-                String plainTextDescription = Html.fromHtml(htmlDescription).toString();
-
-                Intent whatsAppIntent = new Intent(Intent.ACTION_SEND);
-                whatsAppIntent.setType("text/plain");
-                whatsAppIntent.setPackage("com.whatsapp");
-                whatsAppIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\n\n" + title + "\n\n" + plainTextDescription);
-
-                try {
-                    startActivity(whatsAppIntent);
-                } catch (android.content.ActivityNotFoundException e) {
-                    e.printStackTrace();
-                    Toasty.error(context, "WhatsApp is not installed", Toast.LENGTH_LONG, true).show();
-                }
-            }
-        });
-
-        ImageView whatsAppIcon = findViewById(R.id.whatsapp_icon);
-        whatsAppIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                String title = editTextTitle.getText().toString().trim();
-                String htmlDescription = mEditor.getHtml();
-                String plainTextDescription = Html.fromHtml(htmlDescription).toString();
-
-                Intent whatsAppIntent = new Intent(Intent.ACTION_SEND);
-                whatsAppIntent.setType("text/plain");
-                whatsAppIntent.setPackage("com.whatsapp");
-                whatsAppIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.interstellarstudios.note_ify\n\n" + title + "\n\n" + plainTextDescription);
-
-                try {
-                    startActivity(whatsAppIntent);
-                } catch (android.content.ActivityNotFoundException e) {
-                    e.printStackTrace();
-                    Toasty.error(context, "WhatsApp is not installed", Toast.LENGTH_LONG, true).show();
-                }
+            public void onClick(View v) {
+                share();
             }
         });
 
@@ -543,12 +472,11 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             }
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             toolbarSave.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            toolbarContacts.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            toolbarShare.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             editTextTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             editTextTitle.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextTitle.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            DrawableCompat.setTint(sharedUserEmailInput.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
 
             String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -721,23 +649,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
     }
 
-    public void getPermissionToReadUserContacts() {
-
-        new AlertDialog.Builder(context)
-                .setTitle("Permission needed to access contacts")
-                .setMessage("This permission is needed in order to get an email address for a selected contact. Manually enable in Settings > Apps & notifications > Note-ify > Permissions.")
-                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACTS_REQUEST);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
-    }
-
     public void getPermissionToUseCamera() {
 
         new AlertDialog.Builder(context)
@@ -774,18 +685,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-
-        if (requestCode == PERMISSION_READ_CONTACTS_REQUEST) {
-            if (grantResults.length == 1 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toasty.success(context, "Read Contacts permission granted", Toast.LENGTH_LONG, true).show();
-                doLaunchContactPicker();
-            } else {
-                Toasty.error(context, "Read Contacts permission denied", Toast.LENGTH_LONG, true).show();
-            }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
 
         if (requestCode == PERMISSION_USE_CAMERA_REQUEST) {
             if (grantResults.length == 1 &&
@@ -848,11 +747,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         sendBroadcast(mediaScanIntent);
-    }
-
-    public void doLaunchContactPicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(intent, CONTACT_PICKER_RESULT);
     }
 
     private void openFileChooser() {
@@ -926,28 +820,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
 
             attachmentUpload();
-        }
-
-        if (requestCode == CONTACT_PICKER_RESULT && resultCode == RESULT_OK) {
-
-            String email = "";
-
-            Uri result = data.getData();
-            String id = result.getLastPathSegment();
-
-            Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID + "=?", new String[]{id}, null);
-
-            if (cursor.moveToFirst()) {
-                email = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-            }
-            if (cursor != null) {
-                cursor.close();
-            }
-            if (email.length() == 0) {
-                Toasty.info(context, "No email address stored for this contact", Toast.LENGTH_LONG, true).show();
-            } else {
-                sharedUserEmailInput.setText(email);
-            }
         }
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
@@ -1157,71 +1029,10 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         folderPath.set(new Collection(folderId, noteDate));
 
         DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId).collection(folderId).document(localNoteId);
-        documentPath.set(new Note(localNoteId, "", title, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
+        documentPath.set(new Note(localNoteId, "", title, description, priority, noteDate, "", revision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
 
         Toasty.success(context, "Note Saved", Toast.LENGTH_LONG, true).show();
         finish();
-    }
-
-    private void saveSharedNote() {
-
-        sharedUserEmail = sharedUserEmailInput.getText().toString().trim().toLowerCase();
-        if (sharedUserEmail.trim().isEmpty()) {
-            return;
-        }
-
-        DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
-        userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
-                        String sharedUserId = userDetails.getUserId();
-
-                        Map<String, Object> notificationMessage = new HashMap<>();
-                        notificationMessage.put("from", currentUserEmail);
-                        CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Notifications").collection("Notifications");
-                        notificationPath.add(notificationMessage);
-
-                        DocumentReference sharedDocumentPath = mFireBaseFireStore.collection("Users").document(sharedUserId).collection("Public").document("Shared").collection("Shared").document(sharedNoteId);
-                        sharedDocumentPath.set(new Note(sharedNoteId, "", title, description, priority, noteDate, currentUserEmail, updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
-
-                        List<SendSmtpEmailAttachment> attachmentList = new ArrayList<>();
-                        attachment_name = attachmentTextView.getText().toString();
-
-                        if (attachment_name.equals("") && audioZipFileName.equals("")) {
-                            SendMail.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
-                        }
-                        if (!audioZipFileName.equals("") && attachment_name.equals("")) {
-                            attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
-
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
-                        } else if (audioZipFileName.equals("") && !attachment_name.equals("")) {
-                            attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
-
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
-                        } else {
-                            attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
-                            attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
-
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
-                        }
-
-                        Toasty.success(context, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
-                        finish();
-                    } else {
-                        Toasty.success(context, "Note emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
-                        finish();
-                    }
-                } else {
-                    Toasty.error(context, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
-                    finish();
-                }
-            }
-        });
     }
 
     @Override
@@ -1245,7 +1056,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         }
 
         final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts").collection("Drafts").document(localNoteId);
-        documentPath.set(new Note(localNoteId, "", title, description, priority, noteDate, "", updatedRevision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
+        documentPath.set(new Note(localNoteId, "", title, description, priority, noteDate, "", revision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
 
         Toasty.success(context, "Note saved to Drafts", Toast.LENGTH_LONG, true).show();
         finish();
@@ -1261,7 +1072,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
                     v.clearFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
                 }
             }
         }
@@ -1270,12 +1083,42 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
             view = new View(activity);
         }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    private void share() {
+
+        title = editTextTitle.getText().toString();
+        description = mEditor.getHtml();
+        priority = numberPickerPriority.getValue();
+
+        if (title.trim().isEmpty()) {
+            Toasty.info(context, "Please enter a title", Toast.LENGTH_LONG, true).show();
+            return;
+        }
+
+        if (description == null) {
+            description = "";
+        }
+
+        Intent i = new Intent (context, Share.class);
+        i.putExtra("fromActivity", "Note");
+        i.putExtra("title", title);
+        i.putExtra("description", description);
+        i.putExtra("priority", priority);
+        i.putExtra("revision", revision);
+        i.putExtra("noteDate", noteDate);
+        i.putExtra("attachmentUrl", attachmentUrl);
+        i.putExtra("attachment_name", attachment_name);
+        i.putExtra("audioDownloadUrl", audioDownloadUrl);
+        i.putExtra("audioZipDownloadUrl", audioZipDownloadUrl);
+        i.putExtra("audioZipFileName", audioZipFileName);
+        startActivity(i);
     }
 }

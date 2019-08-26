@@ -15,41 +15,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/sharedUserEmail"
+        android:id="@+id/grocery_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:autofillHints="email address"
-        android:ems="10"
-        android:hint="@string/grocery_list_email_address_share_hint"
-        android:importantForAutofill="yes"
-        android:inputType="textEmailAddress"
-        android:textColor="@color/colorAccent"
-        android:textColorHint="@color/colorAccent"
-        android:textSize="16sp"
-        app:backgroundTint="@color/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/shareIcon"
-        app:layout_constraintTop_toBottomOf="@+id/whatsapp_text"
-        tools:targetApi="o" />
-
-    <ImageView
-        android:id="@+id/shareIcon"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginStart="16dp"
-        android:contentDescription="@string/grocery_list_share_icon_content_description"
-        app:layout_constraintBottom_toBottomOf="@+id/sharedUserEmail"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sharedUserEmail"
-        app:srcCompat="@drawable/ic_share" />
-
-    <EditText
-        android:id="@+id/grocery_item"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:gravity="bottom"
         android:hint="@string/grocery_add_item_input_text"
@@ -60,8 +30,8 @@
         android:textSize="16sp"
         app:backgroundTint="@color/colorLightThemeText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/sharedUserEmail"
-        app:layout_constraintTop_toBottomOf="@+id/sharedUserEmail"
+        app:layout_constraintStart_toEndOf="@+id/item_icon"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         tools:targetApi="o" />
 
     <TextView
@@ -141,40 +111,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_help" />
 
-    <TextView
-        android:id="@+id/whatsapp_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/share_via_whatsapp"
-        android:textColor="@color/colorAccent"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/whatsapp_icon"
-        app:layout_constraintStart_toStartOf="@+id/sharedUserEmail"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-    <ImageView
-        android:id="@+id/whatsapp_icon"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:contentDescription="@string/whatsapp_icon_content_description"
-        app:layout_constraintBottom_toBottomOf="@+id/whatsapp_text"
-        app:layout_constraintEnd_toEndOf="@+id/shareIcon"
-        app:layout_constraintStart_toStartOf="@+id/shareIcon"
-        app:layout_constraintTop_toTopOf="@+id/whatsapp_text"
-        app:srcCompat="@drawable/whatsapp_icon" />
-
     <ImageView
         android:id="@+id/item_icon"
         android:layout_width="25dp"
         android:layout_height="25dp"
+        android:layout_marginStart="16dp"
         android:contentDescription="@string/grocery_list_add_item_icon_content_description"
         app:layout_constraintBottom_toBottomOf="@+id/grocery_item"
-        app:layout_constraintEnd_toEndOf="@+id/shareIcon"
-        app:layout_constraintStart_toStartOf="@+id/shareIcon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/grocery_item"
         app:srcCompat="@drawable/ic_grocery_black" />
 

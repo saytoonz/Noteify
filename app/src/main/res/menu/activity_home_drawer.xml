@@ -23,7 +23,7 @@
                 android:title="Shared with Me" />
             <item
                 android:id="@+id/nav_bin"
-                android:icon="@drawable/ic_bin_green"
+                android:icon="@drawable/ic_bin"
                 android:title="Bin" />
         </menu>
     </item>
@@ -32,7 +32,7 @@
         <menu>
             <item
                 android:id="@+id/nav_grocery_list"
-                android:icon="@drawable/ic_grocery_green"
+                android:icon="@drawable/ic_grocery_white"
                 android:title="Grocery List" />
             <item
                 android:id="@+id/nav_shared_grocery_list"
