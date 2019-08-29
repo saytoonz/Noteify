@@ -8,6 +8,14 @@ Powered by the Cloud
 
 All of your notes automatically synced to the Cloud. Sign in and see your notes instantly. Powered by Google Firebase and the Google Cloud Platform.
 
+Share, Connect & Manage
+
+Share notes with the click of a button by importing email addresses from your Contacts. The recipient is automatically notified via email and device-to-device push notifications.
+
+Share via WhatsApp
+
+Instantly share notes or grocery lists via WhatsApp.
+
 Themes
 
 Quickly switch between light and dark themes with the flick of a switch.
@@ -32,9 +40,9 @@ Voice Notes
 
 Add voice notes to any note with the tap of a button. Voice notes are added to your note and, if shared, are added to a recipient's note and attached to an email.
 
-Share, Connect & Manage
+Speech To Text
 
-Share notes with the click of a button by importing email addresses from your Contacts. The recipient is automatically notified via email and device-to-device push notifications.
+Quickly convert speech to text to use in your notes or search your notes with speech to text.
 
 Reminders
 
