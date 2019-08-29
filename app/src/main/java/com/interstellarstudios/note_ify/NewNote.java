@@ -30,6 +30,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import android.speech.RecognizerIntent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +48,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -61,7 +63,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -75,6 +79,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int SPEECH_INPUT_REQUEST = 2;
     private static final int REQUEST_IMAGE_CAPTURE = 3;
     private static final int PICK_DOCUMENT_REQUEST = 4;
     private static final int AUDIO_RECORD_REQUEST = 5;
@@ -107,6 +112,8 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     private String audioDownloadUrl = "";
     private String audioZipDownloadUrl = "";
     private String audioZipFileName = "";
+    private View audioOverlay;
+    private View imageOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,11 +127,101 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
+        String noteType;
+
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             folderId = bundle.getString("folderId");
+            noteType = bundle.getString("noteType");
         } else {
             return;
+        }
+
+        TextView textSpeech = findViewById(R.id.textView_speech);
+        TextView textVoice = findViewById(R.id.textView_voice);
+
+        audioOverlay = findViewById(R.id.note_audio_overlay);
+        audioOverlay.setVisibility(View.GONE);
+        audioOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (audioOverlay.getVisibility() == View.VISIBLE) {
+                    audioOverlay.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        FloatingActionButton fabVoiceNote = findViewById(R.id.fab_voice_note);
+        fabVoiceNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordAudio();
+                audioOverlay.setVisibility(View.GONE);
+            }
+        });
+
+        FloatingActionButton fabSpeechText = findViewById(R.id.fab_speech_text);
+        fabSpeechText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSpeechInput();
+                audioOverlay.setVisibility(View.GONE);
+            }
+        });
+
+        TextView textGallery = findViewById(R.id.textView_gallery);
+        TextView textCamera = findViewById(R.id.textView_camera);
+
+        imageOverlay = findViewById(R.id.note_image_overlay);
+        imageOverlay.setVisibility(View.GONE);
+        imageOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (imageOverlay.getVisibility() == View.VISIBLE) {
+                    imageOverlay.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        FloatingActionButton fabGallery = findViewById(R.id.fab_gallery);
+        fabGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openFileChooser();
+                imageOverlay.setVisibility(View.GONE);
+            }
+        });
+
+        FloatingActionButton fabCamera = findViewById(R.id.fab_camera);
+        fabCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    getPermissionToUseCamera();
+                }
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    getPermissionToWriteStorage();
+                } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    dispatchTakePictureIntent();
+                }
+                imageOverlay.setVisibility(View.GONE);
+            }
+        });
+
+        if (noteType != null && noteType.equals("attachment")) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                getPermissionToWriteStorage();
+            } else {
+                new MaterialFilePicker()
+                        .withActivity(NewNote.this)
+                        .withRequestCode(PICK_DOCUMENT_REQUEST)
+                        .withHiddenFiles(true)
+                        .start();
+            }
+        } else if (noteType != null && noteType.equals("voice")) {
+            recordAudio();
+        } else if (noteType != null && noteType.equals("speech")) {
+            getSpeechInput();
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -181,22 +278,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         button_choose_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openFileChooser();
-            }
-        });
-
-        ImageView button_camera = findViewById(R.id.button_camera);
-        button_camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    getPermissionToUseCamera();
-                }
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    getPermissionToWriteStorage();
-                } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    dispatchTakePictureIntent();
-                }
+                imageOverlay.setVisibility(View.VISIBLE);
             }
         });
 
@@ -204,7 +286,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         button_audio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                recordAudio();
+                audioOverlay.setVisibility(View.VISIBLE);
             }
         });
 
@@ -484,7 +566,14 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeString));
 
             horizontalScrollView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            buttonBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.buttonBackground));
+            buttonBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.buttonBackgroundDarkTheme));
+
+            audioOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
+            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            imageOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
+            textGallery.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textCamera.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -759,6 +848,14 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SPEECH_INPUT_REQUEST && resultCode == RESULT_OK) {
+
+            if (data != null) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                mEditor.setHtml(result.get(0));
+            }
+        }
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
 
@@ -1037,12 +1134,21 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
 
-        DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
-        DraftsDocumentPath.set(new Collection("Drafts", noteDate));
+        if (audioOverlay.getVisibility() == View.VISIBLE) {
+            audioOverlay.setVisibility(View.GONE);
+        }
+        if (imageOverlay.getVisibility() == View.VISIBLE) {
+            imageOverlay.setVisibility(View.GONE);
+        }
+        else {
+            super.onBackPressed();
 
-        saveDraft();
+            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
+            DraftsDocumentPath.set(new Collection("Drafts", noteDate));
+
+            saveDraft();
+        }
     }
 
     private void saveDraft() {
@@ -1120,5 +1226,29 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         i.putExtra("audioZipDownloadUrl", audioZipDownloadUrl);
         i.putExtra("audioZipFileName", audioZipFileName);
         startActivity(i);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (audioOverlay.getVisibility() == View.VISIBLE) {
+            audioOverlay.setVisibility(View.GONE);
+        }
+        if (imageOverlay.getVisibility() == View.VISIBLE) {
+            imageOverlay.setVisibility(View.GONE);
+        }
+    }
+
+    private void getSpeechInput() {
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, SPEECH_INPUT_REQUEST);
+        } else {
+            Toast.makeText(this, "This device doesn't support speech input", Toast.LENGTH_SHORT).show();
+        }
     }
 }

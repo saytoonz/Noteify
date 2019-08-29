@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -172,13 +173,13 @@ public class Share extends AppCompatActivity {
             }
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            toolbarCheck.setImageResource(R.drawable.ic_check_white);
+            ImageViewCompat.setImageTintList(toolbarCheck, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
             mSharedUserEmailText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             mSharedUserEmailText.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(mSharedUserEmailText.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
             whatsAppText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             importContactText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            importContactIcon.setImageResource(R.drawable.ic_contact_mail_white);
+            ImageViewCompat.setImageTintList(importContactIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -304,15 +305,12 @@ public class Share extends AppCompatActivity {
                                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                             if (task.isSuccessful()) {
 
-                                                                groceryArrayList.clear();
-
                                                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
                                                                     String documentId = document.getId();
 
                                                                     GroceryItem groceryItem = document.toObject(GroceryItem.class);
                                                                     String setItem = groceryItem.getItem();
-                                                                    groceryArrayList.add(setItem);
 
                                                                     DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List").document(documentId);
                                                                     groceryListPath.set(new GroceryItem(setItem));
@@ -383,15 +381,12 @@ public class Share extends AppCompatActivity {
                                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                             if (task.isSuccessful()) {
 
-                                                                groceryArrayList.clear();
-
                                                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
                                                                     String documentId = document.getId();
 
                                                                     GroceryItem groceryItem = document.toObject(GroceryItem.class);
                                                                     String setItem = groceryItem.getItem();
-                                                                    groceryArrayList.add(setItem);
 
                                                                     DocumentReference groceryListPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared_Grocery_List").collection("Shared_Grocery_List").document(documentId);
                                                                     groceryListPath.set(new GroceryItem(setItem));

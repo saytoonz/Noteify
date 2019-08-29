@@ -44,6 +44,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
     private ImageView emptyView;
     private TextView emptyViewText;
     private String folderId;
+    private View newNoteOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,70 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
             return;
         }
 
+        TextView textNote = findViewById(R.id.textView_text_note);
+        TextView textSpeech = findViewById(R.id.textView_speech);
+        TextView textVoice = findViewById(R.id.textView_voice);
+        TextView textAttachment = findViewById(R.id.textView_attachment);
+
+        newNoteOverlay = findViewById(R.id.new_note_overlay);
+        newNoteOverlay.setVisibility(View.GONE);
+        newNoteOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (newNoteOverlay.getVisibility() == View.VISIBLE) {
+                    newNoteOverlay.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        FloatingActionButton fabText = findViewById(R.id.fab_text);
+        fabText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String folderId = bundle.getString("folderId");
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", folderId);
+                i.putExtra("noteType", "note");
+                startActivity(i);
+            }
+        });
+
+        FloatingActionButton fabSpeechText = findViewById(R.id.fab_speech_text);
+        fabSpeechText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String folderId = bundle.getString("folderId");
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", folderId);
+                i.putExtra("noteType", "speech");
+                startActivity(i);
+            }
+        });
+
+        FloatingActionButton fabVoiceNote = findViewById(R.id.fab_voice_note);
+        fabVoiceNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String folderId = bundle.getString("folderId");
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", folderId);
+                i.putExtra("noteType", "voice");
+                startActivity(i);
+            }
+        });
+
+        FloatingActionButton fabAttachment = findViewById(R.id.fab_attach);
+        fabAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String folderId = bundle.getString("folderId");
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", folderId);
+                i.putExtra("noteType", "attachment");
+                startActivity(i);
+            }
+        });
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(folderId + " (Sort: Alphabetical)");
         toolbar.setOverflowIcon(ContextCompat.getDrawable(context, R.drawable.ic_sort));
@@ -76,10 +141,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String folderId = bundle.getString("folderId");
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", folderId);
-                startActivity(i);
+                newNoteOverlay.setVisibility(View.VISIBLE);
             }
         });
 
@@ -126,6 +188,11 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
+            newNoteOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
+            textNote.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textAttachment.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
             emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             searchTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -145,9 +212,12 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
 
     @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (newNoteOverlay.getVisibility() == View.VISIBLE) {
+            newNoteOverlay.setVisibility(View.GONE);
         } else {
             super.onBackPressed();
         }
@@ -346,13 +416,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_new_note) {
-            Bundle bundle = getIntent().getExtras();
-            String folderId = bundle.getString("folderId");
-            Intent i = new Intent(context, NewNote.class);
-            i.putExtra("folderId", folderId);
-            startActivity(i);
-        } else if (id == R.id.nav_search) {
+        if (id == R.id.nav_search) {
             Intent i = new Intent(context, Search.class);
             startActivity(i);
         } else if (id == R.id.nav_folders) {

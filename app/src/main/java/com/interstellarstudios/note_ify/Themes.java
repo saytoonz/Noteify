@@ -3,6 +3,7 @@ package com.interstellarstudios.note_ify;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -28,6 +30,7 @@ public class Themes extends AppCompatActivity {
 
         final TextView themesTextView = findViewById(R.id.dark_theme_text);
         final TextView themesDescription = findViewById(R.id.dark_theme_description);
+        final ImageView darkIcon = findViewById(R.id.dark_icon);
         switchThemes = findViewById(R.id.switchThemes);
         switchThemes.setChecked(switchThemesOnOff);
 
@@ -46,6 +49,7 @@ public class Themes extends AppCompatActivity {
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             themesTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             themesDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(darkIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -68,9 +72,12 @@ public class Themes extends AppCompatActivity {
                     toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
                     themesTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
                     themesDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                    ImageViewCompat.setImageTintList(darkIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
                     savePreferences();
+
                 } else {
+
                     window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
                     if (container != null) {
                         container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
@@ -80,6 +87,7 @@ public class Themes extends AppCompatActivity {
                     toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
                     themesTextView.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
                     themesDescription.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                    ImageViewCompat.setImageTintList(darkIcon, ContextCompat.getColorStateList(context, R.color.colorLightThemeText));
 
                     savePreferences();
                 }

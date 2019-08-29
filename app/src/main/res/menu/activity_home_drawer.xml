@@ -3,71 +3,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item android:title="Notes">
+    <item android:title="@string/nav_drawer_notes">
         <menu>
-            <item
-                android:id="@+id/nav_new_note"
-                android:icon="@drawable/note_placeholder"
-                android:title="New Note" />
-            <item
-                android:id="@+id/nav_search"
-                android:icon="@drawable/ic_search"
-                android:title="All Notes" />
             <item
                 android:id="@+id/nav_folders"
                 android:icon="@drawable/ic_folder"
-                android:title="Folders" />
+                android:title="@string/nav_drawer_folders" />
+            <item
+                android:id="@+id/nav_search"
+                android:icon="@drawable/ic_search"
+                android:title="@string/nav_drawer_all_notes" />
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_share"
-                android:title="Shared with Me" />
+                android:title="@string/nav_drawer_shared_with_me" />
             <item
                 android:id="@+id/nav_bin"
                 android:icon="@drawable/ic_bin"
-                android:title="Bin" />
+                android:title="@string/nav_drawer_bin" />
         </menu>
     </item>
 
-    <item android:title="Grocery Lists">
+    <item android:title="@string/nav_drawer_grocery_lists">
         <menu>
             <item
                 android:id="@+id/nav_grocery_list"
-                android:icon="@drawable/ic_grocery_white"
-                android:title="Grocery List" />
+                android:icon="@drawable/ic_grocery_black"
+                android:title="@string/nav_drawer_grocery_list" />
             <item
                 android:id="@+id/nav_shared_grocery_list"
                 android:icon="@drawable/ic_shared_grocery"
-                android:title="Shared Grocery List" />
+                android:title="@string/nav_drawer_shared_grocery_list" />
         </menu>
     </item>
 
-    <item android:title="Config">
+    <item android:title="@string/nav_drawer_config">
         <menu>
             <item
                 android:id="@+id/nav_themes"
                 android:icon="@drawable/ic_themes"
-                android:title="Themes" />
+                android:title="@string/nav_drawer_themes" />
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_settings"
-                android:title="Settings" />
+                android:title="@string/nav_drawer_settings" />
             <item
                 android:id="@+id/nav_account"
                 android:icon="@drawable/ic_account"
-                android:title="Account" />
+                android:title="@string/nav_drawer_account" />
         </menu>
     </item>
 
-    <item android:title="Info">
+    <item android:title="@string/nav_drawer_info">
         <menu>
             <item
                 android:id="@+id/nav_information"
                 android:icon="@drawable/ic_info"
-                android:title="Noticeboard" />
+                android:title="@string/nav_drawer_noticeboard" />
             <item
                 android:id="@+id/nav_faq"
                 android:icon="@drawable/ic_help"
-                android:title="FAQ" />
+                android:title="@string/nav_drawer_faq" />
         </menu>
     </item>
 

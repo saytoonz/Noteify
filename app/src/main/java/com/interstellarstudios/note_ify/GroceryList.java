@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -129,7 +130,7 @@ public class GroceryList extends AppCompatActivity {
             buttonIncrease.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             buttonDecrease.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
             buttonDecrease.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            itemIcon.setImageResource(R.drawable.ic_grocery_white);
+            ImageViewCompat.setImageTintList(itemIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 

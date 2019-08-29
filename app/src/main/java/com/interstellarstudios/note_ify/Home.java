@@ -42,6 +42,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private CollectionAdapter adapter;
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
+    private View newNoteOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,66 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
+        TextView textNote = findViewById(R.id.textView_text_note);
+        TextView textSpeech = findViewById(R.id.textView_speech);
+        TextView textVoice = findViewById(R.id.textView_voice);
+        TextView textAttachment = findViewById(R.id.textView_attachment);
+
+        newNoteOverlay = findViewById(R.id.new_note_overlay);
+        newNoteOverlay.setVisibility(View.GONE);
+        newNoteOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (newNoteOverlay.getVisibility() == View.VISIBLE) {
+                    newNoteOverlay.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        FloatingActionButton fabText = findViewById(R.id.fab_text);
+        fabText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", "Notebook");
+                i.putExtra("noteType", "note");
+                startActivity(i);
+            }
+        });
+
+        FloatingActionButton fabSpeechText = findViewById(R.id.fab_speech_text);
+        fabSpeechText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", "Notebook");
+                i.putExtra("noteType", "speech");
+                startActivity(i);
+            }
+        });
+
+        FloatingActionButton fabVoiceNote = findViewById(R.id.fab_voice_note);
+        fabVoiceNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", "Notebook");
+                i.putExtra("noteType", "voice");
+                startActivity(i);
+            }
+        });
+
+        FloatingActionButton fabAttachment = findViewById(R.id.fab_attach);
+        fabAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", "Notebook");
+                i.putExtra("noteType", "attachment");
+                startActivity(i);
+            }
+        });
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -83,9 +144,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", "Notebook");
-                startActivity(i);
+                newNoteOverlay.setVisibility(View.VISIBLE);
             }
         });
 
@@ -135,10 +194,15 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
+            newNoteOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             searchTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            textNote.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textAttachment.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -256,9 +320,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (newNoteOverlay.getVisibility() == View.VISIBLE) {
+            newNoteOverlay.setVisibility(View.GONE);
         } else {
             super.onBackPressed();
         }
@@ -269,11 +336,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         int id = item.getItemId();
 
-        if (id == R.id.nav_new_note) {
-            Intent i = new Intent(context, NewNote.class);
-            i.putExtra("folderId", "Notebook");
-            startActivity(i);
-        } else if (id == R.id.nav_search) {
+        if (id == R.id.nav_search) {
             Intent i = new Intent(context, Search.class);
             startActivity(i);
         } else if (id == R.id.nav_share) {
@@ -307,6 +370,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (newNoteOverlay.getVisibility() == View.VISIBLE) {
+            newNoteOverlay.setVisibility(View.GONE);
+        }
     }
 }
 

@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import es.dmoral.toasty.Toasty;
 
 public class Account extends AppCompatActivity {
@@ -170,7 +171,7 @@ public class Account extends AppCompatActivity {
         Bitmap bmp = BitmapFactory.decodeStream(imageStream);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 10, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 20, stream);
         byte[] byteArray = stream.toByteArray();
         try {
             stream.flush();
