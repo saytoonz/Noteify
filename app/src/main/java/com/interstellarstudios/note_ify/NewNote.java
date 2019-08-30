@@ -31,6 +31,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.speech.RecognizerIntent;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -227,7 +229,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextView priorityTextView = findViewById(R.id.priorityTextView);
+        final TextView priorityTextView = findViewById(R.id.priorityTextView);
 
         final HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
         horizontalScrollView.setVisibility(View.GONE);
@@ -582,6 +584,11 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
+    }
+
+    public static float dpToPx(Context context, float valueInDp) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
 
     private void recordAudio() {
@@ -1136,30 +1143,45 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     public void onBackPressed() {
 
         if (audioOverlay.getVisibility() == View.VISIBLE) {
+
             audioOverlay.setVisibility(View.GONE);
-        }
-        if (imageOverlay.getVisibility() == View.VISIBLE) {
+        } else if (imageOverlay.getVisibility() == View.VISIBLE) {
+
             imageOverlay.setVisibility(View.GONE);
-        }
-        else {
-            super.onBackPressed();
+        }  else {
 
-            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
-            DraftsDocumentPath.set(new Collection("Drafts", noteDate));
+            title = editTextTitle.getText().toString();
+            description = mEditor.getHtml();
 
-            saveDraft();
+            if (!title.trim().isEmpty() || description != null || !audioDownloadUrl.equals("")) {
+                new AlertDialog.Builder(context)
+                        .setTitle("Save as draft")
+                        .setMessage("Do you want to save this note as a draft?")
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                saveDraft();
+                            }
+                        })
+                        .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .show();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
     private void saveDraft() {
 
+        DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
+        DraftsDocumentPath.set(new Collection("Drafts", noteDate));
+
         title = editTextTitle.getText().toString();
         description = mEditor.getHtml();
         priority = numberPickerPriority.getValue();
-
-        if (title.trim().isEmpty() && description == null) {
-            return;
-        }
 
         final DocumentReference documentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts").collection("Drafts").document(localNoteId);
         documentPath.set(new Note(localNoteId, "", title, description, priority, noteDate, "", revision, attachmentUrl, attachment_name, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));

@@ -356,6 +356,18 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/priorityTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Priority"
+                    android:textColor="@color/colorLightThemeText"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/number_picker_priority"
+                    app:layout_constraintStart_toEndOf="@+id/number_picker_priority"
+                    app:layout_constraintTop_toTopOf="@+id/number_picker_priority" />
+
+                <TextView
                     android:id="@+id/download_textview"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -397,22 +409,10 @@
                     app:layout_constraintStart_toStartOf="@+id/attachment_textview"
                     app:layout_constraintTop_toBottomOf="@+id/attachment_textview" />
 
-                <TextView
-                    android:id="@+id/priorityTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Priority"
-                    android:textColor="@color/colorLightThemeText"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/number_picker_priority"
-                    app:layout_constraintStart_toEndOf="@+id/number_picker_priority"
-                    app:layout_constraintTop_toTopOf="@+id/number_picker_priority" />
-
                 <jp.wasabeef.richeditor.RichEditor
                     android:id="@+id/mEditor"
                     android:layout_width="0dp"
-                    android:layout_height="2048dp"
+                    android:layout_height="16384dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"

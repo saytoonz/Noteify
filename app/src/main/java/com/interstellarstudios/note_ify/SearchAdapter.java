@@ -94,7 +94,17 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         holder.playText.setVisibility(View.GONE);
 
         holder.textViewTitle.setText(currentItem.getTitle());
-        holder.mEditor.setHtml(currentItem.getDescription());
+
+        String fullDescription = currentItem.getDescription();
+        if (fullDescription != null) {
+            String shortDescription;
+            if (fullDescription.length() > 100) {
+                shortDescription = fullDescription.substring(0, 100).trim() + "...";
+            } else {
+                shortDescription = fullDescription;
+            }
+            holder.mEditor.setHtml(shortDescription);
+        }
 
         if (switchThemesOnOff) {
             String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));

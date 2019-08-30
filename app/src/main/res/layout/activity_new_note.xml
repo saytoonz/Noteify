@@ -315,16 +315,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/number_picker_priority" />
 
                 <ImageView
-                    android:id="@+id/play_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="@+id/audio_textview"
-                    app:layout_constraintEnd_toEndOf="@+id/attachment_icon"
-                    app:layout_constraintTop_toTopOf="@+id/audio_textview"
-                    app:srcCompat="@drawable/ic_play_green" />
-
-                <ImageView
                     android:id="@+id/attachment_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -335,6 +325,16 @@
                     app:layout_constraintTop_toTopOf="@+id/attachment_textview"
                     app:srcCompat="@drawable/ic_attachment" />
 
+                <ImageView
+                    android:id="@+id/play_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@+id/audio_textview"
+                    app:layout_constraintEnd_toEndOf="@+id/attachment_icon"
+                    app:layout_constraintTop_toTopOf="@+id/audio_textview"
+                    app:srcCompat="@drawable/ic_play_green" />
+
                 <NumberPicker
                     android:id="@+id/number_picker_priority"
                     android:layout_width="35dp"
@@ -344,21 +344,6 @@
                     android:background="@color/colorDarkThemeText"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/audio_textview"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="end"
-                    android:text="Play Audio"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="16sp"
-                    android:visibility="visible"
-                    app:layout_constraintEnd_toStartOf="@+id/play_icon"
-                    app:layout_constraintStart_toStartOf="@+id/attachment_textview"
-                    app:layout_constraintTop_toBottomOf="@+id/attachment_textview" />
-
 
                 <TextView
                     android:id="@+id/priorityTextView"
@@ -386,10 +371,24 @@
                     app:layout_constraintStart_toEndOf="@+id/priorityTextView"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/audio_textview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="end"
+                    android:text="Play Audio"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="16sp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toStartOf="@+id/play_icon"
+                    app:layout_constraintStart_toStartOf="@+id/attachment_textview"
+                    app:layout_constraintTop_toBottomOf="@+id/attachment_textview" />
+
                 <jp.wasabeef.richeditor.RichEditor
                     android:id="@+id/mEditor"
                     android:layout_width="0dp"
-                    android:layout_height="2048dp"
+                    android:layout_height="16384dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"

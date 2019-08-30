@@ -54,7 +54,17 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         holder.playText.setVisibility(View.GONE);
 
         holder.textViewTitle.setText(model.getTitle());
-        holder.mEditor.setHtml(model.getDescription());
+
+        String fullDescription = model.getDescription();
+        if (fullDescription != null) {
+            String shortDescription;
+            if (fullDescription.length() > 100) {
+                shortDescription = fullDescription.substring(0, 100).trim() + "...";
+            } else {
+                shortDescription = fullDescription;
+            }
+            holder.mEditor.setHtml(shortDescription);
+        }
 
         if (switchThemesOnOff) {
             String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.colorDarkThemeText));

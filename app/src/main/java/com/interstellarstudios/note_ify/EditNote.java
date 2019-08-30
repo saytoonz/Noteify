@@ -1182,22 +1182,41 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     public void onBackPressed() {
 
         if (audioOverlay.getVisibility() == View.VISIBLE) {
+
             audioOverlay.setVisibility(View.GONE);
-        }
-        if (imageOverlay.getVisibility() == View.VISIBLE) {
+        } else if (imageOverlay.getVisibility() == View.VISIBLE) {
+
             imageOverlay.setVisibility(View.GONE);
-        }
-        else {
-            super.onBackPressed();
+        }  else {
 
-            DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
-            DraftsDocumentPath.set(new Collection("Drafts", noteDate));
+            title = editTextTitle.getText().toString();
+            description = mEditor.getHtml();
 
-            saveDraft();
+            if (!title.trim().isEmpty() || description != null || !audioDownloadUrl.equals("")) {
+                new AlertDialog.Builder(context)
+                        .setTitle("Save as draft")
+                        .setMessage("Do you want to save this note as a draft?")
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                saveDraft();
+                            }
+                        })
+                        .setNegativeButton("Discard changes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .show();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
     private void saveDraft() {
+
+        DocumentReference DraftsDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Drafts");
+        DraftsDocumentPath.set(new Collection("Drafts", noteDate));
 
         title = editTextTitle.getText().toString();
         description = mEditor.getHtml();
