@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
@@ -47,7 +46,6 @@ public class FingerprintLogin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fingerprint_login);
 
-        ImageView logoImageView = findViewById(R.id.logoImageView);
         TextView informationTextView = findViewById(R.id.informationTextView);
 
         mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
@@ -67,7 +65,6 @@ public class FingerprintLogin extends AppCompatActivity {
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
-            logoImageView.setImageResource(R.drawable.name_logo);
             informationTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
         } else {
