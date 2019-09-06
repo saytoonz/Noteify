@@ -8,8 +8,8 @@ android {
         applicationId "com.interstellarstudios.note_ify"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 20802
-        versionName "2.8.2"
+        versionCode 20803
+        versionName "2.8.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -40,7 +40,7 @@ dependencies {
     implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'androidx.biometric:biometric:1.0.0-alpha04'
+    implementation 'androidx.biometric:biometric:1.0.0-beta01'
 
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
