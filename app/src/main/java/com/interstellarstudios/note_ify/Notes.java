@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,10 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import android.speech.RecognizerIntent;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
@@ -24,8 +29,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +45,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.interstellarstudios.note_ify.database.NoteEntity;
+import com.interstellarstudios.note_ify.repository.Repository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class Notes extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -45,6 +61,9 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
     private TextView emptyViewText;
     private String folderId;
     private View newNoteOverlay;
+    private ArrayList<String> searchSuggestions = new ArrayList<>();
+    private static final int SPEECH_INPUT_REQUEST = 2;
+    private AutoCompleteTextView searchField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,24 +164,6 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
             }
         });
 
-        TextView searchTextView = findViewById(R.id.searchTextView);
-        searchTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, Search.class);
-                startActivity(i);
-            }
-        });
-
-        ImageView searchButton = findViewById(R.id.searchButton);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, Search.class);
-                startActivity(i);
-            }
-        });
-
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -177,6 +178,35 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
 
         emptyView = findViewById(R.id.emptyView);
         emptyViewText = findViewById(R.id.emptyViewText);
+
+        searchField = findViewById(R.id.searchField);
+        searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId,
+                                          KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+
+                    String searchTerm = searchField.getText().toString().trim();
+                    Intent i = new Intent(context, Search.class);
+                    i.putExtra("searchTerm", searchTerm);
+                    startActivity(i);
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
+                android.R.layout.simple_list_item_1, searchSuggestions);
+        searchField.setAdapter(adapter);
+
+        ImageView voiceSearch = findViewById(R.id.voice_search);
+        voiceSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSpeechInput();
+            }
+        });
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
@@ -196,7 +226,10 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
             emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            searchTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            searchField.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            searchField.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(voiceSearch, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -207,6 +240,7 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
         }
 
         setUpRecyclerView();
+        loadDataFromRepository();
     }
 
     @Override
@@ -269,8 +303,7 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
 
         adapter = new NoteAdapter(options, sharedPreferences, context);
 
-        final RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
 
@@ -418,6 +451,7 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
 
         if (id == R.id.nav_search) {
             Intent i = new Intent(context, Search.class);
+            i.putExtra("searchTerm", "");
             startActivity(i);
         } else if (id == R.id.nav_folders) {
             Intent j = new Intent(context, Home.class);
@@ -459,5 +493,65 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
     protected void onRestart() {
         super.onRestart();
         recreate();
+    }
+
+    private void loadDataFromRepository() {
+
+        Repository repository = new Repository(getApplication());
+        List<NoteEntity> noteList = repository.getAllNotes();
+
+        for (NoteEntity noteEntity : noteList) {
+
+            String searchTitle = noteEntity.getTitle();
+            searchSuggestions.add(searchTitle);
+        }
+    }
+
+    private void getSpeechInput() {
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, SPEECH_INPUT_REQUEST);
+        } else {
+            Toast.makeText(this, "This device doesn't support speech input", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SPEECH_INPUT_REQUEST && resultCode == RESULT_OK) {
+
+            if (data != null) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                searchField.setText(result.get(0));
+
+                String searchTerm = searchField.getText().toString().trim();
+                Intent i = new Intent(context, Search.class);
+                i.putExtra("searchTerm", searchTerm);
+                startActivity(i);
+            }
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
     }
 }

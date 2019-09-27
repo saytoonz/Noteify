@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.interstellarstudios.note_ify">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-sdk tools:overrideLibrary="me.aflak.libraries" />
 
@@ -38,26 +39,35 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Notes" />
-        <activity android:name=".NotesSortAlphabetical" />
-        <activity android:name=".NotesSortPriority" />
-        <activity
-            android:name=".Search"
-            android:label="All Notes"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".SignIn"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Register"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".SignIn"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ForgotPassword"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".Notes"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".NotesSortAlphabetical"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".NotesSortPriority"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".Search"
+            android:label="All Notes"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".GroceryList"
             android:label="Grocery List"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".Account" />
         <activity
             android:name=".NewNote"
@@ -65,12 +75,9 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".ForgotPassword"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
             android:name=".Bin"
-            android:label="Bin" />
+            android:label="Bin"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".EditNote"
             android:label=""
@@ -78,17 +85,23 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".NewCollection"
-            android:label="New Folder" />
+            android:label="New Folder"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".Settings" />
         <activity android:name=".FingerprintLogin" />
-        <activity android:name=".SharedSortAlphabetical" />
-        <activity android:name=".SharedSortPriority" />
+        <activity
+            android:name=".SharedSortAlphabetical"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".SharedSortPriority"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".MoveSelectFolder"
             android:label="Move Note" />
         <activity
             android:name=".Home"
-            android:label="Folders" />
+            android:label="Folders"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".Themes"
             android:label="Themes" />
@@ -99,18 +112,20 @@
         <activity
             android:name=".Share"
             android:label="Share"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".SharedGroceryList"
             android:label="Shared Grocery List"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="com.interstellarstudios.note_ify.FirebasePushNotifications.TARGETNOTIFICATION2" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Shared">
+        <activity
+            android:name=".Shared"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="com.interstellarstudios.note_ify.FirebasePushNotifications.TARGETNOTIFICATION" />
 

@@ -338,13 +338,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         mEditor.setBackgroundColor(Color.parseColor(colorLightThemeString));
         mEditor.setPlaceholder("Start Writing");
 
-        findViewById(R.id.action_clear).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.removeFormat();
-            }
-        });
-
         findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

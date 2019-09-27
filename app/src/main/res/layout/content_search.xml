@@ -59,6 +59,7 @@
         android:ems="10"
         android:hint="@string/search_field_hint"
         android:inputType="text"
+        android:imeOptions="actionGo"
         android:text=""
         android:textColor="@color/colorLightThemeText"
         android:textColorHint="@color/colorLightThemeText"

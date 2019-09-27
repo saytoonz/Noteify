@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -32,14 +33,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.interstellarstudios.note_ify.database.NoteDatabase;
+import com.interstellarstudios.note_ify.database.ProfilePicEntity;
+import com.interstellarstudios.note_ify.repository.Repository;
 import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.List;
 import es.dmoral.toasty.Toasty;
 
 public class Account extends AppCompatActivity {
@@ -52,13 +54,18 @@ public class Account extends AppCompatActivity {
     private FirebaseFirestore mFireBaseFireStore;
     private static final int PICK_IMAGE_REQUEST = 1;
     private GoogleSignInClient mGoogleSignInClient;
+    private  Repository repository;
+    private String androidUUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
+        androidUUID = android.provider.Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        repository = new Repository(getApplication());
 
         mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
@@ -72,13 +79,23 @@ public class Account extends AppCompatActivity {
 
         mProfilePic = findViewById(R.id.profile_pic);
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(context);
+
         if (acct != null) {
             Uri personPhoto = acct.getPhotoUrl();
+
             if (personPhoto != null) {
                 Picasso.get().load(personPhoto).into(mProfilePic);
             }
+
         } else {
-            String profilePicURL = sharedPreferences.getString("profilePicUrl", null);
+
+            List<ProfilePicEntity> profilePicEntityList = repository.getProfilePicUrl();
+
+            String profilePicURL = null;
+
+            for (ProfilePicEntity profilePicEntity : profilePicEntityList) {
+                profilePicURL = profilePicEntity.getProfilePicUrl();
+            }
 
             if (profilePicURL != null) {
                 Picasso.get().load(profilePicURL).into(mProfilePic);
@@ -208,10 +225,9 @@ public class Account extends AppCompatActivity {
                             String downloadURL = downloadUri.toString();
                             detailsRef.set(new Details(downloadURL));
 
-                            SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-                            SharedPreferences.Editor prefsEditor = myPrefs.edit();
-                            prefsEditor.putString("profilePicUrl", downloadURL);
-                            prefsEditor.apply();
+                            ProfilePicEntity profilePicEntity = new ProfilePicEntity(downloadURL);
+                            repository.deleteProfilePicUrl();
+                            repository.insert(profilePicEntity);
                         }
                     }
                 });
@@ -225,11 +241,8 @@ public class Account extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
-                        Map<String, Object> userToken = new HashMap<>();
-                        userToken.put("User_Token_ID", "");
-
-                        DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
-                        userTokenDocumentPath.set(userToken);
+                        DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Tokens").collection("User_Tokens").document(androidUUID);
+                        userTokenDocumentPath.delete();
 
                         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(context);
                         if (acct != null) {
@@ -238,10 +251,8 @@ public class Account extends AppCompatActivity {
 
                         mFireBaseAuth.signOut();
 
-                        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-                        SharedPreferences.Editor prefsEditor = myPrefs.edit();
-                        prefsEditor.putString("profilePicUrl", null);
-                        prefsEditor.apply();
+                        NoteDatabase noteDatabase = NoteDatabase.getInstance(context);
+                        noteDatabase.clearAllTables();
 
                         Intent i = new Intent(context, Register.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

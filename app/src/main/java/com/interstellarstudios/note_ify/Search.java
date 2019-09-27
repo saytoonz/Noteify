@@ -1,15 +1,11 @@
 package com.interstellarstudios.note_ify;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -17,8 +13,7 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.speech.RecognizerIntent;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.core.view.GravityCompat;
@@ -27,6 +22,7 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -34,10 +30,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.interstellarstudios.note_ify.database.NoteEntity;
+import com.interstellarstudios.note_ify.repository.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -46,34 +40,36 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
 
     private Context context = this;
     private RecyclerView.Adapter adapter;
-    private String mCurrentUserId;
-    private FirebaseFirestore mFireBaseFireStore;
+    private RecyclerView recyclerView;
     private ArrayList<String> searchSuggestions = new ArrayList<>();
-    private List<Note> noteList = new ArrayList<>();
-    private ProgressDialog mProgressDialog;
+    private List<NoteEntity> searchNoteList = new ArrayList<>();
     private View newNoteOverlay;
     private static final int SPEECH_INPUT_REQUEST = 2;
     private AutoCompleteTextView searchField;
+    private SharedPreferences sharedPreferences;
+    private String mSearchTerm;
+    private Repository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        mProgressDialog = new ProgressDialog(context);
-        mProgressDialog.setMessage("Loading all notes");
-        mProgressDialog.show();
+        sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        repository = new Repository(getApplication());
 
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setNestedScrollingEnabled(false);
 
-        FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
-        mFireBaseFireStore = FirebaseFirestore.getInstance();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
 
-        if (mFireBaseAuth.getCurrentUser() != null) {
-            mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
+            mSearchTerm = bundle.getString("searchTerm");
+            searchNoteList = repository.searchNotes(mSearchTerm);
+            adapter = new SearchAdapter(searchNoteList, sharedPreferences);
+            recyclerView.setAdapter(adapter);
         }
-
-        getAllNoteData();
 
         ImageView voiceSearch = findViewById(R.id.voice_search);
         voiceSearch.setOnClickListener(new View.OnClickListener() {
@@ -143,11 +139,11 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             }
         });
 
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.drawer_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        final ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
+        ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
         navDrawerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,18 +163,23 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         });
 
         searchField = findViewById(R.id.searchField);
-        searchField.addTextChangedListener(new TextWatcher() {
+        searchField.setText(mSearchTerm);
+        searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId,
+                                          KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
 
-            public void afterTextChanged(Editable s) {
-            }
+                    mSearchTerm = searchField.getText().toString().trim();
 
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+                    searchNoteList.clear();
+                    searchNoteList = repository.searchNotes(mSearchTerm);
 
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (noteList != null && !noteList.isEmpty()) {
-                    ((SearchAdapter) adapter).getFilter().filter(s);
+                    adapter = new SearchAdapter(searchNoteList, sharedPreferences);
+                    recyclerView.setAdapter(adapter);
+
+                    return true;
                 }
+                return false;
             }
         });
 
@@ -216,6 +217,8 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
                 container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
+
+        loadSearchSuggestions();
     }
 
     @Override
@@ -272,124 +275,15 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         return true;
     }
 
-    private void getAllNoteData() {
+    private void loadSearchSuggestions() {
 
-        mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Bin")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
+        List<NoteEntity> noteList = repository.getAllNotes();
 
-                                Note note = document.toObject(Note.class);
-                                String noteId = document.getId();
-                                String title = note.getTitle();
-                                String description = note.getDescription();
-                                String date = note.getDate();
-                                String fromEmailAddress = note.getFromEmailAddress();
-                                int priority = note.getPriority();
-                                int revision = note.getRevision();
-                                String attachmentUrl = note.getAttachmentUrl();
-                                String attachmentName = note.getAttachmentName();
-                                String audioDownloadUrl = note.getAudioUrl();
-                                String audioZipDownloadUrl = note.getAudioZipUrl();
-                                String audioZipFileName = note.getAudioZipName();
+        for (NoteEntity noteEntity : noteList) {
 
-                                searchSuggestions.add(title);
-                                noteList.add(new Note(noteId, "Bin", title, description, priority, date, fromEmailAddress, revision, attachmentUrl, attachmentName, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
-                            }
-                        }
-                    }
-                });
-
-        mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Public").document("Shared").collection("Shared")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                Note note = document.toObject(Note.class);
-                                String noteId = document.getId();
-                                String title = note.getTitle();
-                                String description = note.getDescription();
-                                String date = note.getDate();
-                                String fromEmailAddress = note.getFromEmailAddress();
-                                int priority = note.getPriority();
-                                int revision = note.getRevision();
-                                String attachmentUrl = note.getAttachmentUrl();
-                                String attachmentName = note.getAttachmentName();
-                                String audioDownloadUrl = note.getAudioUrl();
-                                String audioZipDownloadUrl = note.getAudioZipUrl();
-                                String audioZipFileName = note.getAudioZipName();
-
-                                searchSuggestions.add(title);
-                                noteList.add(new Note(noteId, "Shared", title, description, priority, date, fromEmailAddress, revision, attachmentUrl, attachmentName, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
-                            }
-                        }
-                    }
-                });
-
-        mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                Collection collection = document.toObject(Collection.class);
-                                final String folderName = collection.getFolder();
-
-                                mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderName).collection(folderName)
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                        Note note = document.toObject(Note.class);
-                                                        String noteId = document.getId();
-                                                        String title = note.getTitle();
-                                                        String description = note.getDescription();
-                                                        String date = note.getDate();
-                                                        String fromEmailAddress = note.getFromEmailAddress();
-                                                        int priority = note.getPriority();
-                                                        int revision = note.getRevision();
-                                                        String attachmentUrl = note.getAttachmentUrl();
-                                                        String attachmentName = note.getAttachmentName();
-                                                        String audioDownloadUrl = note.getAudioUrl();
-                                                        String audioZipDownloadUrl = note.getAudioZipUrl();
-                                                        String audioZipFileName = note.getAudioZipName();
-
-                                                        searchSuggestions.add(title);
-                                                        noteList.add(new Note(noteId, folderName, title, description, priority, date, fromEmailAddress, revision, attachmentUrl, attachmentName, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName));
-                                                    }
-                                                }
-                                                setUpRecyclerView();
-                                            }
-                                        });
-                            }
-                        }
-                    }
-                });
-    }
-
-    private void setUpRecyclerView() {
-
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-
-        adapter = new SearchAdapter(noteList, sharedPreferences);
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(adapter);
-
-        mProgressDialog.dismiss();
+            String searchTitle = noteEntity.getTitle();
+            searchSuggestions.add(searchTitle);
+        }
     }
 
     @Override
@@ -439,6 +333,14 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             if (data != null) {
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 searchField.setText(result.get(0));
+
+                mSearchTerm = searchField.getText().toString().trim();
+
+                searchNoteList.clear();
+                searchNoteList = repository.searchNotes(mSearchTerm);
+
+                adapter = new SearchAdapter(searchNoteList, sharedPreferences);
+                recyclerView.setAdapter(adapter);
             }
         }
     }

@@ -8,23 +8,20 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
+import com.interstellarstudios.note_ify.database.NoteEntity;
 import java.util.List;
 import jp.wasabeef.richeditor.RichEditor;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> implements Filterable {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> {
 
     private Context context;
-    private List<Note> NewsList;
-    private List<Note> NewsListFull;
+    private List<NoteEntity> NoteList;
     private boolean switchPriorityOnOff;
     private boolean switchThemesOnOff;
 
@@ -68,12 +65,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         }
     }
 
-    public SearchAdapter(List<Note> NewsList, SharedPreferences sharedPreferences) {
+    public SearchAdapter(List<NoteEntity> NoteList, SharedPreferences sharedPreferences) {
 
         switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
         switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
-        this.NewsList = NewsList;
-        NewsListFull = new ArrayList<>(NewsList);
+        this.NoteList = NoteList;
     }
 
     @NonNull
@@ -86,7 +82,22 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
-        final Note currentItem = NewsList.get(position);
+        NoteEntity currentItem = NoteList.get(position);
+
+        if (switchThemesOnOff) {
+
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            holder.textViewTitle.setTextColor(Color.parseColor(colorDarkThemeTextString));
+            holder.textViewDate.setTextColor(Color.parseColor(colorDarkThemeTextString));
+            holder.textViewFromUserEmail.setTextColor(Color.parseColor(colorDarkThemeTextString));
+            holder.textViewRevision.setTextColor(Color.parseColor(colorDarkThemeTextString));
+            holder.textViewPriority.setTextColor(Color.parseColor(colorDarkThemeTextString));
+            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardBackgroundDarkTheme));
+
+            String colorDarkThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.cardBackgroundDarkTheme));
+            holder.mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeCardBackgroundString));
+            holder.mEditor.setEditorFontColor(Color.parseColor(colorDarkThemeTextString));
+        }
 
         holder.attachmentName.setVisibility(View.GONE);
         holder.attachment_icon.setVisibility(View.GONE);
@@ -104,20 +115,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                 shortDescription = fullDescription;
             }
             holder.mEditor.setHtml(shortDescription);
-        }
-
-        if (switchThemesOnOff) {
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            holder.textViewTitle.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            holder.textViewDate.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            holder.textViewFromUserEmail.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            holder.textViewRevision.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            holder.textViewPriority.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardBackgroundDarkTheme));
-
-            String colorDarkThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.cardBackgroundDarkTheme));
-            holder.mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeCardBackgroundString));
-            holder.mEditor.setEditorFontColor(Color.parseColor(colorDarkThemeTextString));
         }
 
         if (switchPriorityOnOff) {
@@ -143,7 +140,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         holder.textViewRevision.setText("Revision: " + currentItem.getRevision());
         holder.attachmentName.setText(currentItem.getAttachmentName());
 
-        final String attachmentURL = currentItem.getAttachmentUrl();
+        String attachmentURL = currentItem.getAttachmentUrl();
         if (attachmentURL != null && !attachmentURL.equals("")) {
 
             holder.attachmentName.setVisibility(View.VISIBLE);
@@ -165,7 +162,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
             });
         }
 
-        final String audioDownloadUrl = currentItem.getAudioUrl();
+        String audioDownloadUrl = currentItem.getAudioUrl();
         if (audioDownloadUrl != null && !audioDownloadUrl.equals("")) {
 
             holder.playIcon.setVisibility(View.VISIBLE);
@@ -213,43 +210,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     @Override
     public int getItemCount() {
-        return NewsList.size();
+        return NoteList.size();
     }
-
-    @Override
-    public Filter getFilter() {
-        return searchFilter;
-    }
-
-    private Filter searchFilter = new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            List<Note> filteredList = new ArrayList<>();
-
-            if (constraint == null || constraint.length() == 0) {
-                filteredList.addAll(NewsListFull);
-            } else {
-                String filterPattern = constraint.toString().toLowerCase().trim();
-
-                for (Note item : NewsListFull) {
-                    if (item.getTitle().toLowerCase().contains(filterPattern) || item.getDescription().toLowerCase().contains(filterPattern)) {
-                        filteredList.add(item);
-                    }
-                }
-            }
-
-            FilterResults results = new FilterResults();
-            results.values = filteredList;
-
-            return results;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            NewsList.clear();
-            NewsList.addAll((List) results.values);
-            notifyDataSetChanged();
-        }
-    };
 }

@@ -103,7 +103,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         holder.textViewRevision.setText("Revision: " + model.getRevision());
         holder.attachmentName.setText(model.getAttachmentName());
 
-        final String attachmentURL = model.getAttachmentUrl();
+        String attachmentURL = model.getAttachmentUrl();
         if (attachmentURL != null && !attachmentURL.equals("")) {
 
             holder.attachmentName.setVisibility(View.VISIBLE);
@@ -125,7 +125,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             });
         }
 
-        final String audioDownloadUrl = model.getAudioUrl();
+        String audioDownloadUrl = model.getAudioUrl();
         if (audioDownloadUrl != null && !audioDownloadUrl.equals("")) {
 
             holder.playIcon.setVisibility(View.VISIBLE);

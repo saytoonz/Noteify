@@ -1,18 +1,20 @@
 package com.interstellarstudios.note_ify;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -33,9 +35,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.interstellarstudios.note_ify.database.NoteEntity;
+import com.interstellarstudios.note_ify.database.ProfilePicEntity;
+import com.interstellarstudios.note_ify.repository.Repository;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -57,11 +65,19 @@ public class SignIn extends AppCompatActivity {
     private FirebaseUser mCurrentUser;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
+    private Repository repository;
+    private SharedPreferences sharedPreferences;
+    private String androidUUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
+        androidUUID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        repository = new Repository(getApplication());
 
         mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
@@ -122,7 +138,6 @@ public class SignIn extends AppCompatActivity {
 
         switchThemes = findViewById(R.id.switchThemes);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         switchThemes.setChecked(switchThemesOnOff);
@@ -214,8 +229,7 @@ public class SignIn extends AppCompatActivity {
 
     public void savePreferences() {
 
-        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = myPrefs.edit();
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
 
         if (switchThemes.isChecked()) {
             prefsEditor.putBoolean("switchThemes", true);
@@ -287,11 +301,13 @@ public class SignIn extends AppCompatActivity {
                                     Map<String, Object> userToken = new HashMap<>();
                                     userToken.put("User_Token_ID", deviceToken);
 
-                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
+                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Tokens").collection("User_Tokens").document(androidUUID);
                                     userTokenDocumentPath.set(userToken);
                                 }
                             });
 
+                            setUpSearch();
+                            loadProfilePic();
                             saveNonGuestPreferences();
 
                             Intent i = new Intent(context, Home.class);
@@ -343,17 +359,21 @@ public class SignIn extends AppCompatActivity {
                                     Map<String, Object> userToken = new HashMap<>();
                                     userToken.put("User_Token_ID", deviceToken);
 
-                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
+                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Tokens").collection("User_Tokens").document(androidUUID);
                                     userTokenDocumentPath.set(userToken);
                                 }
                             });
 
                             saveNonGuestPreferences();
+                            setUpSearch();
+                            loadProfilePic();
 
                             Intent i = new Intent(context, Home.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
                             finish();
+
+                            hideKeyboard(SignIn.this);
 
                             Toasty.success(context, "Sign In Successful", Toast.LENGTH_LONG, true).show();
                         } else {
@@ -366,8 +386,7 @@ public class SignIn extends AppCompatActivity {
 
     private void saveNonGuestPreferences() {
 
-        SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = myPrefs.edit();
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
         prefsEditor.putBoolean("guestAccount", false);
         prefsEditor.apply();
     }
@@ -378,5 +397,146 @@ public class SignIn extends AppCompatActivity {
         Intent i = new Intent(context, Register.class);
         startActivity(i);
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+    }
+
+    private void setUpSearch() {
+
+        mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Bin")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            repository.deleteAllNotes();
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                Note note = document.toObject(Note.class);
+                                String noteId = document.getId();
+                                String title = note.getTitle();
+                                String description = note.getDescription();
+                                String date = note.getDate();
+                                String fromEmailAddress = note.getFromEmailAddress();
+                                int priority = note.getPriority();
+                                int revision = note.getRevision();
+                                String attachmentUrl = note.getAttachmentUrl();
+                                String attachmentName = note.getAttachmentName();
+                                String audioDownloadUrl = note.getAudioUrl();
+                                String audioZipDownloadUrl = note.getAudioZipUrl();
+                                String audioZipFileName = note.getAudioZipName();
+
+                                NoteEntity noteEntity = new NoteEntity(noteId, "Bin", title, description, priority, date, fromEmailAddress, revision, attachmentUrl, attachmentName, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName);
+                                repository.insert(noteEntity);
+                            }
+                        }
+                    }
+                });
+
+        mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Public").document("Shared").collection("Shared")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                Note note = document.toObject(Note.class);
+                                String noteId = document.getId();
+                                String title = note.getTitle();
+                                String description = note.getDescription();
+                                String date = note.getDate();
+                                String fromEmailAddress = note.getFromEmailAddress();
+                                int priority = note.getPriority();
+                                int revision = note.getRevision();
+                                String attachmentUrl = note.getAttachmentUrl();
+                                String attachmentName = note.getAttachmentName();
+                                String audioDownloadUrl = note.getAudioUrl();
+                                String audioZipDownloadUrl = note.getAudioZipUrl();
+                                String audioZipFileName = note.getAudioZipName();
+
+                                NoteEntity noteEntity = new NoteEntity(noteId, "Shared", title, description, priority, date, fromEmailAddress, revision, attachmentUrl, attachmentName, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName);
+                                repository.insert(noteEntity);
+                            }
+                        }
+                    }
+                });
+
+        mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                Collection collection = document.toObject(Collection.class);
+                                final String folderName = collection.getFolder();
+
+                                mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderName).collection(folderName)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                        Note note = document.toObject(Note.class);
+                                                        String noteId = document.getId();
+                                                        String title = note.getTitle();
+                                                        String description = note.getDescription();
+                                                        String date = note.getDate();
+                                                        String fromEmailAddress = note.getFromEmailAddress();
+                                                        int priority = note.getPriority();
+                                                        int revision = note.getRevision();
+                                                        String attachmentUrl = note.getAttachmentUrl();
+                                                        String attachmentName = note.getAttachmentName();
+                                                        String audioDownloadUrl = note.getAudioUrl();
+                                                        String audioZipDownloadUrl = note.getAudioZipUrl();
+                                                        String audioZipFileName = note.getAudioZipName();
+
+                                                        NoteEntity noteEntity = new NoteEntity(noteId, folderName, title, description, priority, date, fromEmailAddress, revision, attachmentUrl, attachmentName, audioDownloadUrl, audioZipDownloadUrl, audioZipFileName);
+                                                        repository.insert(noteEntity);
+                                                    }
+                                                }
+                                            }
+                                        });
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void loadProfilePic() {
+
+        DocumentReference detailsRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("This User");
+        detailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Details details = document.toObject(Details.class);
+                        String profilePicURL = details.getProfilePic();
+
+                        ProfilePicEntity profilePicEntity = new ProfilePicEntity(profilePicURL);
+                        repository.deleteProfilePicUrl();
+                        repository.insert(profilePicEntity);
+                    }
+                }
+            }
+        });
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

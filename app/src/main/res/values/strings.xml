@@ -81,7 +81,7 @@
     <string name="edit_note_priority_text">Priority</string>
     <string name="edit_note_title_text">Title</string>
 
-    <string name="search_field_hint">Search by Title or Description</string>
+    <string name="search_field_hint">Title or Description</string>
     <string name="search_icon_content_description">Search icon</string>
 
     <string name="grocery_add_item_input_text">Item Name</string>
@@ -95,6 +95,6 @@
 
     <string name="fingerprint_login_info"><![CDATA[Go to \'Settings\' > \'Security\' > \'Screenlock\' to set up a password, PIN, pattern or fingerprint.]]></string>
 
-    <string name="new_collection_new_folder_info">Tap here to create a new folder</string>
+    <string name="new_collection_new_folder_info">New folder</string>
     <string name="new_collection_folder_icon">Folder icon</string>
 </resources>
