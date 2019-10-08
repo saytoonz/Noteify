@@ -1,5 +1,7 @@
 package com.interstellarstudios.note_ify;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.interstellarstudios.note_ify.database.NoteEntity;
+import com.interstellarstudios.note_ify.database.RecentSearches;
 import com.interstellarstudios.note_ify.repository.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +44,17 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
     private Context context = this;
     private RecyclerView.Adapter adapter;
     private RecyclerView recyclerView;
-    private ArrayList<String> searchSuggestions = new ArrayList<>();
-    private List<NoteEntity> searchNoteList = new ArrayList<>();
+    private RecyclerView mRecentSearchesRecyclerView;
     private View newNoteOverlay;
     private static final int SPEECH_INPUT_REQUEST = 2;
     private AutoCompleteTextView searchField;
     private SharedPreferences sharedPreferences;
     private String mSearchTerm;
     private Repository repository;
+    private List<RecentSearches> recentSearchesList = new ArrayList<>();
+    private ArrayList<String> recentSearchesStringArrayList = new ArrayList<>();
+    private ArrayList<String> searchSuggestions = new ArrayList<>();
+    private List<NoteEntity> searchNoteList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,13 +68,13 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setNestedScrollingEnabled(false);
 
+        mRecentSearchesRecyclerView = findViewById(R.id.recent_searches_recycler);
+        mRecentSearchesRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecentSearchesRecyclerView.setNestedScrollingEnabled(false);
+
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-
             mSearchTerm = bundle.getString("searchTerm");
-            searchNoteList = repository.searchNotes(mSearchTerm);
-            adapter = new SearchAdapter(searchNoteList, sharedPreferences);
-            recyclerView.setAdapter(adapter);
         }
 
         ImageView voiceSearch = findViewById(R.id.voice_search);
@@ -85,12 +91,12 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         TextView textAttachment = findViewById(R.id.textView_attachment);
 
         newNoteOverlay = findViewById(R.id.new_note_overlay);
-        newNoteOverlay.setVisibility(View.GONE);
+        newNoteOverlay.setVisibility(View.INVISIBLE);
         newNoteOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-                    newNoteOverlay.setVisibility(View.GONE);
+                    newNoteOverlay.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -156,6 +162,7 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onClick(View view) {
                 newNoteOverlay.setVisibility(View.VISIBLE);
@@ -169,13 +176,8 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
                                           KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_GO) {
 
-                    mSearchTerm = searchField.getText().toString().trim();
-
-                    searchNoteList.clear();
-                    searchNoteList = repository.searchNotes(mSearchTerm);
-
-                    adapter = new SearchAdapter(searchNoteList, sharedPreferences);
-                    recyclerView.setAdapter(adapter);
+                    search();
+                    hideKeyboard(Search.this);
 
                     return true;
                 }
@@ -218,7 +220,7 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             }
         }
 
-        loadSearchSuggestions();
+        loadDataFromRepository();
     }
 
     @Override
@@ -228,7 +230,7 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-            newNoteOverlay.setVisibility(View.GONE);
+            newNoteOverlay.setVisibility(View.INVISIBLE);
         } else {
             super.onBackPressed();
         }
@@ -275,7 +277,11 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         return true;
     }
 
-    private void loadSearchSuggestions() {
+    private void loadDataFromRepository() {
+
+        searchNoteList = repository.searchNotes(mSearchTerm);
+        adapter = new SearchAdapter(searchNoteList, sharedPreferences);
+        recyclerView.setAdapter(adapter);
 
         List<NoteEntity> noteList = repository.getAllNotes();
 
@@ -284,6 +290,27 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             String searchTitle = noteEntity.getTitle();
             searchSuggestions.add(searchTitle);
         }
+
+        recentSearchesList = repository.getRecentSearches();
+
+        if (recentSearchesList.isEmpty()) {
+            mRecentSearchesRecyclerView.setVisibility(View.GONE);
+        }
+
+        mRecentSearchesRecyclerView.setAdapter(new RecentSearchesAdapter(recentSearchesList, sharedPreferences, context, new RecentSearchesAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(RecentSearches item) {
+                searchField.setText(item.getSearchTerm());
+
+                mSearchTerm = searchField.getText().toString().trim();
+
+                searchNoteList.clear();
+                searchNoteList = repository.searchNotes(mSearchTerm);
+
+                adapter = new SearchAdapter(searchNoteList, sharedPreferences);
+                recyclerView.setAdapter(adapter);
+            }
+        }));
     }
 
     @Override
@@ -307,7 +334,7 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
     protected void onRestart() {
         super.onRestart();
         if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-            newNoteOverlay.setVisibility(View.GONE);
+            newNoteOverlay.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -334,6 +361,58 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 searchField.setText(result.get(0));
 
+                search();
+            }
+        }
+    }
+
+    private void search() {
+
+        mSearchTerm = searchField.getText().toString().trim().toLowerCase();
+
+        recentSearchesList.clear();
+        recentSearchesStringArrayList.clear();
+
+        recentSearchesList = repository.getRecentSearches();
+
+        for (RecentSearches recentSearches : recentSearchesList) {
+            String recentSearchesListString = recentSearches.getSearchTerm();
+            recentSearchesStringArrayList.add(recentSearchesListString);
+        }
+
+        if (!recentSearchesStringArrayList.contains(mSearchTerm) && !mSearchTerm.equals("")) {
+            mRecentSearchesRecyclerView.setVisibility(View.VISIBLE);
+            long timeStamp = System.currentTimeMillis();
+            RecentSearches recentSearches = new RecentSearches(timeStamp, mSearchTerm);
+            repository.insert(recentSearches);
+
+        } else if (recentSearchesStringArrayList.contains(mSearchTerm)) {
+            long timeStampQuery = repository.getTimeStamp(mSearchTerm);
+            RecentSearches recentSearchesOld = new RecentSearches(timeStampQuery, mSearchTerm);
+            repository.delete(recentSearchesOld);
+
+            long timeStamp = System.currentTimeMillis();
+            RecentSearches recentSearchesNew = new RecentSearches(timeStamp, mSearchTerm);
+            repository.insert(recentSearchesNew);
+        }
+
+        searchNoteList.clear();
+        searchNoteList = repository.searchNotes(mSearchTerm);
+
+        adapter = new SearchAdapter(searchNoteList, sharedPreferences);
+        recyclerView.setAdapter(adapter);
+
+        List<RecentSearches> recentSearchesList = repository.getRecentSearches();
+
+        if (recentSearchesList.isEmpty()) {
+            mRecentSearchesRecyclerView.setVisibility(View.GONE);
+        }
+
+        mRecentSearchesRecyclerView.setAdapter(new RecentSearchesAdapter(recentSearchesList, sharedPreferences, context, new RecentSearchesAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(RecentSearches item) {
+                searchField.setText(item.getSearchTerm());
+
                 mSearchTerm = searchField.getText().toString().trim();
 
                 searchNoteList.clear();
@@ -342,6 +421,17 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
                 adapter = new SearchAdapter(searchNoteList, sharedPreferences);
                 recyclerView.setAdapter(adapter);
             }
+        }));
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }

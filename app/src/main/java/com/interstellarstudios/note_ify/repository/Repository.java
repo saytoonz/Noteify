@@ -6,18 +6,22 @@ import com.interstellarstudios.note_ify.database.NoteDatabase;
 import com.interstellarstudios.note_ify.database.NoteEntity;
 import com.interstellarstudios.note_ify.database.ProfilePicDAO;
 import com.interstellarstudios.note_ify.database.ProfilePicEntity;
+import com.interstellarstudios.note_ify.database.RecentSearches;
+import com.interstellarstudios.note_ify.database.RecentSearchesDAO;
 import java.util.List;
 
 public class Repository {
 
     private NoteDAO noteDAO;
     private ProfilePicDAO profilePicDAO;
+    private RecentSearchesDAO recentSearchesDAO;
 
     public Repository(Application application) {
 
         NoteDatabase noteDatabase = NoteDatabase.getInstance(application);
         noteDAO = noteDatabase.noteDAO();
         profilePicDAO = noteDatabase.profilePicDAO();
+        recentSearchesDAO = noteDatabase.recentSearchesDAO();
     }
 
     public void insert(NoteEntity noteEntity) {
@@ -62,5 +66,29 @@ public class Repository {
 
     public List<ProfilePicEntity> getProfilePicUrl() {
         return profilePicDAO.getAll();
+    }
+
+    public void insert(RecentSearches recentSearches) {
+        recentSearchesDAO.insert(recentSearches);
+    }
+
+    public void update(RecentSearches recentSearches) {
+        recentSearchesDAO.update(recentSearches);
+    }
+
+    public void delete(RecentSearches recentSearches) {
+        recentSearchesDAO.delete(recentSearches);
+    }
+
+    public void deleteAllRecentSearches() {
+        recentSearchesDAO.deleteAll();
+    }
+
+    public List<RecentSearches> getRecentSearches() {
+        return recentSearchesDAO.getAll();
+    }
+
+    public long getTimeStamp(String term) {
+        return recentSearchesDAO.getTimeStamp(term);
     }
 }

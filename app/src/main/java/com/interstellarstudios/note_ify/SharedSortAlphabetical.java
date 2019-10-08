@@ -46,6 +46,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.interstellarstudios.note_ify.database.NoteEntity;
+import com.interstellarstudios.note_ify.database.RecentSearches;
 import com.interstellarstudios.note_ify.repository.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,9 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
     private ArrayList<String> searchSuggestions = new ArrayList<>();
     private static final int SPEECH_INPUT_REQUEST = 2;
     private AutoCompleteTextView searchField;
+    private List<RecentSearches> recentSearchesList = new ArrayList<>();
+    private ArrayList<String> recentSearchesStringArrayList = new ArrayList<>();
+    private Repository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,7 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
         setContentView(R.layout.activity_notes);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        repository = new Repository(getApplication());
 
         FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
@@ -172,10 +177,7 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
                                           KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_GO) {
 
-                    String searchTerm = searchField.getText().toString().trim();
-                    Intent i = new Intent(context, Search.class);
-                    i.putExtra("searchTerm", searchTerm);
-                    startActivity(i);
+                    search();
 
                     return true;
                 }
@@ -482,7 +484,6 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
 
     private void loadDataFromRepository() {
 
-        Repository repository = new Repository(getApplication());
         List<NoteEntity> noteList = repository.getAllNotes();
 
         for (NoteEntity noteEntity : noteList) {
@@ -515,10 +516,7 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 searchField.setText(result.get(0));
 
-                String searchTerm = searchField.getText().toString().trim();
-                Intent i = new Intent(context, Search.class);
-                i.putExtra("searchTerm", searchTerm);
-                startActivity(i);
+                search();
             }
         }
     }
@@ -538,5 +536,39 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
             }
         }
         return super.dispatchTouchEvent(event);
+    }
+
+    private void search() {
+
+        recentSearchesList.clear();
+        recentSearchesStringArrayList.clear();
+
+        String searchTerm = searchField.getText().toString().trim().toLowerCase();
+
+        recentSearchesList = repository.getRecentSearches();
+
+        for (RecentSearches recentSearches : recentSearchesList) {
+            String recentSearchesListString = recentSearches.getSearchTerm();
+            recentSearchesStringArrayList.add(recentSearchesListString);
+        }
+
+        if (!recentSearchesStringArrayList.contains(searchTerm) && !searchTerm.equals("")) {
+            long timeStamp = System.currentTimeMillis();
+            RecentSearches recentSearches = new RecentSearches(timeStamp, searchTerm);
+            repository.insert(recentSearches);
+
+        } else if (recentSearchesStringArrayList.contains(searchTerm)) {
+            long timeStampQuery = repository.getTimeStamp(searchTerm);
+            RecentSearches recentSearchesOld = new RecentSearches(timeStampQuery, searchTerm);
+            repository.delete(recentSearchesOld);
+
+            long timeStamp = System.currentTimeMillis();
+            RecentSearches recentSearchesNew = new RecentSearches(timeStamp, searchTerm);
+            repository.insert(recentSearchesNew);
+        }
+
+        Intent i = new Intent(context, Search.class);
+        i.putExtra("searchTerm", searchTerm);
+        startActivity(i);
     }
 }

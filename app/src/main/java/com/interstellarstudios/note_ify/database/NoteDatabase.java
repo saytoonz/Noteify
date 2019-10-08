@@ -5,13 +5,14 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {NoteEntity.class, ProfilePicEntity.class}, version = 3, exportSchema = false)
+@Database(entities = {NoteEntity.class, ProfilePicEntity.class, RecentSearches.class}, version = 6, exportSchema = false)
 
 public abstract class NoteDatabase extends RoomDatabase {
 
     private static  NoteDatabase instance;
     public abstract NoteDAO noteDAO();
     public abstract ProfilePicDAO profilePicDAO();
+    public abstract RecentSearchesDAO recentSearchesDAO();
 
     public static synchronized NoteDatabase getInstance(Context context) {
 

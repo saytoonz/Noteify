@@ -1,5 +1,6 @@
 package com.interstellarstudios.note_ify;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,6 +44,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.interstellarstudios.note_ify.database.NoteEntity;
+import com.interstellarstudios.note_ify.database.RecentSearches;
 import com.interstellarstudios.note_ify.repository.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,9 +58,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private String mCurrentUserId;
     private FirebaseFirestore mFireBaseFireStore;
     private View newNoteOverlay;
-    private ArrayList<String> searchSuggestions = new ArrayList<>();
     private static final int SPEECH_INPUT_REQUEST = 2;
     private AutoCompleteTextView searchField;
+    private Repository repository;
+    private ArrayList<String> searchSuggestions = new ArrayList<>();
+    private List<RecentSearches> recentSearchesList = new ArrayList<>();
+    private ArrayList<String> recentSearchesStringArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         setContentView(R.layout.activity_home);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        repository = new Repository(getApplication());
 
         AppRate.with(this)
                 .setInstallDays(7)
@@ -87,12 +93,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         TextView textAttachment = findViewById(R.id.textView_attachment);
 
         newNoteOverlay = findViewById(R.id.new_note_overlay);
-        newNoteOverlay.setVisibility(View.GONE);
+        newNoteOverlay.setVisibility(View.INVISIBLE);
         newNoteOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-                    newNoteOverlay.setVisibility(View.GONE);
+                    newNoteOverlay.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -158,6 +164,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onClick(View view) {
                 newNoteOverlay.setVisibility(View.VISIBLE);
@@ -188,10 +195,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                                           KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_GO) {
 
-                    String searchTerm = searchField.getText().toString().trim();
-                    Intent i = new Intent(context, Search.class);
-                    i.putExtra("searchTerm", searchTerm);
-                    startActivity(i);
+                    search();
 
                     return true;
                 }
@@ -337,7 +341,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-            newNoteOverlay.setVisibility(View.GONE);
+            newNoteOverlay.setVisibility(View.INVISIBLE);
         } else {
             super.onBackPressed();
         }
@@ -389,13 +393,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     protected void onRestart() {
         super.onRestart();
         if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-            newNoteOverlay.setVisibility(View.GONE);
+            newNoteOverlay.setVisibility(View.INVISIBLE);
         }
     }
 
     private void loadDataFromRepository() {
 
-        Repository repository = new Repository(getApplication());
         List<NoteEntity> noteList = repository.getAllNotes();
 
         for (NoteEntity noteEntity : noteList) {
@@ -428,10 +431,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 searchField.setText(result.get(0));
 
-                String searchTerm = searchField.getText().toString().trim();
-                Intent i = new Intent(context, Search.class);
-                i.putExtra("searchTerm", searchTerm);
-                startActivity(i);
+                search();
             }
         }
     }
@@ -451,6 +451,40 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             }
         }
         return super.dispatchTouchEvent(event);
+    }
+
+    private void search() {
+
+        recentSearchesList.clear();
+        recentSearchesStringArrayList.clear();
+
+        String searchTerm = searchField.getText().toString().trim().toLowerCase();
+
+        recentSearchesList = repository.getRecentSearches();
+
+        for (RecentSearches recentSearches : recentSearchesList) {
+            String recentSearchesListString = recentSearches.getSearchTerm();
+            recentSearchesStringArrayList.add(recentSearchesListString);
+        }
+
+        if (!recentSearchesStringArrayList.contains(searchTerm) && !searchTerm.equals("")) {
+            long timeStamp = System.currentTimeMillis();
+            RecentSearches recentSearches = new RecentSearches(timeStamp, searchTerm);
+            repository.insert(recentSearches);
+
+        } else if (recentSearchesStringArrayList.contains(searchTerm)) {
+            long timeStampQuery = repository.getTimeStamp(searchTerm);
+            RecentSearches recentSearchesOld = new RecentSearches(timeStampQuery, searchTerm);
+            repository.delete(recentSearchesOld);
+
+            long timeStamp = System.currentTimeMillis();
+            RecentSearches recentSearchesNew = new RecentSearches(timeStamp, searchTerm);
+            repository.insert(recentSearchesNew);
+        }
+
+        Intent i = new Intent(context, Search.class);
+        i.putExtra("searchTerm", searchTerm);
+        startActivity(i);
     }
 }
 

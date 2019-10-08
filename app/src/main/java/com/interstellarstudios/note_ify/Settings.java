@@ -16,6 +16,9 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.interstellarstudios.note_ify.repository.Repository;
 import es.dmoral.toasty.Toasty;
 
 public class Settings extends AppCompatActivity {
@@ -30,12 +33,14 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        final TextView settingsHeading = findViewById(R.id.settingsHeading);
-        final TextView fingerprintTextView = findViewById(R.id.fingerprintTextView);
-        final TextView fingerprintDescription = findViewById(R.id.fingerprintDescription);
-        final TextView priorityTextView = findViewById(R.id.priorityTextView);
-        final TextView priorityDescription = findViewById(R.id.priorityDescription);
-        final ImageView settingsIcon = findViewById(R.id.settingsIcon);
+        TextView settingsHeading = findViewById(R.id.settingsHeading);
+        TextView fingerprintTextView = findViewById(R.id.fingerprintTextView);
+        TextView fingerprintDescription = findViewById(R.id.fingerprintDescription);
+        TextView priorityTextView = findViewById(R.id.priorityTextView);
+        TextView priorityDescription = findViewById(R.id.priorityDescription);
+        ImageView settingsIcon = findViewById(R.id.settingsIcon);
+        TextView searchHistoryTextView = findViewById(R.id.search_history);
+        TextView searchHistoryDescriptionTextView = findViewById(R.id.search_history_description);
 
         switchSecurity = findViewById(R.id.switchSecurity);
         switchPriorityColor = findViewById(R.id.switchPriorityColor);
@@ -89,6 +94,21 @@ public class Settings extends AppCompatActivity {
             }
         });
 
+        ImageView clearSearchHistory = findViewById(R.id.clear_button);
+        clearSearchHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                YoYo.with(Techniques.Wobble)
+                        .duration(750)
+                        .playOn(clearSearchHistory);
+
+                Repository repository = new Repository(getApplication());
+                repository.deleteAllRecentSearches();
+                Toasty.success(context, "Search history cleared", Toast.LENGTH_LONG, true).show();
+            }
+        });
+
         Window window = this.getWindow();
         View container = findViewById(R.id.container);
 
@@ -103,6 +123,8 @@ public class Settings extends AppCompatActivity {
             priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             priorityDescription.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(settingsIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            searchHistoryTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            searchHistoryDescriptionTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             versionText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
         } else {

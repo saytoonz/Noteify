@@ -270,11 +270,6 @@ public class Share extends AppCompatActivity {
             groceryArrayList = bundle.getStringArrayList("groceryArrayList");
         }
 
-        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
-        Toasty.success(context, "Grocery List shared with and emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
-
-        finish();
-
         DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
         userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -282,6 +277,8 @@ public class Share extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+
+                        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
 
                         UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
                         mSharedUserId = userDetails.getUserId();
@@ -326,7 +323,20 @@ public class Share extends AppCompatActivity {
                         notificationMessage.put("from", currentUserEmail);
                         CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Grocery_Notifications").collection("Grocery_Notifications");
                         notificationPath.add(notificationMessage);
+
+                        Toasty.success(context, "Grocery List shared with and emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                        finish();
+
+                    } else {
+
+                        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
+
+                        Toasty.success(context, "Grocery List emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                        finish();
                     }
+
+                } else {
+                    Toasty.error(context, "Please ensure that there is an active network connection to share a grocery list", Toast.LENGTH_LONG, true).show();
                 }
             }
         });
@@ -346,11 +356,6 @@ public class Share extends AppCompatActivity {
             groceryArrayList = bundle.getStringArrayList("groceryArrayList");
         }
 
-        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
-        Toasty.success(context, "Grocery List shared with and emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
-
-        finish();
-
         DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(sharedUserEmail);
         userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -358,6 +363,8 @@ public class Share extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+
+                        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
 
                         UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
                         mSharedUserId = userDetails.getUserId();
@@ -402,7 +409,20 @@ public class Share extends AppCompatActivity {
                         notificationMessage.put("from", currentUserEmail);
                         CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Grocery_Notifications").collection("Grocery_Notifications");
                         notificationPath.add(notificationMessage);
+
+                        Toasty.success(context, "Grocery List shared with and emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                        finish();
+
+                    } else {
+
+                        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
+
+                        Toasty.success(context, "Grocery List emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
+                        finish();
                     }
+
+                } else {
+                    Toasty.error(context, "Please ensure that there is an active network connection to share a grocery list", Toast.LENGTH_LONG, true).show();
                 }
             }
         });
@@ -493,13 +513,35 @@ public class Share extends AppCompatActivity {
 
                         Toasty.success(context, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
+
                     } else {
+
+                        List<SendSmtpEmailAttachment> attachmentList = new ArrayList<>();
+
+                        if (attachment_name.equals("") && audioZipFileName.equals("")) {
+                            SendMail.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+                        }
+                        if (!audioZipFileName.equals("") && attachment_name.equals("")) {
+                            attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
+
+                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                        } else if (audioZipFileName.equals("") && !attachment_name.equals("")) {
+                            attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
+
+                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                        } else {
+                            attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
+                            attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
+
+                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                        }
+
                         Toasty.success(context, "Note emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
                     }
+
                 } else {
                     Toasty.error(context, "Please ensure that there is an active network connection to share a note", Toast.LENGTH_LONG, true).show();
-                    finish();
                 }
             }
         });
