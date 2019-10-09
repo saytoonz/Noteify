@@ -1,4 +1,4 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.models;
 
 public class UserDetailsModel {
 

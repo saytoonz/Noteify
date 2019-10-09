@@ -1,4 +1,4 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.interstellarstudios.note_ify.EditNote;
+import com.interstellarstudios.note_ify.R;
 import com.interstellarstudios.note_ify.database.NoteEntity;
 import java.util.List;
 import jp.wasabeef.richeditor.RichEditor;

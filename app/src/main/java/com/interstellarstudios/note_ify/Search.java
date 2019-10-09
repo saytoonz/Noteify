@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -32,8 +33,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.interstellarstudios.note_ify.adapters.RecentSearchesAdapter;
+import com.interstellarstudios.note_ify.adapters.SearchAdapter;
 import com.interstellarstudios.note_ify.database.NoteEntity;
 import com.interstellarstudios.note_ify.database.RecentSearches;
+import com.interstellarstudios.note_ify.firestore.GetData;
 import com.interstellarstudios.note_ify.repository.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +61,7 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
     private ArrayList<String> recentSearchesStringArrayList = new ArrayList<>();
     private ArrayList<String> searchSuggestions = new ArrayList<>();
     private List<NoteEntity> searchNoteList = new ArrayList<>();
+    private String mCurrentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,13 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
 
         sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         repository = new Repository(getApplication());
+
+        FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore mFireBaseFireStore = FirebaseFirestore.getInstance();
+
+        if (mFireBaseAuth.getCurrentUser() != null) {
+            mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
+        }
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -185,9 +199,26 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             }
         });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
+        ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(context,
                 android.R.layout.simple_list_item_1, searchSuggestions);
-        searchField.setAdapter(adapter);
+        searchField.setAdapter(autocompleteAdapter);
+
+        SwipeRefreshLayout mSwipeRefreshLayout = findViewById(R.id.swipe);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+
+                GetData.allNotes(mFireBaseFireStore, mCurrentUserId, repository);
+
+                searchNoteList = repository.searchNotes(mSearchTerm);
+                adapter = new SearchAdapter(searchNoteList, sharedPreferences);
+                recyclerView.setAdapter(adapter);
+
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 

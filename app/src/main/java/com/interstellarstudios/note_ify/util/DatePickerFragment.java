@@ -1,4 +1,4 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.util;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

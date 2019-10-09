@@ -1,4 +1,4 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.interstellarstudios.note_ify.R;
 import com.interstellarstudios.note_ify.database.RecentSearches;
 import java.util.List;
 

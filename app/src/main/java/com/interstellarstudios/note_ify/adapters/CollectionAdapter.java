@@ -1,4 +1,4 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,6 +22,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.interstellarstudios.note_ify.models.Collection;
+import com.interstellarstudios.note_ify.R;
 
 public class CollectionAdapter extends FirestoreRecyclerAdapter <Collection, CollectionAdapter.CollectionHolder> {
 

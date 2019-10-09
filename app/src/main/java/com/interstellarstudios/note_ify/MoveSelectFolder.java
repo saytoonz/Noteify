@@ -24,6 +24,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.interstellarstudios.note_ify.adapters.CollectionAdapter;
+import com.interstellarstudios.note_ify.models.Collection;
+
 import es.dmoral.toasty.Toasty;
 
 public class MoveSelectFolder extends AppCompatActivity {

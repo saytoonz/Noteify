@@ -1,4 +1,4 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.adapters;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,6 +13,9 @@ import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.interstellarstudios.note_ify.models.GroceryItem;
+import com.interstellarstudios.note_ify.R;
+
 import android.content.Context;
 
 public class GroceryListAdapter extends FirestoreRecyclerAdapter<GroceryItem, GroceryListAdapter.GroceryItemHolder> {

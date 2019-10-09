@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.interstellarstudios.note_ify.database.NoteDatabase;
 import com.interstellarstudios.note_ify.database.ProfilePicEntity;
+import com.interstellarstudios.note_ify.models.Details;
 import com.interstellarstudios.note_ify.repository.Repository;
 import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;

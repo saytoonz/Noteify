@@ -1,16 +1,7 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.email;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import androidx.core.app.NotificationCompat;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 import sendinblue.ApiClient;
@@ -22,87 +13,13 @@ import sibModel.SendSmtpEmail;
 import sibModel.SendSmtpEmailSender;
 import sibModel.SendSmtpEmailTo;
 import static android.content.Context.MODE_PRIVATE;
-import static android.content.Context.NOTIFICATION_SERVICE;
 
-public class AlertReceiver extends BroadcastReceiver {
+public class SendMail {
 
-    private String currentUserEmail;
-    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
-    private static final int NOTIFICATION_ID = 0;
-    private NotificationManager mNotifyManager;
-
-    private Context mContext;
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-
-        mContext = context;
+    public static void sendMail(Context context, final String sharedUserEmail, final String currentUserEmail, final String title, final String description, final int priority, final int updatedRevision, final String noteDate) {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean guestAccountOn = sharedPreferences.getBoolean("guestAccount", false);
-
-        if(!guestAccountOn){
-            sendMail();
-        }
-
-        createNotificationChannel();
-        sendNotification();
-    }
-
-    public void createNotificationChannel() {
-
-        mNotifyManager = (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >=
-                android.os.Build.VERSION_CODES.O) {
-
-            NotificationChannel notificationChannel = new NotificationChannel
-                    (PRIMARY_CHANNEL_ID,
-                            mContext.getString(R.string.notification_channel_name),
-                            NotificationManager.IMPORTANCE_HIGH);
-
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
-            notificationChannel.enableVibration(true);
-            notificationChannel.setDescription
-                    (mContext.getString(R.string.notification_channel_description));
-
-            mNotifyManager.createNotificationChannel(notificationChannel);
-        }
-    }
-
-    public void sendNotification() {
-
-        NotificationCompat.Builder notifyBuilder = getNotificationBuilder();
-        mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build());
-    }
-
-    private NotificationCompat.Builder getNotificationBuilder() {
-
-        Intent notificationIntent = new Intent(mContext, Home.class);
-        PendingIntent notificationPendingIntent = PendingIntent.getActivity
-                (mContext, NOTIFICATION_ID, notificationIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder notifyBuilder = new NotificationCompat
-                .Builder(mContext, PRIMARY_CHANNEL_ID)
-                .setContentTitle(mContext.getString(R.string.notification_title))
-                .setContentText(mContext.getString(R.string.notification_text))
-                .setSmallIcon(R.drawable.ic_notification)
-                .setAutoCancel(true).setContentIntent(notificationPendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(NotificationCompat.DEFAULT_ALL);
-        return notifyBuilder;
-    }
-
-    private void sendMail() {
-
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-
-        if (firebaseAuth.getCurrentUser() != null) {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            currentUserEmail = user.getEmail();
-        }
 
         ApiClient defaultClient = Configuration.getDefaultApiClient();
 
@@ -112,12 +29,18 @@ public class AlertReceiver extends BroadcastReceiver {
         final SmtpApi apiInstance = new SmtpApi();
 
         List<SendSmtpEmailTo> emailArrayList = new ArrayList<>();
-        emailArrayList.add(new SendSmtpEmailTo().email(currentUserEmail));
+        emailArrayList.add(new SendSmtpEmailTo().email(sharedUserEmail));
 
         final SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
         sendSmtpEmail.sender(new SendSmtpEmailSender().email("note-ify@interstellarstudios.co.uk").name("Note-ify"));
         sendSmtpEmail.to(emailArrayList);
-        sendSmtpEmail.subject("Reminder from Note-ify");
+
+        if(guestAccountOn) {
+            sendSmtpEmail.subject("You've received a Note");
+        } else {
+            sendSmtpEmail.subject("You've received a Note from " + currentUserEmail);
+        }
+
         sendSmtpEmail.htmlContent("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><meta name=\"x-apple-disable-message-reformatting\" /><meta name=\"apple-mobile-web-app-capable\" content=\"yes\" /><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" /><meta name=\"format-detection\" content=\"telephone=no\" /><title></title><style type=\"text/css\">\n" +
                 "        /* Resets */\n" +
                 "        .ReadMsgBody { width: 100%; background-color: #ebebeb;}\n" +
@@ -467,11 +390,17 @@ public class AlertReceiver extends BroadcastReceiver {
                 "                                                            <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" align=\"left\" class=\"rnb-col-1\">\n" +
                 "\n" +
                 "                                                                <tbody><tr>\n" +
-                "                                                                    <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\"><div>\n" +
-                "<div><strong>Reminder</strong><br>\n" +
-                "<br>\n" +
-                "You have received this email because you set a reminder when creating or editing a note. Open the App to see your notes.</div>\n" +
-                "</div>\n" +
+                "                                                                    <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\"><div><span style=\"font-size:16px;\"><strong>" + title + "</strong></span></div>\n" +
+                "\n" +
+                "<div><br>\n" +
+                "" + description + "</div>\n" +
+                "\n" +
+                "<div><br>\n" +
+                "<em>Priority: " + priority + "<br>\n" +
+                "Revision: " + updatedRevision + "</em></div>\n" +
+                "\n" +
+                "<div><br>\n" +
+                "<span style=\"font-size:12px;\">Date &amp; Time: " + noteDate + "</span></div>\n" +
                 "</td>\n" +
                 "                                                                </tr>\n" +
                 "                                                                </tbody></table>\n" +
@@ -839,7 +768,6 @@ public class AlertReceiver extends BroadcastReceiver {
                 "        </tbody></table>\n" +
                 "\n" +
                 "</body></html>");
-
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

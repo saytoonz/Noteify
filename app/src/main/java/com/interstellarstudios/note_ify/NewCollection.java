@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.interstellarstudios.note_ify.models.Collection;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import es.dmoral.toasty.Toasty;

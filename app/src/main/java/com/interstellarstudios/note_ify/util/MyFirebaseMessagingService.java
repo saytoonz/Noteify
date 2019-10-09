@@ -1,4 +1,4 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.util;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,6 +11,9 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.interstellarstudios.note_ify.R;
+import com.interstellarstudios.note_ify.Shared;
+import com.interstellarstudios.note_ify.SharedGroceryList;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 

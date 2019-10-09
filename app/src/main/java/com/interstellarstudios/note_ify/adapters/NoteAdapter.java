@@ -1,4 +1,4 @@
-package com.interstellarstudios.note_ify;
+package com.interstellarstudios.note_ify.adapters;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +23,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.interstellarstudios.note_ify.models.Collection;
+import com.interstellarstudios.note_ify.MoveSelectFolder;
+import com.interstellarstudios.note_ify.models.Note;
+import com.interstellarstudios.note_ify.R;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import android.content.Context;
