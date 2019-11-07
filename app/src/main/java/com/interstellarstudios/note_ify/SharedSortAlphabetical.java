@@ -10,6 +10,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.content.ContextCompat;
@@ -167,6 +170,22 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
             @Override
             public void onClick(View view) {
                 newNoteOverlay.setVisibility(View.VISIBLE);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabText);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabSpeechText);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabVoiceNote);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabAttachment);
             }
         });
 
@@ -177,10 +196,8 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
         searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId,
                                           KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     search();
-
                     return true;
                 }
                 return false;

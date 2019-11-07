@@ -7,23 +7,33 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+
 import androidx.appcompat.widget.Toolbar;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.speech.RecognizerIntent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+
 import androidx.core.view.GravityCompat;
+
 import android.view.MenuItem;
+
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -33,14 +43,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+
 import com.interstellarstudios.note_ify.adapters.RecentSearchesAdapter;
 import com.interstellarstudios.note_ify.adapters.SearchAdapter;
 import com.interstellarstudios.note_ify.database.NoteEntity;
 import com.interstellarstudios.note_ify.database.RecentSearches;
-import com.interstellarstudios.note_ify.firestore.GetData;
 import com.interstellarstudios.note_ify.repository.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -61,7 +70,6 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
     private ArrayList<String> recentSearchesStringArrayList = new ArrayList<>();
     private ArrayList<String> searchSuggestions = new ArrayList<>();
     private List<NoteEntity> searchNoteList = new ArrayList<>();
-    private String mCurrentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +78,6 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
 
         sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         repository = new Repository(getApplication());
-
-        FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore mFireBaseFireStore = FirebaseFirestore.getInstance();
-
-        if (mFireBaseAuth.getCurrentUser() != null) {
-            mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
-        }
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -180,6 +181,22 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             @Override
             public void onClick(View view) {
                 newNoteOverlay.setVisibility(View.VISIBLE);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabText);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabSpeechText);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabVoiceNote);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabAttachment);
             }
         });
 
@@ -188,11 +205,9 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId,
                                           KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     search();
                     hideKeyboard(Search.this);
-
                     return true;
                 }
                 return false;
@@ -202,23 +217,6 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(context,
                 android.R.layout.simple_list_item_1, searchSuggestions);
         searchField.setAdapter(autocompleteAdapter);
-
-        SwipeRefreshLayout mSwipeRefreshLayout = findViewById(R.id.swipe);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
-
-                GetData.allNotes(mFireBaseFireStore, mCurrentUserId, repository);
-
-                searchNoteList = repository.searchNotes(mSearchTerm);
-                adapter = new SearchAdapter(searchNoteList, sharedPreferences);
-                recyclerView.setAdapter(adapter);
-
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        });
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 

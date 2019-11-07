@@ -33,7 +33,7 @@
         android:ems="10"
         android:hint="@string/search_field_hint"
         android:inputType="text"
-        android:imeOptions="actionGo"
+        android:imeOptions="actionSearch"
         android:text=""
         android:textColor="@color/colorLightThemeText"
         android:textColorHint="@color/colorLightThemeText"
@@ -86,7 +86,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/recycler_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add" />
 

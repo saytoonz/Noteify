@@ -9,24 +9,35 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
+
 import android.speech.RecognizerIntent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+
 import androidx.core.view.GravityCompat;
+
 import android.view.MenuItem;
+
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.Menu;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
@@ -37,6 +48,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,6 +62,7 @@ import com.interstellarstudios.note_ify.database.NoteEntity;
 import com.interstellarstudios.note_ify.database.RecentSearches;
 import com.interstellarstudios.note_ify.models.Note;
 import com.interstellarstudios.note_ify.repository.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -168,6 +181,22 @@ public class NotesSortPriority extends AppCompatActivity implements NavigationVi
             @Override
             public void onClick(View view) {
                 newNoteOverlay.setVisibility(View.VISIBLE);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabText);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabSpeechText);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabVoiceNote);
+
+                YoYo.with(Techniques.FlipInX)
+                        .duration(400)
+                        .playOn(fabAttachment);
             }
         });
 
@@ -190,10 +219,8 @@ public class NotesSortPriority extends AppCompatActivity implements NavigationVi
         searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId,
                                           KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     search();
-
                     return true;
                 }
                 return false;
@@ -217,7 +244,7 @@ public class NotesSortPriority extends AppCompatActivity implements NavigationVi
         Window window = this.getWindow();
         View container = findViewById(R.id.container);
 
-        if(switchThemesOnOff) {
+        if (switchThemesOnOff) {
 
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
@@ -315,7 +342,7 @@ public class NotesSortPriority extends AppCompatActivity implements NavigationVi
         notebookRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(queryDocumentSnapshots.isEmpty()){
+                if (queryDocumentSnapshots.isEmpty()) {
                     recyclerView.setVisibility(View.INVISIBLE);
                     emptyView.setVisibility(View.VISIBLE);
                     emptyViewText.setVisibility(View.VISIBLE);

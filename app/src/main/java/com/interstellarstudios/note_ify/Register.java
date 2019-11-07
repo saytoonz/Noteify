@@ -6,23 +6,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -30,7 +28,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -39,8 +36,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.interstellarstudios.note_ify.email.RegistrationEmail;
 import com.interstellarstudios.note_ify.firestore.GetData;
 import com.interstellarstudios.note_ify.models.Collection;
@@ -52,10 +47,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
+
 import es.dmoral.toasty.Toasty;
 import sendinblue.ApiException;
 
@@ -73,7 +67,6 @@ public class Register extends AppCompatActivity {
                     ".{8,}" +               //at least 8 characters
                     "$");
 
-    private Switch switchThemes;
     private EditText editTextEmail;
     private EditText editTextPassword;
     private EditText editTextConfirmPassword;
@@ -87,14 +80,11 @@ public class Register extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
     private Repository repository;
     private SharedPreferences sharedPreferences;
-    private String androidUUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        androidUUID = android.provider.Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         repository = new Repository(getApplication());
@@ -111,12 +101,12 @@ public class Register extends AppCompatActivity {
             startActivity(i);
         }
 
-        editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPassword = findViewById(R.id.password);
-        editTextConfirmPassword = findViewById(R.id.confirmPassword);
+        editTextEmail = findViewById(R.id.edit_text_email);
+        editTextPassword = findViewById(R.id.edit_text_password);
+        editTextConfirmPassword = findViewById(R.id.edit_text_confirm_password);
         mProgressDialog = new ProgressDialog(context);
 
-        final Button buttonSignUp = findViewById(R.id.buttonSignup);
+        final Button buttonSignUp = findViewById(R.id.button_sign_up);
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,7 +114,7 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        final Button buttonGuestMode = findViewById(R.id.buttonGuestMode);
+        final Button buttonGuestMode = findViewById(R.id.button_sign_up_later);
         buttonGuestMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +143,7 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        final TextView textViewSignIn = findViewById(R.id.textViewSignin);
+        final TextView textViewSignIn = findViewById(R.id.text_view_go_to_sign_in);
         textViewSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,7 +152,7 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        final TextView textViewSignIn2 = findViewById(R.id.textViewSignin2);
+        final TextView textViewSignIn2 = findViewById(R.id.text_view_go_to_sign_in_2);
         textViewSignIn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,18 +161,22 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        switchThemes = findViewById(R.id.switchThemes);
+        ImageView imageViewDarkMode = findViewById(R.id.image_view_dark_mode);
+        ImageView imageViewLightMode = findViewById(R.id.image_view_light_mode);
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
-
-        switchThemes.setChecked(switchThemesOnOff);
 
         final Window window = this.getWindow();
         final View container = findViewById(R.id.container2);
 
         if (switchThemesOnOff) {
 
+            imageViewLightMode.setVisibility(View.VISIBLE);
+            imageViewDarkMode.setVisibility(View.GONE);
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
             editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
@@ -195,72 +189,80 @@ public class Register extends AppCompatActivity {
             editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
             textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textViewSignIn2.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            buttonSignUp.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            buttonGuestMode.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
-            buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
 
         } else {
+
+            imageViewLightMode.setVisibility(View.GONE);
+            imageViewDarkMode.setVisibility(View.VISIBLE);
 
             window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
             if (container != null) {
                 container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
             }
+            editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+            editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+            editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+            textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
         }
 
-        switchThemes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        imageViewDarkMode.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-                    if (container != null) {
-                        container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                        container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-                    }
-                    editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    textViewSignIn2.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    buttonSignUp.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                    buttonGuestMode.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
-                    buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            public void onClick(View v) {
 
-                    savePreferences();
+                imageViewLightMode.setVisibility(View.VISIBLE);
+                imageViewDarkMode.setVisibility(View.GONE);
 
-                } else {
-
-                    window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
-                    if (container != null) {
-                        container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                        container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
-                    }
-                    editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    textViewSignIn2.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    buttonSignUp.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    switchThemes.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-                    buttonGuestMode.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-                    buttonGuestMode.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-
-                    savePreferences();
+                window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                if (container != null) {
+                    container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                    container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
                 }
+                editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+                saveDarkModePreference();
+            }
+        });
+
+        imageViewLightMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                imageViewLightMode.setVisibility(View.GONE);
+                imageViewDarkMode.setVisibility(View.VISIBLE);
+
+                window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                if (container != null) {
+                    container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                }
+                editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+                editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+                editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+                textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+
+                saveLightModePreference();
             }
         });
 
@@ -271,15 +273,17 @@ public class Register extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
-    public void savePreferences() {
+    private void saveLightModePreference() {
 
         SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        prefsEditor.putBoolean("switchThemes", false);
+        prefsEditor.apply();
+    }
 
-        if (switchThemes.isChecked()) {
-            prefsEditor.putBoolean("switchThemes", true);
-        } else {
-            prefsEditor.putBoolean("switchThemes", false);
-        }
+    private void saveDarkModePreference() {
+
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        prefsEditor.putBoolean("switchThemes", true);
         prefsEditor.apply();
     }
 
@@ -337,19 +341,6 @@ public class Register extends AppCompatActivity {
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
                             userMapPath.set(new UserDetailsModel(mCurrentUserId));
 
-                            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                                @Override
-                                public void onSuccess(InstanceIdResult instanceIdResult) {
-                                    String deviceToken = instanceIdResult.getToken();
-
-                                    Map<String, Object> userToken = new HashMap<>();
-                                    userToken.put("User_Token_ID", deviceToken);
-
-                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Tokens").collection("User_Tokens").document(androidUUID);
-                                    userTokenDocumentPath.set(userToken);
-                                }
-                            });
-
                             saveNonGuestPreferences();
                             GetData.allNotes(mFireBaseFireStore, mCurrentUserId, repository);
                             GetData.profilePic(mFireBaseFireStore, mCurrentUserId, repository);
@@ -377,24 +368,16 @@ public class Register extends AppCompatActivity {
         if (TextUtils.isEmpty(email)) {
             Toasty.info(context, "Please enter your email address", Toast.LENGTH_LONG, true).show();
             return;
-        }
-
-        else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toasty.info(context, "Please enter a valid email address", Toast.LENGTH_LONG, true).show();
             return;
-        }
-
-        else if (TextUtils.isEmpty(password)) {
+        } else if (TextUtils.isEmpty(password)) {
             Toasty.info(context, "Please enter a password", Toast.LENGTH_LONG, true).show();
             return;
-        }
-
-        else if (!PASSWORD_PATTERN.matcher(password).matches()) {
+        } else if (!PASSWORD_PATTERN.matcher(password).matches()) {
             Toasty.info(context, "Your password must be at least 8 characters and must contain at least 1 number", Toast.LENGTH_LONG, true).show();
             return;
-        }
-
-        else if (!password.equals(confirmPassword)) {
+        } else if (!password.equals(confirmPassword)) {
             Toasty.info(context, "Please enter the same password in the confirm password field", Toast.LENGTH_LONG, true).show();
             return;
         }
@@ -427,19 +410,6 @@ public class Register extends AppCompatActivity {
 
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
                             userMapPath.set(new UserDetailsModel(mCurrentUserId));
-
-                            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                                @Override
-                                public void onSuccess(InstanceIdResult instanceIdResult) {
-                                    String deviceToken = instanceIdResult.getToken();
-
-                                    Map<String, Object> userToken = new HashMap<>();
-                                    userToken.put("User_Token_ID", deviceToken);
-
-                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Tokens").collection("User_Tokens").document(androidUUID);
-                                    userTokenDocumentPath.set(userToken);
-                                }
-                            });
 
                             saveNonGuestPreferences();
 
@@ -499,19 +469,6 @@ public class Register extends AppCompatActivity {
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
                             userMapPath.set(new UserDetailsModel(mCurrentUserId));
 
-                            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                                @Override
-                                public void onSuccess(InstanceIdResult instanceIdResult) {
-                                    String deviceToken = instanceIdResult.getToken();
-
-                                    Map<String, Object> userToken = new HashMap<>();
-                                    userToken.put("User_Token_ID", deviceToken);
-
-                                    DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Tokens").collection("User_Tokens").document(androidUUID);
-                                    userTokenDocumentPath.set(userToken);
-                                }
-                            });
-
                             saveGuestPreferences();
 
                             Intent i = new Intent(context, Home.class);
@@ -526,20 +483,16 @@ public class Register extends AppCompatActivity {
                 });
     }
 
-    public static String md5(String s)
-    {
+    public static String md5(String s) {
         MessageDigest digest;
-        try
-        {
+        try {
             digest = MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes(Charset.forName("US-ASCII")),0,s.length());
+            digest.update(s.getBytes(Charset.forName("US-ASCII")), 0, s.length());
             byte[] magnitude = digest.digest();
             BigInteger bi = new BigInteger(1, magnitude);
             String hash = String.format("%0" + (magnitude.length << 1) + "x", bi);
             return hash;
-        }
-        catch (NoSuchAlgorithmException e)
-        {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return "";

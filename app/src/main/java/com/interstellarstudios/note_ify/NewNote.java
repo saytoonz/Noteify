@@ -15,12 +15,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+
 import androidx.exifinterface.media.ExifInterface;
+
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.core.content.ContextCompat;
@@ -28,11 +31,12 @@ import androidx.core.content.FileProvider;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
+
 import androidx.appcompat.widget.Toolbar;
+
 import android.speech.RecognizerIntent;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +51,7 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -63,6 +68,7 @@ import com.interstellarstudios.note_ify.util.AlertReceiver;
 import com.interstellarstudios.note_ify.util.DatePickerFragment;
 import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -75,8 +81,10 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import es.dmoral.toasty.Toasty;
 import jp.wasabeef.richeditor.RichEditor;
+
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
@@ -581,11 +589,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
-    }
-
-    public static float dpToPx(Context context, float valueInDp) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
 
     private void recordAudio() {
@@ -1145,7 +1148,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         } else if (imageOverlay.getVisibility() == View.VISIBLE) {
 
             imageOverlay.setVisibility(View.GONE);
-        }  else {
+        } else {
 
             title = editTextTitle.getText().toString();
             description = mEditor.getHtml();
@@ -1232,7 +1235,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             description = "";
         }
 
-        Intent i = new Intent (context, Share.class);
+        Intent i = new Intent(context, Share.class);
         i.putExtra("fromActivity", "Note");
         i.putExtra("title", title);
         i.putExtra("description", description);

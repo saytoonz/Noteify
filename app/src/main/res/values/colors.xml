@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#fbfbfb</color>
+    <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDarkTheme">#171717</color>
     <color name="colorPrimaryDark">#171717</color>
     <color name="colorAccent">#02A72F</color>
     <color name="colorLightThemeText">#000000</color>
     <color name="colorDarkThemeText">#FFFFFF</color>
-    <color name="cardBackground">#fafafa</color>
+    <color name="cardBackground">#fefefe</color>
     <color name="cardBackgroundDarkTheme">#1f1f1f</color>
     <color name="buttonBackgroundDarkTheme">#0f0f0f</color>
 </resources>

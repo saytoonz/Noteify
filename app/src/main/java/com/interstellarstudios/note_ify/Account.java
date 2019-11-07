@@ -4,21 +4,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -38,11 +40,13 @@ import com.interstellarstudios.note_ify.database.ProfilePicEntity;
 import com.interstellarstudios.note_ify.models.Details;
 import com.interstellarstudios.note_ify.repository.Repository;
 import com.squareup.picasso.Picasso;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
 import es.dmoral.toasty.Toasty;
 
 public class Account extends AppCompatActivity {
@@ -55,15 +59,12 @@ public class Account extends AppCompatActivity {
     private FirebaseFirestore mFireBaseFireStore;
     private static final int PICK_IMAGE_REQUEST = 1;
     private GoogleSignInClient mGoogleSignInClient;
-    private  Repository repository;
-    private String androidUUID;
+    private Repository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
-
-        androidUUID = android.provider.Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         repository = new Repository(getApplication());
@@ -242,7 +243,7 @@ public class Account extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
-                        DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Tokens").collection("User_Tokens").document(androidUUID);
+                        DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
                         userTokenDocumentPath.delete();
 
                         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(context);

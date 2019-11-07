@@ -3,21 +3,26 @@ package com.interstellarstudios.note_ify;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+
 import es.dmoral.toasty.Toasty;
 
 public class ForgotPassword extends AppCompatActivity {
@@ -25,6 +30,7 @@ public class ForgotPassword extends AppCompatActivity {
     private Context context = this;
     private EditText editTextEmail;
     private FirebaseAuth mFireBaseAuth;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +39,9 @@ public class ForgotPassword extends AppCompatActivity {
 
         mFireBaseAuth = FirebaseAuth.getInstance();
 
-        editTextEmail = findViewById(R.id.editTextEmail);
+        editTextEmail = findViewById(R.id.edit_text_email);
 
-        Button buttonSendLink = findViewById(R.id.buttonSendLink);
+        Button buttonSendLink = findViewById(R.id.button_send_link);
         buttonSendLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,7 +49,7 @@ public class ForgotPassword extends AppCompatActivity {
             }
         });
 
-        TextView textViewSignIn = findViewById(R.id.textViewSignin);
+        TextView textViewSignIn = findViewById(R.id.text_view_go_to_sign_in);
         textViewSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,36 +57,108 @@ public class ForgotPassword extends AppCompatActivity {
             }
         });
 
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+        ImageView imageViewDarkMode = findViewById(R.id.image_view_dark_mode);
+        ImageView imageViewLightMode = findViewById(R.id.image_view_light_mode);
+
+        sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         Window window = this.getWindow();
-        View container = findViewById(R.id.container);
+        View container = findViewById(R.id.container2);
 
-        if(switchThemesOnOff) {
+        if (switchThemesOnOff) {
+
+            imageViewLightMode.setVisibility(View.VISIBLE);
+            imageViewDarkMode.setVisibility(View.GONE);
+
+            window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             if (container != null) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
+
             editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            buttonSendLink.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
         } else {
+
+            imageViewLightMode.setVisibility(View.GONE);
+            imageViewDarkMode.setVisibility(View.VISIBLE);
 
             window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
             if (container != null) {
                 container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
             }
+
+            editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
         }
+
+        imageViewDarkMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                imageViewLightMode.setVisibility(View.VISIBLE);
+                imageViewDarkMode.setVisibility(View.GONE);
+
+                window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                if (container != null) {
+                    container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                    container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
+                }
+
+                editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
+                saveDarkModePreference();
+            }
+        });
+
+        imageViewLightMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                imageViewLightMode.setVisibility(View.GONE);
+                imageViewDarkMode.setVisibility(View.VISIBLE);
+
+                window.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                if (container != null) {
+                    container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                }
+
+                editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
+                DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorLightThemeText));
+
+                saveLightModePreference();
+            }
+        });
     }
 
-    private void sendLink(){
+    private void saveLightModePreference() {
+
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        prefsEditor.putBoolean("switchThemes", false);
+        prefsEditor.apply();
+    }
+
+    private void saveDarkModePreference() {
+
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        prefsEditor.putBoolean("switchThemes", true);
+        prefsEditor.apply();
+    }
+
+    private void sendLink() {
 
         String email = editTextEmail.getText().toString().trim().toLowerCase();
 
-        if(TextUtils.isEmpty(email)){
+        if (TextUtils.isEmpty(email)) {
             Toasty.info(context, "Please enter your registered email address", Toast.LENGTH_LONG, true).show();
             return;
         }
@@ -92,7 +170,7 @@ public class ForgotPassword extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toasty.success(context, "Password reset email sent", Toast.LENGTH_LONG, true).show();
                             onBackPressed();
-                        }else{
+                        } else {
                             Toasty.error(context, "Error sending password reset email", Toast.LENGTH_LONG, true).show();
                         }
                     }
@@ -100,7 +178,7 @@ public class ForgotPassword extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed () {
+    public void onBackPressed() {
         super.onBackPressed();
         Intent i = new Intent(context, SignIn.class);
         startActivity(i);

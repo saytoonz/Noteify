@@ -78,7 +78,6 @@ public class NewCollection extends AppCompatActivity {
             mNewFolder.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             ImageViewCompat.setImageTintList(folderImageView, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
-            buttonSave.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
