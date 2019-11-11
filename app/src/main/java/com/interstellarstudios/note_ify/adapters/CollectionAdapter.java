@@ -49,7 +49,6 @@ public class CollectionAdapter extends FirestoreRecyclerAdapter <Collection, Col
             String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.colorDarkThemeText));
             holder.folder.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.folderDate.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            ImageViewCompat.setImageTintList(holder.folderImageView, ContextCompat.getColorStateList(mContext, R.color.colorDarkThemeText));
             holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext, R.color.cardBackgroundDarkTheme));
         }
     }

@@ -18,13 +18,11 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
-import android.speech.RecognizerIntent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,7 +45,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -65,7 +62,6 @@ import com.interstellarstudios.note_ify.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class Notes extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -78,7 +74,6 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
     private String folderId;
     private View newNoteOverlay;
     private ArrayList<String> searchSuggestions = new ArrayList<>();
-    private static final int SPEECH_INPUT_REQUEST = 2;
     private AutoCompleteTextView searchField;
     private List<RecentSearches> recentSearchesList = new ArrayList<>();
     private ArrayList<String> recentSearchesStringArrayList = new ArrayList<>();
@@ -231,14 +226,6 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
                 android.R.layout.simple_list_item_1, searchSuggestions);
         searchField.setAdapter(adapter);
 
-        ImageView voiceSearch = findViewById(R.id.voice_search);
-        voiceSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSpeechInput();
-            }
-        });
-
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         Window window = this.getWindow();
@@ -257,10 +244,6 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
             emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            searchField.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            searchField.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(voiceSearch, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -534,34 +517,6 @@ public class Notes extends AppCompatActivity implements NavigationView.OnNavigat
 
             String searchTitle = noteEntity.getTitle();
             searchSuggestions.add(searchTitle);
-        }
-    }
-
-    private void getSpeechInput() {
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, SPEECH_INPUT_REQUEST);
-        } else {
-            Toast.makeText(this, "This device doesn't support speech input", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == SPEECH_INPUT_REQUEST && resultCode == RESULT_OK) {
-
-            if (data != null) {
-                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                searchField.setText(result.get(0));
-
-                search();
-            }
         }
     }
 

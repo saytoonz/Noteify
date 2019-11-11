@@ -9,4 +9,6 @@
     <color name="cardBackground">#fefefe</color>
     <color name="cardBackgroundDarkTheme">#1f1f1f</color>
     <color name="buttonBackgroundDarkTheme">#0f0f0f</color>
+    <color name="SecondaryLight">#eaeaea</color>
+    <color name="TertiaryDark">#7b7b7b</color>
 </resources>

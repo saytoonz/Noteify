@@ -9,28 +9,33 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
 import androidx.appcompat.widget.Toolbar;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import android.speech.RecognizerIntent;
+
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -39,7 +44,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,9 +58,9 @@ import com.interstellarstudios.note_ify.database.NoteEntity;
 import com.interstellarstudios.note_ify.database.RecentSearches;
 import com.interstellarstudios.note_ify.models.Note;
 import com.interstellarstudios.note_ify.repository.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class SharedSortAlphabetical extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -67,7 +72,6 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
     private TextView emptyViewText;
     private View newNoteOverlay;
     private ArrayList<String> searchSuggestions = new ArrayList<>();
-    private static final int SPEECH_INPUT_REQUEST = 2;
     private AutoCompleteTextView searchField;
     private List<RecentSearches> recentSearchesList = new ArrayList<>();
     private ArrayList<String> recentSearchesStringArrayList = new ArrayList<>();
@@ -208,20 +212,12 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
                 android.R.layout.simple_list_item_1, searchSuggestions);
         searchField.setAdapter(adapter);
 
-        ImageView voiceSearch = findViewById(R.id.voice_search);
-        voiceSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSpeechInput();
-            }
-        });
-
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         Window window = this.getWindow();
         View container = findViewById(R.id.container);
 
-        if(switchThemesOnOff) {
+        if (switchThemesOnOff) {
 
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
@@ -235,10 +231,6 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
             emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            searchField.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            searchField.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(voiceSearch, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -509,34 +501,6 @@ public class SharedSortAlphabetical extends AppCompatActivity implements Navigat
 
             String searchTitle = noteEntity.getTitle();
             searchSuggestions.add(searchTitle);
-        }
-    }
-
-    private void getSpeechInput() {
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, SPEECH_INPUT_REQUEST);
-        } else {
-            Toast.makeText(this, "This device doesn't support speech input", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == SPEECH_INPUT_REQUEST && resultCode == RESULT_OK) {
-
-            if (data != null) {
-                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                searchField.setText(result.get(0));
-
-                search();
-            }
         }
     }
 

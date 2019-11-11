@@ -5,27 +5,32 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.MotionEvent;
 import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -36,15 +41,17 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.interstellarstudios.note_ify.adapters.GroceryListAdapter;
 import com.interstellarstudios.note_ify.models.GroceryItem;
+import com.interstellarstudios.note_ify.util.GrocerySuggestions;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
 import es.dmoral.toasty.Toasty;
 
 public class GroceryList extends AppCompatActivity {
 
     private Context context = this;
-    private EditText mEditTextName;
+    private AutoCompleteTextView mEditTextName;
     private TextView mTextViewAmount;
     private int mAmount = 0;
     private FirebaseFirestore mFireBaseFireStore;
@@ -85,9 +92,8 @@ public class GroceryList extends AppCompatActivity {
             }
         });
 
-        mEditTextName = findViewById(R.id.grocery_item);
+        mEditTextName = findViewById(R.id.searchField);
         mTextViewAmount = findViewById(R.id.grocery_amount);
-        ImageView itemIcon = findViewById(R.id.item_icon);
 
         final Button buttonIncrease = findViewById(R.id.button_increase);
         buttonIncrease.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +119,10 @@ public class GroceryList extends AppCompatActivity {
             }
         });
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
+                android.R.layout.simple_list_item_1, GrocerySuggestions.getGrocerySuggestions(context));
+        mEditTextName.setAdapter(adapter);
+
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         Window window = this.getWindow();
@@ -125,15 +135,7 @@ public class GroceryList extends AppCompatActivity {
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             toolbarShare.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            mEditTextName.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            mEditTextName.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(mEditTextName.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
             mTextViewAmount.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            buttonIncrease.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-            buttonIncrease.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            buttonDecrease.setTextColor(ContextCompat.getColor(context, R.color.colorLightThemeText));
-            buttonDecrease.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(itemIcon, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 

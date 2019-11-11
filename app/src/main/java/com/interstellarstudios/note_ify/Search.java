@@ -15,12 +15,9 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.speech.RecognizerIntent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,7 +39,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.interstellarstudios.note_ify.adapters.RecentSearchesAdapter;
 import com.interstellarstudios.note_ify.adapters.SearchAdapter;
@@ -52,7 +48,6 @@ import com.interstellarstudios.note_ify.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class Search extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -61,7 +56,6 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
     private RecyclerView recyclerView;
     private RecyclerView mRecentSearchesRecyclerView;
     private View newNoteOverlay;
-    private static final int SPEECH_INPUT_REQUEST = 2;
     private AutoCompleteTextView searchField;
     private SharedPreferences sharedPreferences;
     private String mSearchTerm;
@@ -91,14 +85,6 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         if (bundle != null) {
             mSearchTerm = bundle.getString("searchTerm");
         }
-
-        ImageView voiceSearch = findViewById(R.id.voice_search);
-        voiceSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSpeechInput();
-            }
-        });
 
         TextView textNote = findViewById(R.id.textView_text_note);
         TextView textSpeech = findViewById(R.id.textView_speech);
@@ -234,12 +220,8 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             textAttachment.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
-            searchField.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            searchField.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(searchField.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(voiceSearch, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -364,34 +346,6 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         super.onRestart();
         if (newNoteOverlay.getVisibility() == View.VISIBLE) {
             newNoteOverlay.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void getSpeechInput() {
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, SPEECH_INPUT_REQUEST);
-        } else {
-            Toast.makeText(this, "This device doesn't support speech input", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == SPEECH_INPUT_REQUEST && resultCode == RESULT_OK) {
-
-            if (data != null) {
-                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                searchField.setText(result.get(0));
-
-                search();
-            }
         }
     }
 
