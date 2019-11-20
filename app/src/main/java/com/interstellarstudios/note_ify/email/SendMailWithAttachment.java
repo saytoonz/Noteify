@@ -33,7 +33,7 @@ public class SendMailWithAttachment {
         emailArrayList.add(new SendSmtpEmailTo().email(sharedUserEmail));
 
         final SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
-        sendSmtpEmail.sender(new SendSmtpEmailSender().email("note-ify@interstellarstudios.co.uk").name("Note-ify"));
+        sendSmtpEmail.sender(new SendSmtpEmailSender().email("note-ify@nullparams.com").name("Note-ify"));
         sendSmtpEmail.to(emailArrayList);
         sendSmtpEmail.attachment(attachmentList);
 
@@ -644,7 +644,7 @@ public class SendMailWithAttachment {
                 "\n" +
                 "                                                    <tbody><tr>\n" +
                 "                                                        <td width=\"100%\" style=\"line-height: 1px;\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
-                "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://noteify.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fweb_computer.jpg?alt=media&token=96b0cbb5-abae-454a-8dd4-a9698f22f163\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
+                "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://nullparams.com\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"https://firebasestorage.googleapis.com/v0/b/note-ify-d3325.appspot.com/o/Email%20Images%2Fweb_computer.jpg?alt=media&token=96b0cbb5-abae-454a-8dd4-a9698f22f163\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
                 "                                                    </tr>\n" +
                 "                                                    </tbody></table>\n" +
                 "                                                </td><td class=\"rnb-force-col\" valign=\"top\">\n" +
@@ -657,7 +657,7 @@ public class SendMailWithAttachment {
                 "                                                    </tr><tr>\n" +
                 "                                                        <td height=\"10\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                 "                                                    </tr><tr>\n" +
-                "                                                        <td class=\"rnb-mbl-float-none\" style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif;color:#3c4858;float:right;width:350px; line-height: 21px;\"><div>Need some information? Check out our website:&nbsp;<a href=\"https://noteify.interstellarstudios.co.uk/\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">https://noteify.interstellarstudios.co.uk\u200B</a></div>\n" +
+                "                                                        <td class=\"rnb-mbl-float-none\" style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif;color:#3c4858;float:right;width:350px; line-height: 21px;\"><div>Need some information? Check out our website:&nbsp;<a href=\"https://nullparams.com/\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">https://nullparams.com\u200B</a></div>\n" +
                 "</td>\n" +
                 "                                                    </tr>\n" +
                 "                                                    </tbody></table>\n" +

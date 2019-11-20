@@ -477,9 +477,6 @@ public class SharedSortPriority extends AppCompatActivity implements NavigationV
         } else if (id == R.id.nav_account) {
             Intent n = new Intent(context, Account.class);
             startActivity(n);
-        } else if (id == R.id.nav_information) {
-            Intent o = new Intent(context, Information.class);
-            startActivity(o);
         } else if (id == R.id.nav_faq) {
             Intent p = new Intent(context, FAQ.class);
             startActivity(p);

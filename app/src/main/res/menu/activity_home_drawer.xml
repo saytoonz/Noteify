@@ -57,10 +57,6 @@
     <item android:title="@string/nav_drawer_info">
         <menu>
             <item
-                android:id="@+id/nav_information"
-                android:icon="@drawable/ic_info"
-                android:title="@string/nav_drawer_noticeboard" />
-            <item
                 android:id="@+id/nav_faq"
                 android:icon="@drawable/ic_help"
                 android:title="@string/nav_drawer_faq" />

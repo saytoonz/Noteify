@@ -102,7 +102,6 @@
         <activity
             android:name=".Themes"
             android:label="Themes" />
-        <activity android:name=".Information" />
         <activity
             android:name=".FAQ"
             android:label="FAQ" />
