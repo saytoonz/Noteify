@@ -56,6 +56,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -128,6 +129,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
     private String audioZipFileName = "";
     private View audioOverlay;
     private View imageOverlay;
+    private FirebaseAnalytics mFireBaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +138,7 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
 
         FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
+        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if (mFireBaseAuth.getCurrentUser() != null) {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
@@ -1128,6 +1131,10 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             Toasty.info(context, "Please enter a title", Toast.LENGTH_LONG, true).show();
             return;
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putString("note_name", title);
+        mFireBaseAnalytics.logEvent("new_note_saved", bundle);
 
         DocumentReference folderPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(folderId);
         folderPath.set(new Collection(folderId, noteDate));

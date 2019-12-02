@@ -9,8 +9,8 @@ android {
         applicationId "com.interstellarstudios.note_ify"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 20911
-        versionName "2.9.11"
+        versionCode 20912
+        versionName "2.9.12"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
