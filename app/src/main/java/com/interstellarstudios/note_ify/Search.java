@@ -5,30 +5,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.core.view.GravityCompat;
-
-import android.view.MenuItem;
-
-import com.google.android.material.navigation.NavigationView;
-
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.Window;
@@ -36,7 +26,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -49,13 +38,12 @@ import com.interstellarstudios.note_ify.repository.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Search extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class Search extends AppCompatActivity {
 
     private Context context = this;
     private RecyclerView.Adapter adapter;
     private RecyclerView recyclerView;
     private RecyclerView mRecentSearchesRecyclerView;
-    private View newNoteOverlay;
     private AutoCompleteTextView searchField;
     private SharedPreferences sharedPreferences;
     private String mSearchTerm;
@@ -86,103 +74,29 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             mSearchTerm = bundle.getString("searchTerm");
         }
 
-        TextView textNote = findViewById(R.id.textView_text_note);
-        TextView textSpeech = findViewById(R.id.textView_speech);
-        TextView textVoice = findViewById(R.id.textView_voice);
-        TextView textAttachment = findViewById(R.id.textView_attachment);
-
-        newNoteOverlay = findViewById(R.id.new_note_overlay);
-        newNoteOverlay.setVisibility(View.INVISIBLE);
-        newNoteOverlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-                    newNoteOverlay.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-
-        FloatingActionButton fabText = findViewById(R.id.fab_text);
-        fabText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", "Notebook");
-                i.putExtra("noteType", "note");
-                startActivity(i);
-            }
-        });
-
-        FloatingActionButton fabSpeechText = findViewById(R.id.fab_speech_text);
-        fabSpeechText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", "Notebook");
-                i.putExtra("noteType", "speech");
-                startActivity(i);
-            }
-        });
-
-        FloatingActionButton fabVoiceNote = findViewById(R.id.fab_voice_note);
-        fabVoiceNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", "Notebook");
-                i.putExtra("noteType", "voice");
-                startActivity(i);
-            }
-        });
-
-        FloatingActionButton fabAttachment = findViewById(R.id.fab_attach);
-        fabAttachment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", "Notebook");
-                i.putExtra("noteType", "attachment");
-                startActivity(i);
-            }
-        });
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.drawer_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
-        navDrawerMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawer.openDrawer(GravityCompat.START);
-            }
-        });
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        TextView textViewFragmentTitle = findViewById(R.id.text_view_fragment_title);
+        textViewFragmentTitle.setText("Search");
+
+        ImageView imageViewBack = findViewById(R.id.image_view_back);
+        imageViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("RestrictedApi")
             @Override
             public void onClick(View view) {
-                newNoteOverlay.setVisibility(View.VISIBLE);
-
-                YoYo.with(Techniques.FlipInX)
-                        .duration(400)
-                        .playOn(fabText);
-
-                YoYo.with(Techniques.FlipInX)
-                        .duration(400)
-                        .playOn(fabSpeechText);
-
-                YoYo.with(Techniques.FlipInX)
-                        .duration(400)
-                        .playOn(fabVoiceNote);
-
-                YoYo.with(Techniques.FlipInX)
-                        .duration(400)
-                        .playOn(fabAttachment);
+                Intent i = new Intent(context, NewNote.class);
+                i.putExtra("folderId", "Notebook");
+                i.putExtra("noteType", "note");
+                startActivity(i);
             }
         });
 
@@ -214,14 +128,10 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
-            newNoteOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
-            textNote.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textAttachment.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textViewFragmentTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(imageViewBack, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -232,57 +142,6 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
         }
 
         loadDataFromRepository();
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-            newNoteOverlay.setVisibility(View.INVISIBLE);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.nav_folders) {
-            Intent j = new Intent(context, Home.class);
-            startActivity(j);
-        } else if (id == R.id.nav_share) {
-            Intent j = new Intent(context, Shared.class);
-            startActivity(j);
-        } else if (id == R.id.nav_grocery_list) {
-            Intent k = new Intent(context, GroceryList.class);
-            startActivity(k);
-        } else if (id == R.id.nav_shared_grocery_list) {
-            Intent k = new Intent(context, SharedGroceryList.class);
-            startActivity(k);
-        } else if (id == R.id.nav_bin) {
-            Intent l = new Intent(context, Bin.class);
-            startActivity(l);
-        } else if (id == R.id.nav_themes) {
-            Intent l = new Intent(context, Themes.class);
-            startActivity(l);
-        } else if (id == R.id.nav_settings) {
-            Intent m = new Intent(context, Settings.class);
-            startActivity(m);
-        } else if (id == R.id.nav_account) {
-            Intent n = new Intent(context, Account.class);
-            startActivity(n);
-        } else if (id == R.id.nav_faq) {
-            Intent p = new Intent(context, FAQ.class);
-            startActivity(p);
-        }
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     private void loadDataFromRepository() {
@@ -319,31 +178,6 @@ public class Search extends AppCompatActivity implements NavigationView.OnNaviga
                 recyclerView.setAdapter(adapter);
             }
         }));
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus();
-            if (v instanceof EditText) {
-                Rect outRect = new Rect();
-                v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    v.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-            }
-        }
-        return super.dispatchTouchEvent(event);
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-            newNoteOverlay.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void search() {

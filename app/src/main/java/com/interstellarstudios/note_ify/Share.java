@@ -284,7 +284,7 @@ public class Share extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
 
-                        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
+                        SendMailGrocery.sendMail(sharedUserEmail, currentUserEmail, groceryArrayList);
 
                         UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
                         mSharedUserId = userDetails.getUserId();
@@ -335,7 +335,7 @@ public class Share extends AppCompatActivity {
 
                     } else {
 
-                        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
+                        SendMailGrocery.sendMail(sharedUserEmail, currentUserEmail, groceryArrayList);
 
                         Toasty.success(context, "Grocery List emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
@@ -370,7 +370,7 @@ public class Share extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
 
-                        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
+                        SendMailGrocery.sendMail(sharedUserEmail, currentUserEmail, groceryArrayList);
 
                         UserDetailsModel userDetails = document.toObject(UserDetailsModel.class);
                         mSharedUserId = userDetails.getUserId();
@@ -421,7 +421,7 @@ public class Share extends AppCompatActivity {
 
                     } else {
 
-                        SendMailGrocery.sendMail(context, sharedUserEmail, currentUserEmail, groceryArrayList);
+                        SendMailGrocery.sendMail(sharedUserEmail, currentUserEmail, groceryArrayList);
 
                         Toasty.success(context, "Grocery List emailed to " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
                         finish();
@@ -500,21 +500,21 @@ public class Share extends AppCompatActivity {
                         List<SendSmtpEmailAttachment> attachmentList = new ArrayList<>();
 
                         if (attachment_name.equals("") && audioZipFileName.equals("")) {
-                            SendMail.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+                            SendMail.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
                         }
                         if (!audioZipFileName.equals("") && attachment_name.equals("")) {
                             attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
 
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         } else if (audioZipFileName.equals("") && !attachment_name.equals("")) {
                             attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
 
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         } else {
                             attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
                             attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
 
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         }
 
                         Toasty.success(context, "Note shared with and emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();
@@ -525,21 +525,21 @@ public class Share extends AppCompatActivity {
                         List<SendSmtpEmailAttachment> attachmentList = new ArrayList<>();
 
                         if (attachment_name.equals("") && audioZipFileName.equals("")) {
-                            SendMail.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
+                            SendMail.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate);
                         }
                         if (!audioZipFileName.equals("") && attachment_name.equals("")) {
                             attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
 
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         } else if (audioZipFileName.equals("") && !attachment_name.equals("")) {
                             attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
 
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         } else {
                             attachmentList.add(new SendSmtpEmailAttachment().url(attachmentUrl).name(attachment_name));
                             attachmentList.add(new SendSmtpEmailAttachment().url(audioZipDownloadUrl).name(audioZipFileName));
 
-                            SendMailWithAttachment.sendMail(context, sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
+                            SendMailWithAttachment.sendMail(sharedUserEmail, currentUserEmail, title, description, priority, updatedRevision, noteDate, attachmentList);
                         }
 
                         Toasty.success(context, "Note emailed to: " + sharedUserEmail, Toast.LENGTH_LONG, true).show();

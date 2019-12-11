@@ -3,11 +3,12 @@ package com.interstellarstudios.note_ify;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
-import androidx.appcompat.widget.Toolbar;
+
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,6 +26,7 @@ import com.interstellarstudios.note_ify.models.Collection;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
 import es.dmoral.toasty.Toasty;
 
 public class NewCollection extends AppCompatActivity {
@@ -46,9 +49,6 @@ public class NewCollection extends AppCompatActivity {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         Button buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,16 +70,15 @@ public class NewCollection extends AppCompatActivity {
         Window window = this.getWindow();
         View container = findViewById(R.id.container);
 
-        if(switchThemesOnOff) {
+        if (switchThemesOnOff) {
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
+
             mNewFolder.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             mNewFolder.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
             DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             ImageViewCompat.setImageTintList(folderImageView, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
-            toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -100,7 +99,7 @@ public class NewCollection extends AppCompatActivity {
             return;
         }
 
-        if(folder.contains("/")){
+        if (folder.contains("/")) {
             Toasty.info(context, "Folder names may not contain a '/'", Toast.LENGTH_LONG, true).show();
             return;
         }
@@ -116,16 +115,16 @@ public class NewCollection extends AppCompatActivity {
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             View v = getCurrentFocus();
-            if ( v instanceof EditText) {
+            if (v instanceof EditText) {
                 Rect outRect = new Rect();
                 v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
                     v.clearFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 }
             }
         }
-        return super.dispatchTouchEvent( event );
+        return super.dispatchTouchEvent(event);
     }
 }

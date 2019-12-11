@@ -3,16 +3,19 @@ package com.interstellarstudios.note_ify.adapters;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,7 +33,9 @@ import com.interstellarstudios.note_ify.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
 import android.content.Context;
+
 import jp.wasabeef.richeditor.RichEditor;
 
 public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.NoteHolder> {
@@ -78,7 +83,8 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             holder.textViewFromUserEmail.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.textViewRevision.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.textViewPriority.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext, R.color.cardBackgroundDarkTheme));
+            holder.container.setBackgroundResource(R.color.colorPrimaryDark);
+            holder.container2.setBackgroundResource(R.drawable.rounded_edges_dark);
 
             String colorDarkThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.cardBackgroundDarkTheme));
             holder.mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeCardBackgroundString));
@@ -226,10 +232,11 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         TextView textViewFromUserEmail;
         TextView textViewRevision;
         ImageView attachment_icon;
-        CardView cardView;
         TextView attachmentName;
         ImageView playIcon;
         TextView playText;
+        ConstraintLayout container;
+        ConstraintLayout container2;
 
         public NoteHolder(View itemView) {
             super(itemView);
@@ -247,10 +254,11 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             textViewFromUserEmail = itemView.findViewById(R.id.fromUserEmail);
             textViewRevision = itemView.findViewById(R.id.revision);
             attachment_icon = itemView.findViewById(R.id.attachment_icon);
-            cardView = itemView.findViewById(R.id.cardView);
             attachmentName = itemView.findViewById(R.id.attachmentName);
             playIcon = itemView.findViewById(R.id.audio_icon);
             playText = itemView.findViewById(R.id.audio_text);
+            container = itemView.findViewById(R.id.container);
+            container2 = itemView.findViewById(R.id.container2);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

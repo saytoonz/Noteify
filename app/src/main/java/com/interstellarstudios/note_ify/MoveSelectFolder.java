@@ -4,15 +4,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -53,18 +59,29 @@ public class MoveSelectFolder extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        TextView textViewFragmentTitle = findViewById(R.id.text_view_fragment_title);
+        textViewFragmentTitle.setText("Move Note");
+
+        ImageView imageViewBack = findViewById(R.id.image_view_back);
+        imageViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
         Window window = this.getWindow();
         View container = findViewById(R.id.container);
 
-        if(switchThemesOnOff) {
+        if (switchThemesOnOff) {
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textViewFragmentTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(imageViewBack, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -113,7 +130,7 @@ public class MoveSelectFolder extends AppCompatActivity {
                     DocumentReference to = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document(toFolderId).collection(toFolderId).document(documentId);
                     moveFireStoreDocument(from, to);
 
-                    Intent i = new Intent(context, Home.class);
+                    Intent i = new Intent(context, MainActivity.class);
                     startActivity(i);
                 }
             }

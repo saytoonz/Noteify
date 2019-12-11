@@ -3,16 +3,18 @@ package com.interstellarstudios.note_ify.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,7 +27,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.interstellarstudios.note_ify.models.Collection;
 import com.interstellarstudios.note_ify.R;
 
-public class CollectionAdapter extends FirestoreRecyclerAdapter <Collection, CollectionAdapter.CollectionHolder> {
+public class CollectionAdapter extends FirestoreRecyclerAdapter<Collection, CollectionAdapter.CollectionHolder> {
 
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private String current_user_id = firebaseAuth.getCurrentUser().getUid();
@@ -45,11 +47,12 @@ public class CollectionAdapter extends FirestoreRecyclerAdapter <Collection, Col
         holder.folder.setText(model.getFolder());
         holder.folderDate.setText(model.getFolderDate());
 
-        if(switchThemesOnOff) {
+        if (switchThemesOnOff) {
             String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.colorDarkThemeText));
             holder.folder.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.folderDate.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(mContext, R.color.cardBackgroundDarkTheme));
+            holder.container.setBackgroundResource(R.color.colorPrimaryDark);
+            holder.container2.setBackgroundResource(R.drawable.rounded_edges_dark);
         }
     }
 
@@ -72,7 +75,7 @@ public class CollectionAdapter extends FirestoreRecyclerAdapter <Collection, Col
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     boolean isEmpty = task.getResult().isEmpty();
-                    if (isEmpty == true){
+                    if (isEmpty == true) {
                         getSnapshots().getSnapshot(position).getReference().delete();
                     }
                 }
@@ -85,14 +88,16 @@ public class CollectionAdapter extends FirestoreRecyclerAdapter <Collection, Col
         TextView folder;
         TextView folderDate;
         ImageView folderImageView;
-        CardView cardView;
+        ConstraintLayout container;
+        ConstraintLayout container2;
 
         public CollectionHolder(View itemView) {
             super(itemView);
             folder = itemView.findViewById(R.id.text_view_folder);
             folderDate = itemView.findViewById(R.id.folderDate);
             folderImageView = itemView.findViewById(R.id.folderImageView);
-            cardView = itemView.findViewById(R.id.cardView);
+            container = itemView.findViewById(R.id.container);
+            container2 = itemView.findViewById(R.id.container2);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

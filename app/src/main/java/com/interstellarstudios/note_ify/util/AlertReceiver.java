@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.interstellarstudios.note_ify.Home;
+import com.interstellarstudios.note_ify.MainActivity;
 import com.interstellarstudios.note_ify.R;
 import com.interstellarstudios.note_ify.email.ReminderEmail;
 import static android.content.Context.MODE_PRIVATE;
@@ -78,7 +80,7 @@ public class AlertReceiver extends BroadcastReceiver {
 
     private NotificationCompat.Builder getNotificationBuilder() {
 
-        Intent notificationIntent = new Intent(mContext, Home.class);
+        Intent notificationIntent = new Intent(mContext, MainActivity.class);
         PendingIntent notificationPendingIntent = PendingIntent.getActivity
                 (mContext, NOTIFICATION_ID, notificationIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
@@ -88,6 +90,7 @@ public class AlertReceiver extends BroadcastReceiver {
                 .setContentTitle(mContext.getString(R.string.notification_title))
                 .setContentText(mContext.getString(R.string.notification_text))
                 .setSmallIcon(R.drawable.ic_notification)
+                .setColor(ContextCompat.getColor(mContext, R.color.colorAccent))
                 .setAutoCancel(true).setContentIntent(notificationPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(NotificationCompat.DEFAULT_ALL);

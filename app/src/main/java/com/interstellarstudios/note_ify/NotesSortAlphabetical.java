@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.core.content.ContextCompat;
@@ -23,26 +20,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-
-import androidx.core.view.GravityCompat;
-
 import android.view.MenuItem;
 
-import com.google.android.material.navigation.NavigationView;
-
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.Menu;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -55,15 +39,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.interstellarstudios.note_ify.adapters.NoteAdapter;
-import com.interstellarstudios.note_ify.database.NoteEntity;
-import com.interstellarstudios.note_ify.database.RecentSearches;
 import com.interstellarstudios.note_ify.models.Note;
-import com.interstellarstudios.note_ify.repository.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class NotesSortAlphabetical extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class NotesSortAlphabetical extends AppCompatActivity {
 
     private Context context = this;
     private String mCurrentUserID;
@@ -72,12 +50,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
     private ImageView emptyView;
     private TextView emptyViewText;
     private String folderId;
-    private View newNoteOverlay;
-    private ArrayList<String> searchSuggestions = new ArrayList<>();
-    private AutoCompleteTextView searchField;
-    private List<RecentSearches> recentSearchesList = new ArrayList<>();
-    private ArrayList<String> recentSearchesStringArrayList = new ArrayList<>();
-    private Repository repository;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +58,6 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
         setContentView(R.layout.activity_notes);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        repository = new Repository(getApplication());
 
         final Bundle bundle = getIntent().getExtras();
 
@@ -102,24 +74,27 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
             return;
         }
 
-        TextView textNote = findViewById(R.id.textView_text_note);
-        TextView textSpeech = findViewById(R.id.textView_speech);
-        TextView textVoice = findViewById(R.id.textView_voice);
-        TextView textAttachment = findViewById(R.id.textView_attachment);
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        newNoteOverlay = findViewById(R.id.new_note_overlay);
-        newNoteOverlay.setVisibility(View.GONE);
-        newNoteOverlay.setOnClickListener(new View.OnClickListener() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setOverflowIcon(ContextCompat.getDrawable(context, R.drawable.ic_sort));
+        setSupportActionBar(toolbar);
+
+        TextView textViewFragmentTitle = findViewById(R.id.text_view_fragment_title);
+        textViewFragmentTitle.setText(folderId);
+
+        ImageView imageViewBack = findViewById(R.id.image_view_back);
+        imageViewBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-                    newNoteOverlay.setVisibility(View.GONE);
-                }
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
-        FloatingActionButton fabText = findViewById(R.id.fab_text);
-        fabText.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String folderId = bundle.getString("folderId");
@@ -130,101 +105,8 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
             }
         });
 
-        FloatingActionButton fabSpeechText = findViewById(R.id.fab_speech_text);
-        fabSpeechText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String folderId = bundle.getString("folderId");
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", folderId);
-                i.putExtra("noteType", "speech");
-                startActivity(i);
-            }
-        });
-
-        FloatingActionButton fabVoiceNote = findViewById(R.id.fab_voice_note);
-        fabVoiceNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String folderId = bundle.getString("folderId");
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", folderId);
-                i.putExtra("noteType", "voice");
-                startActivity(i);
-            }
-        });
-
-        FloatingActionButton fabAttachment = findViewById(R.id.fab_attach);
-        fabAttachment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String folderId = bundle.getString("folderId");
-                Intent i = new Intent(context, NewNote.class);
-                i.putExtra("folderId", folderId);
-                i.putExtra("noteType", "attachment");
-                startActivity(i);
-            }
-        });
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(folderId + " (Sort: Alphabetical)");
-        toolbar.setOverflowIcon(ContextCompat.getDrawable(context, R.drawable.ic_sort));
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                newNoteOverlay.setVisibility(View.VISIBLE);
-
-                YoYo.with(Techniques.FlipInX)
-                        .duration(400)
-                        .playOn(fabText);
-
-                YoYo.with(Techniques.FlipInX)
-                        .duration(400)
-                        .playOn(fabSpeechText);
-
-                YoYo.with(Techniques.FlipInX)
-                        .duration(400)
-                        .playOn(fabVoiceNote);
-
-                YoYo.with(Techniques.FlipInX)
-                        .duration(400)
-                        .playOn(fabAttachment);
-            }
-        });
-
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.drawer_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        final ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
-        navDrawerMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawer.openDrawer(GravityCompat.START);
-            }
-        });
-
         emptyView = findViewById(R.id.emptyView);
         emptyViewText = findViewById(R.id.emptyViewText);
-
-        searchField = findViewById(R.id.searchField);
-        searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            public boolean onEditorAction(TextView v, int actionId,
-                                          KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    search();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
-                android.R.layout.simple_list_item_1, searchSuggestions);
-        searchField.setAdapter(adapter);
 
         boolean switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
 
@@ -236,15 +118,12 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
             if (container != null) {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
-            newNoteOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
-            textNote.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textAttachment.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(navDrawerMenu, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
-            emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textViewFragmentTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(imageViewBack, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(emptyView, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
 
         } else {
 
@@ -255,20 +134,6 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
         }
 
         setUpRecyclerView();
-        loadDataFromRepository();
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else if (newNoteOverlay.getVisibility() == View.VISIBLE) {
-            newNoteOverlay.setVisibility(View.GONE);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     @Override
@@ -287,6 +152,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
             Intent i = new Intent(context, Notes.class);
             i.putExtra("folderId", folderId);
             startActivity(i);
+            finish();
             return true;
         }
         if (id == R.id.sort_priority) {
@@ -295,6 +161,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
             Intent i = new Intent(context, NotesSortPriority.class);
             i.putExtra("folderId", folderId);
             startActivity(i);
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -304,22 +171,19 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
-        final Drawable swipeBackground = new ColorDrawable(Color.parseColor("#e22018"));
-        final Drawable swipeBackground2 = new ColorDrawable(Color.parseColor("#0b37cb"));
-        final Drawable deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
-        final Drawable moveIcon = ContextCompat.getDrawable(context, R.drawable.ic_move);
+        Drawable swipeBackground = new ColorDrawable(Color.parseColor("#e22018"));
+        Drawable swipeBackground2 = new ColorDrawable(Color.parseColor("#0b37cb"));
+        Drawable deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
+        Drawable moveIcon = ContextCompat.getDrawable(context, R.drawable.ic_move);
 
-        final CollectionReference notebookRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document(folderId).collection(folderId);
-        Query query = notebookRef.orderBy("title", Query.Direction.ASCENDING);
+        CollectionReference notebookRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document(folderId).collection(folderId);
+        Query query = notebookRef.orderBy("date", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
                 .setQuery(query, Note.class)
                 .build();
 
         adapter = new NoteAdapter(options, sharedPreferences, context);
-
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
 
         notebookRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -439,6 +303,7 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
                 i.putExtra("revision", revision);
                 i.putExtra("attachmentUrl", attachmentUrl);
                 i.putExtra("attachmentName", attachmentName);
+                i.putExtra("collectionId", "Main");
                 i.putExtra("audioDownloadUrl", audioDownloadUrl);
                 i.putExtra("audioZipDownloadUrl", audioZipDownloadUrl);
                 i.putExtra("audioZipFileName", audioZipFileName);
@@ -448,8 +313,25 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
+
+        CollectionReference myListsRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document(folderId).collection(folderId);
+        myListsRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (queryDocumentSnapshots.isEmpty()) {
+                    recyclerView.setVisibility(View.INVISIBLE);
+                    emptyView.setVisibility(View.VISIBLE);
+                    emptyViewText.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.INVISIBLE);
+                    emptyViewText.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
         adapter.startListening();
     }
 
@@ -457,114 +339,5 @@ public class NotesSortAlphabetical extends AppCompatActivity implements Navigati
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.nav_search) {
-            Intent i = new Intent(context, Search.class);
-            i.putExtra("searchTerm", "");
-            startActivity(i);
-        } else if (id == R.id.nav_folders) {
-            Intent j = new Intent(context, Home.class);
-            startActivity(j);
-        } else if (id == R.id.nav_share) {
-            Intent j = new Intent(context, Shared.class);
-            startActivity(j);
-        } else if (id == R.id.nav_grocery_list) {
-            Intent k = new Intent(context, GroceryList.class);
-            startActivity(k);
-        } else if (id == R.id.nav_shared_grocery_list) {
-            Intent k = new Intent(context, SharedGroceryList.class);
-            startActivity(k);
-        } else if (id == R.id.nav_bin) {
-            Intent l = new Intent(context, Bin.class);
-            startActivity(l);
-        } else if (id == R.id.nav_themes) {
-            Intent l = new Intent(context, Themes.class);
-            startActivity(l);
-        } else if (id == R.id.nav_settings) {
-            Intent m = new Intent(context, Settings.class);
-            startActivity(m);
-        } else if (id == R.id.nav_account) {
-            Intent n = new Intent(context, Account.class);
-            startActivity(n);
-        } else if (id == R.id.nav_faq) {
-            Intent p = new Intent(context, FAQ.class);
-            startActivity(p);
-        }
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        recreate();
-    }
-
-    private void loadDataFromRepository() {
-
-        List<NoteEntity> noteList = repository.getAllNotes();
-
-        for (NoteEntity noteEntity : noteList) {
-
-            String searchTitle = noteEntity.getTitle();
-            searchSuggestions.add(searchTitle);
-        }
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus();
-            if (v instanceof EditText) {
-                Rect outRect = new Rect();
-                v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    v.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-            }
-        }
-        return super.dispatchTouchEvent(event);
-    }
-
-    private void search() {
-
-        recentSearchesList.clear();
-        recentSearchesStringArrayList.clear();
-
-        String searchTerm = searchField.getText().toString().trim().toLowerCase();
-
-        recentSearchesList = repository.getRecentSearches();
-
-        for (RecentSearches recentSearches : recentSearchesList) {
-            String recentSearchesListString = recentSearches.getSearchTerm();
-            recentSearchesStringArrayList.add(recentSearchesListString);
-        }
-
-        if (!recentSearchesStringArrayList.contains(searchTerm) && !searchTerm.equals("")) {
-            long timeStamp = System.currentTimeMillis();
-            RecentSearches recentSearches = new RecentSearches(timeStamp, searchTerm);
-            repository.insert(recentSearches);
-
-        } else if (recentSearchesStringArrayList.contains(searchTerm)) {
-            long timeStampQuery = repository.getTimeStamp(searchTerm);
-            RecentSearches recentSearchesOld = new RecentSearches(timeStampQuery, searchTerm);
-            repository.delete(recentSearchesOld);
-
-            long timeStamp = System.currentTimeMillis();
-            RecentSearches recentSearchesNew = new RecentSearches(timeStamp, searchTerm);
-            repository.insert(recentSearchesNew);
-        }
-
-        Intent i = new Intent(context, Search.class);
-        i.putExtra("searchTerm", searchTerm);
-        startActivity(i);
     }
 }

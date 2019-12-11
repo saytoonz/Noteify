@@ -27,6 +27,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -35,13 +36,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.interstellarstudios.note_ify.firestore.GetData;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.interstellarstudios.note_ify.models.Collection;
 import com.interstellarstudios.note_ify.models.UserDetailsModel;
-import com.interstellarstudios.note_ify.repository.Repository;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 import sendinblue.ApiException;
@@ -59,7 +62,6 @@ public class SignIn extends AppCompatActivity {
     private FirebaseUser mCurrentUser;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
-    private Repository repository;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -68,7 +70,6 @@ public class SignIn extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        repository = new Repository(getApplication());
 
         mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
@@ -299,11 +300,9 @@ public class SignIn extends AppCompatActivity {
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
                             userMapPath.set(new UserDetailsModel(mCurrentUserId));
 
-                            GetData.allNotes(mFireBaseFireStore, mCurrentUserId, repository);
-                            GetData.profilePic(mFireBaseFireStore, mCurrentUserId, repository);
-                            saveNonGuestPreferences();
+                            registerToken();
 
-                            Intent i = new Intent(context, Home.class);
+                            Intent i = new Intent(context, MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
                             finish();
@@ -343,11 +342,9 @@ public class SignIn extends AppCompatActivity {
                                 mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
                             }
 
-                            saveNonGuestPreferences();
-                            GetData.allNotes(mFireBaseFireStore, mCurrentUserId, repository);
-                            GetData.profilePic(mFireBaseFireStore, mCurrentUserId, repository);
+                            registerToken();
 
-                            Intent i = new Intent(context, Home.class);
+                            Intent i = new Intent(context, MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
                             finish();
@@ -363,18 +360,10 @@ public class SignIn extends AppCompatActivity {
                 });
     }
 
-    private void saveNonGuestPreferences() {
-
-        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
-        prefsEditor.putBoolean("guestAccount", false);
-        prefsEditor.apply();
-    }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(context, Register.class);
-        startActivity(i);
+        finish();
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 
@@ -387,5 +376,21 @@ public class SignIn extends AppCompatActivity {
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private void registerToken() {
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String deviceToken = instanceIdResult.getToken();
+
+                Map<String, Object> userToken = new HashMap<>();
+                userToken.put("User_Token_ID", deviceToken);
+
+                DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
+                userTokenDocumentPath.set(userToken);
+            }
+        });
     }
 }

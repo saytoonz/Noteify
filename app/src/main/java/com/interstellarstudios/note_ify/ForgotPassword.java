@@ -1,7 +1,7 @@
 package com.interstellarstudios.note_ify;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -168,8 +169,11 @@ public class ForgotPassword extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toasty.success(context, "Password reset email sent", Toast.LENGTH_LONG, true).show();
+
+                            hideKeyboard(ForgotPassword.this);
                             onBackPressed();
+
+                            Toasty.success(context, "Password reset email sent", Toast.LENGTH_LONG, true).show();
                         } else {
                             Toasty.error(context, "Error sending password reset email", Toast.LENGTH_LONG, true).show();
                         }
@@ -180,8 +184,18 @@ public class ForgotPassword extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(context, SignIn.class);
-        startActivity(i);
+        finish();
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

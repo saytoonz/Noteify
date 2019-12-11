@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -23,11 +24,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -36,17 +39,20 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.interstellarstudios.note_ify.email.RegistrationEmail;
-import com.interstellarstudios.note_ify.firestore.GetData;
 import com.interstellarstudios.note_ify.models.Collection;
 import com.interstellarstudios.note_ify.models.UserDetailsModel;
-import com.interstellarstudios.note_ify.repository.Repository;
+
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -78,7 +84,6 @@ public class Register extends AppCompatActivity {
     private FirebaseUser mCurrentUser;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
-    private Repository repository;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -87,17 +92,15 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        repository = new Repository(getApplication());
         mFireBaseAuth = FirebaseAuth.getInstance();
         mFireBaseFireStore = FirebaseFirestore.getInstance();
 
         if (mFireBaseAuth.getCurrentUser() != null) {
 
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
-            GetData.allNotes(mFireBaseFireStore, mCurrentUserId, repository);
-            GetData.profilePic(mFireBaseFireStore, mCurrentUserId, repository);
+
             finish();
-            Intent i = new Intent(context, Home.class);
+            Intent i = new Intent(context, MainActivity.class);
             startActivity(i);
         }
 
@@ -341,11 +344,9 @@ public class Register extends AppCompatActivity {
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
                             userMapPath.set(new UserDetailsModel(mCurrentUserId));
 
-                            saveNonGuestPreferences();
-                            GetData.allNotes(mFireBaseFireStore, mCurrentUserId, repository);
-                            GetData.profilePic(mFireBaseFireStore, mCurrentUserId, repository);
+                            registerToken();
 
-                            Intent i = new Intent(context, Home.class);
+                            Intent i = new Intent(context, MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
                             finish();
@@ -411,9 +412,9 @@ public class Register extends AppCompatActivity {
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
                             userMapPath.set(new UserDetailsModel(mCurrentUserId));
 
-                            saveNonGuestPreferences();
+                            registerToken();
 
-                            Intent i = new Intent(context, Home.class);
+                            Intent i = new Intent(context, MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
                             finish();
@@ -437,7 +438,7 @@ public class Register extends AppCompatActivity {
         int num = rand.nextInt(9000000) + 1000000;
         String randomNumber = Integer.toString(num);
 
-        String guestEmail = "guest" + randomNumber + "@interstellarstudios.co.uk";
+        String guestEmail = "guest" + randomNumber + "@nullparams.com";
         String guestPassword = md5(guestEmail);
 
         mProgressDialog.setMessage("Launching");
@@ -469,9 +470,9 @@ public class Register extends AppCompatActivity {
                             DocumentReference userMapPath = mFireBaseFireStore.collection("User_List").document(mCurrentUserEmail);
                             userMapPath.set(new UserDetailsModel(mCurrentUserId));
 
-                            saveGuestPreferences();
+                            registerToken();
 
-                            Intent i = new Intent(context, Home.class);
+                            Intent i = new Intent(context, MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
                             finish();
@@ -498,20 +499,6 @@ public class Register extends AppCompatActivity {
         return "";
     }
 
-    private void saveGuestPreferences() {
-
-        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
-        prefsEditor.putBoolean("guestAccount", true);
-        prefsEditor.apply();
-    }
-
-    private void saveNonGuestPreferences() {
-
-        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
-        prefsEditor.putBoolean("guestAccount", false);
-        prefsEditor.apply();
-    }
-
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
@@ -521,5 +508,21 @@ public class Register extends AppCompatActivity {
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private void registerToken() {
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String deviceToken = instanceIdResult.getToken();
+
+                Map<String, Object> userToken = new HashMap<>();
+                userToken.put("User_Token_ID", deviceToken);
+
+                DocumentReference userTokenDocumentPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("User_Token");
+                userTokenDocumentPath.set(userToken);
+            }
+        });
     }
 }

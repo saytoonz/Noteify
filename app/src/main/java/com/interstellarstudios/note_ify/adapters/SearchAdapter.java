@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,11 +38,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         TextView textViewFromUserEmail;
         TextView textViewRevision;
         ImageView attachment_icon;
-        CardView cardView;
         TextView attachmentName;
         ImageView playIcon;
         TextView playText;
         View parentView;
+        ConstraintLayout container;
+        ConstraintLayout container2;
 
         SearchViewHolder(View itemView) {
             super(itemView);
@@ -59,10 +61,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
             textViewFromUserEmail = itemView.findViewById(R.id.fromUserEmail);
             textViewRevision = itemView.findViewById(R.id.revision);
             attachment_icon = itemView.findViewById(R.id.attachment_icon);
-            cardView = itemView.findViewById(R.id.cardView);
             attachmentName = itemView.findViewById(R.id.attachmentName);
             playIcon = itemView.findViewById(R.id.audio_icon);
             playText = itemView.findViewById(R.id.audio_text);
+            container = itemView.findViewById(R.id.container);
+            container2 = itemView.findViewById(R.id.container2);
 
             parentView = itemView;
         }
@@ -95,7 +98,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
             holder.textViewFromUserEmail.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.textViewRevision.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.textViewPriority.setTextColor(Color.parseColor(colorDarkThemeTextString));
-            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardBackgroundDarkTheme));
+            holder.container.setBackgroundResource(R.color.colorPrimaryDark);
+            holder.container2.setBackgroundResource(R.drawable.rounded_edges_dark);
 
             String colorDarkThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.cardBackgroundDarkTheme));
             holder.mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeCardBackgroundString));
