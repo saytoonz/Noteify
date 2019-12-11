@@ -20,10 +20,6 @@ Themes
 
 Quickly switch between light and dark themes with the flick of a switch.
 
-Grocery Lists
-
-Share grocery lists instantly via email and device-to-device push notifications with the click of a button.
-
 Search
 
 Use powerful search with suggestions to quickly find what you need. Use real time search to find notes in all of your folders, shared notes and notes in the Bin by title or description.
