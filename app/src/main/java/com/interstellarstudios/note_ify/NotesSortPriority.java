@@ -177,7 +177,7 @@ public class NotesSortPriority extends AppCompatActivity {
         Drawable moveIcon = ContextCompat.getDrawable(context, R.drawable.ic_move);
 
         CollectionReference notebookRef = mFireBaseFireStore.collection("Users").document(mCurrentUserID).collection("Main").document(folderId).collection(folderId);
-        Query query = notebookRef.orderBy("date", Query.Direction.DESCENDING);
+        Query query = notebookRef.orderBy("priority", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
                 .setQuery(query, Note.class)

@@ -26,7 +26,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     private Context context;
     private List<NoteEntity> NoteList;
-    private boolean switchPriorityOnOff;
+    //private boolean switchPriorityOnOff;
     private boolean switchThemesOnOff;
 
     class SearchViewHolder extends RecyclerView.ViewHolder {
@@ -73,7 +73,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     public SearchAdapter(List<NoteEntity> NoteList, SharedPreferences sharedPreferences) {
 
-        switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
+        //switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
         switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
         this.NoteList = NoteList;
     }
@@ -124,7 +124,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
             holder.mEditor.setHtml(shortDescription);
         }
 
-        if (switchPriorityOnOff) {
+        holder.textViewPriority.setText("Priority: " + currentItem.getPriority());
+
+        /*if (switchPriorityOnOff) {
             int priority = currentItem.getPriority();
             if (priority >= 1 && priority <= 3) {
                 holder.textViewPriority.setText("Priority: " + priority);
@@ -140,7 +142,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
             }
         } else {
             holder.textViewPriority.setText("Priority: " + currentItem.getPriority());
-        }
+        }*/
 
         holder.textViewDate.setText(currentItem.getDate());
         holder.textViewFromUserEmail.setText(currentItem.getFromEmailAddress());

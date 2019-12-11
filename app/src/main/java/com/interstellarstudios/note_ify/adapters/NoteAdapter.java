@@ -44,13 +44,13 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
     private String current_user_id = firebaseAuth.getCurrentUser().getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private OnItemClickListener listener;
-    private boolean switchPriorityOnOff;
+    //private boolean switchPriorityOnOff;
     private boolean switchThemesOnOff;
     private Context mContext;
 
     public NoteAdapter(@NonNull FirestoreRecyclerOptions<Note> options, SharedPreferences sharedPreferences, Context context) {
         super(options);
-        switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
+        //switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
         switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
         mContext = context;
     }
@@ -91,7 +91,9 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             holder.mEditor.setEditorFontColor(Color.parseColor(colorDarkThemeTextString));
         }
 
-        if (switchPriorityOnOff) {
+        holder.textViewPriority.setText("Priority: " + model.getPriority());
+
+        /*if (switchPriorityOnOff) {
             int priority = model.getPriority();
             if (priority >= 1 && priority <= 3) {
                 holder.textViewPriority.setText("Priority: " + priority);
@@ -107,7 +109,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             }
         } else {
             holder.textViewPriority.setText("Priority: " + model.getPriority());
-        }
+        }*/
 
         holder.textViewDate.setText(model.getDate());
         holder.textViewFromUserEmail.setText(model.getFromEmailAddress());
