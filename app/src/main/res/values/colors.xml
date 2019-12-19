@@ -5,10 +5,8 @@
     <color name="colorPrimaryDark">#171717</color>
     <color name="colorAccent">#02A72F</color>
     <color name="colorLightThemeText">#000000</color>
-    <color name="colorDarkThemeText">#FFFFFF</color>
-    <color name="cardBackground">#eaeaea</color>
     <color name="cardBackgroundDarkTheme">#202020</color>
     <color name="buttonBackgroundDarkTheme">#0f0f0f</color>
-    <color name="SecondaryLight">#eaeaea</color>
+    <color name="SecondaryLight">#E7E7E7</color>
     <color name="TertiaryDark">#7b7b7b</color>
 </resources>

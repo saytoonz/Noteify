@@ -113,13 +113,6 @@ public class MainActivity extends AppCompatActivity {
                 .monitor();
         AppRate.showRateDialogIfMeetsConditions(this);
 
-        if (savedInstanceState == null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_frame, new HomeFragment());
-            fragmentTransaction.commit();
-        }
-
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
 
         FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
@@ -136,8 +129,19 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
+        bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav.setOnNavigationItemSelectedListener(navListener);
+        bottomNav.setLabelVisibilityMode(LabelVisibilityMode.LABEL_VISIBILITY_SELECTED);
+
         textViewFragmentTitle = findViewById(R.id.text_view_fragment_title);
         textViewFragmentTitle.setText("Home");
+
+        if (savedInstanceState == null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_frame, new HomeFragment());
+            fragmentTransaction.commit();
+        }
 
         searchField = findViewById(R.id.searchField);
         searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -154,10 +158,6 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
                 android.R.layout.simple_list_item_1, searchSuggestions);
         searchField.setAdapter(adapter);
-
-        bottomNav = findViewById(R.id.bottom_nav);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
-        bottomNav.setLabelVisibilityMode(LabelVisibilityMode.LABEL_VISIBILITY_SELECTED);
 
         imageViewToolbarAdd = findViewById(R.id.toolbar_add);
         imageViewToolbarAdd.setOnClickListener(new View.OnClickListener() {

@@ -182,16 +182,16 @@ public class Register extends AppCompatActivity {
                 container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
-            editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
+            textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
 
         } else {
 
@@ -227,16 +227,16 @@ public class Register extends AppCompatActivity {
                     container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
                     container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
                 }
-                editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
+                editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
+                editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
+                textViewSignIn.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
 
                 saveDarkModePreference();
             }

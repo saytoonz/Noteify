@@ -131,15 +131,15 @@ public class UpdateUserDetailsActivity extends AppCompatActivity {
             container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
         }
 
-        editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+        editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
+        editTextPassword.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        editTextPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        DrawableCompat.setTint(editTextPassword.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
+        editTextConfirmPassword.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        editTextConfirmPassword.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        DrawableCompat.setTint(editTextConfirmPassword.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
     }
 
     @Override

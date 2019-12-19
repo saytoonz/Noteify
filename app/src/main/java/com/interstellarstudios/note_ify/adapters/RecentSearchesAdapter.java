@@ -72,7 +72,7 @@ public class RecentSearchesAdapter extends RecyclerView.Adapter<RecentSearchesAd
 
         if (switchThemesOnOff) {
             holder.card.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            holder.searchTermTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            holder.searchTermTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
         }
 
         String searchTerm = currentItem.getSearchTerm();

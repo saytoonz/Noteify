@@ -44,13 +44,11 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
     private String current_user_id = firebaseAuth.getCurrentUser().getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private OnItemClickListener listener;
-    //private boolean switchPriorityOnOff;
     private boolean switchThemesOnOff;
     private Context mContext;
 
     public NoteAdapter(@NonNull FirestoreRecyclerOptions<Note> options, SharedPreferences sharedPreferences, Context context) {
         super(options);
-        //switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
         switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
         mContext = context;
     }
@@ -77,7 +75,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         }
 
         if (switchThemesOnOff) {
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.colorDarkThemeText));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.colorPrimary));
             holder.textViewTitle.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.textViewDate.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.textViewFromUserEmail.setTextColor(Color.parseColor(colorDarkThemeTextString));
@@ -92,24 +90,6 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         }
 
         holder.textViewPriority.setText("Priority: " + model.getPriority());
-
-        /*if (switchPriorityOnOff) {
-            int priority = model.getPriority();
-            if (priority >= 1 && priority <= 3) {
-                holder.textViewPriority.setText("Priority: " + priority);
-            } else if (priority >= 4 && priority <= 5) {
-                holder.textViewPriority.setTextColor(Color.GREEN);
-                holder.textViewPriority.setText("Priority: " + priority);
-            } else if (priority >= 6 && priority <= 8) {
-                holder.textViewPriority.setTextColor(Color.YELLOW);
-                holder.textViewPriority.setText("Priority: " + priority);
-            } else {
-                holder.textViewPriority.setTextColor(Color.RED);
-                holder.textViewPriority.setText("Priority: " + priority);
-            }
-        } else {
-            holder.textViewPriority.setText("Priority: " + model.getPriority());
-        }*/
 
         holder.textViewDate.setText(model.getDate());
         holder.textViewFromUserEmail.setText(model.getFromEmailAddress());
@@ -244,7 +224,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             super(itemView);
 
             String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.colorLightThemeText));
-            String colorLightThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.cardBackground));
+            String colorLightThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(mContext, R.color.SecondaryLight));
             mEditor = itemView.findViewById(R.id.mEditor);
             mEditor.setInputEnabled(false);
             mEditor.setBackgroundColor(Color.parseColor(colorLightThemeCardBackgroundString));

@@ -102,8 +102,8 @@ public class SharedFragment extends Fragment {
     private void darkMode() {
 
         layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
-        emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        ImageViewCompat.setImageTintList(emptyView, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+        emptyViewText.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        ImageViewCompat.setImageTintList(emptyView, ContextCompat.getColorStateList(context, R.color.colorPrimary));
     }
 
     private void setUpRecyclerView() {

@@ -75,10 +75,10 @@ public class NewCollection extends AppCompatActivity {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
 
-            mNewFolder.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            mNewFolder.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            mNewFolder.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            mNewFolder.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
             DrawableCompat.setTint(mNewFolder.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            ImageViewCompat.setImageTintList(folderImageView, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            ImageViewCompat.setImageTintList(folderImageView, ContextCompat.getColorStateList(context, R.color.colorPrimary));
 
         } else {
 

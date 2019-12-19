@@ -219,7 +219,7 @@
             android:id="@+id/buttonBackground"
             android:layout_width="0dp"
             android:layout_height="52dp"
-            android:background="@color/cardBackground"
+            android:background="@color/SecondaryLight"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -334,7 +334,7 @@
                     android:layout_height="75dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/colorDarkThemeText"
+                    android:background="@color/colorPrimary"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

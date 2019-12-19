@@ -144,12 +144,9 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        String noteType;
-
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             folderId = bundle.getString("folderId");
-            noteType = bundle.getString("noteType");
         } else {
             return;
         }
@@ -224,22 +221,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 imageOverlay.setVisibility(View.GONE);
             }
         });
-
-        if (noteType != null && noteType.equals("attachment")) {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                getPermissionToWriteStorage();
-            } else {
-                new MaterialFilePicker()
-                        .withActivity(NewNote.this)
-                        .withRequestCode(PICK_DOCUMENT_REQUEST)
-                        .withHiddenFiles(true)
-                        .start();
-            }
-        } else if (noteType != null && noteType.equals("voice")) {
-            recordAudio();
-        } else if (noteType != null && noteType.equals("speech")) {
-            getSpeechInput();
-        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -563,15 +544,15 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            toolbarSave.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            toolbarShare.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextTitle.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            toolbarSave.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            toolbarShare.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextTitle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextTitle.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
             DrawableCompat.setTint(editTextTitle.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
 
             String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
             mEditor.setEditorFontColor(Color.parseColor(colorDarkThemeTextString));
             mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeString));
 
@@ -579,11 +560,11 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
             buttonBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.buttonBackgroundDarkTheme));
 
             audioOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
-            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
             imageOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
-            textGallery.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textCamera.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textGallery.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            textCamera.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
 
         } else {
 
@@ -1243,7 +1224,6 @@ public class NewNote extends AppCompatActivity implements DatePickerDialog.OnDat
         }
 
         Intent i = new Intent(context, Share.class);
-        i.putExtra("fromActivity", "Note");
         i.putExtra("title", title);
         i.putExtra("description", description);
         i.putExtra("priority", priority);

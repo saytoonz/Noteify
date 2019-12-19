@@ -6,8 +6,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
@@ -16,7 +16,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.interstellarstudios.note_ify.MainActivity;
 import com.interstellarstudios.note_ify.R;
 import com.interstellarstudios.note_ify.email.ReminderEmail;
-import static android.content.Context.MODE_PRIVATE;
+
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class AlertReceiver extends BroadcastReceiver {
@@ -32,9 +32,6 @@ public class AlertReceiver extends BroadcastReceiver {
 
         mContext = context;
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        boolean guestAccountOn = sharedPreferences.getBoolean("guestAccount", false);
-
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null) {
@@ -42,9 +39,7 @@ public class AlertReceiver extends BroadcastReceiver {
             currentUserEmail = user.getEmail();
         }
 
-        if(!guestAccountOn){
-            ReminderEmail.sendMail(currentUserEmail);
-        }
+        ReminderEmail.sendMail(currentUserEmail);
 
         createNotificationChannel();
         sendNotification();

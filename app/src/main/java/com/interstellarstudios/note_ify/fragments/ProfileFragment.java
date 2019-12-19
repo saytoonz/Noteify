@@ -313,21 +313,21 @@ public class ProfileFragment extends Fragment {
         }
 
         toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
-        textViewFragmentTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        ImageViewCompat.setImageTintList(imageViewToolbarAdd, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+        textViewFragmentTitle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        ImageViewCompat.setImageTintList(imageViewToolbarAdd, ContextCompat.getColorStateList(context, R.color.colorPrimary));
 
         bottomNav.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
         bottomNav.setItemIconTintList(ContextCompat.getColorStateList(context, R.color.bottom_nav_selector_light));
 
         layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
-        textViewUsername.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        textViewDarkMode.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        textViewSearchHistory.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        textViewLogout.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-        textViewUpdateDetails.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+        textViewUsername.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        textViewDarkMode.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        textViewSearchHistory.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        textViewLogout.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        textViewUpdateDetails.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
         imageViewCameraIcon.setImageResource(R.drawable.camera_icon_dark);
-        ImageViewCompat.setImageTintList(clearSearchHistory, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+        ImageViewCompat.setImageTintList(clearSearchHistory, ContextCompat.getColorStateList(context, R.color.colorPrimary));
     }
 
     private void startLogOut() {

@@ -80,8 +80,8 @@ public class MoveSelectFolder extends AppCompatActivity {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            textViewFragmentTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            ImageViewCompat.setImageTintList(imageViewBack, ContextCompat.getColorStateList(context, R.color.colorDarkThemeText));
+            textViewFragmentTitle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            ImageViewCompat.setImageTintList(imageViewBack, ContextCompat.getColorStateList(context, R.color.colorPrimary));
 
         } else {
 

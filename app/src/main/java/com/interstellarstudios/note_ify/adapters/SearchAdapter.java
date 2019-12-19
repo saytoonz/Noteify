@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,14 +19,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.interstellarstudios.note_ify.EditNote;
 import com.interstellarstudios.note_ify.R;
 import com.interstellarstudios.note_ify.database.NoteEntity;
+
 import java.util.List;
+
 import jp.wasabeef.richeditor.RichEditor;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> {
 
     private Context context;
     private List<NoteEntity> NoteList;
-    //private boolean switchPriorityOnOff;
     private boolean switchThemesOnOff;
 
     class SearchViewHolder extends RecyclerView.ViewHolder {
@@ -49,7 +50,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
             super(itemView);
 
             String colorLightThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorLightThemeText));
-            String colorLightThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.cardBackground));
+            String colorLightThemeCardBackgroundString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.SecondaryLight));
             mEditor = itemView.findViewById(R.id.mEditor);
             mEditor.setInputEnabled(false);
             mEditor.setBackgroundColor(Color.parseColor(colorLightThemeCardBackgroundString));
@@ -72,8 +73,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
     }
 
     public SearchAdapter(List<NoteEntity> NoteList, SharedPreferences sharedPreferences) {
-
-        //switchPriorityOnOff = sharedPreferences.getBoolean("switchPriorityColor", false);
         switchThemesOnOff = sharedPreferences.getBoolean("switchThemes", true);
         this.NoteList = NoteList;
     }
@@ -92,7 +91,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
         if (switchThemesOnOff) {
 
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
             holder.textViewTitle.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.textViewDate.setTextColor(Color.parseColor(colorDarkThemeTextString));
             holder.textViewFromUserEmail.setTextColor(Color.parseColor(colorDarkThemeTextString));
@@ -125,24 +124,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         }
 
         holder.textViewPriority.setText("Priority: " + currentItem.getPriority());
-
-        /*if (switchPriorityOnOff) {
-            int priority = currentItem.getPriority();
-            if (priority >= 1 && priority <= 3) {
-                holder.textViewPriority.setText("Priority: " + priority);
-            } else if (priority >= 4 && priority <= 5) {
-                holder.textViewPriority.setTextColor(Color.GREEN);
-                holder.textViewPriority.setText("Priority: " + priority);
-            } else if (priority >= 6 && priority <= 8) {
-                holder.textViewPriority.setTextColor(Color.YELLOW);
-                holder.textViewPriority.setText("Priority: " + priority);
-            } else {
-                holder.textViewPriority.setTextColor(Color.RED);
-                holder.textViewPriority.setText("Priority: " + priority);
-            }
-        } else {
-            holder.textViewPriority.setText("Priority: " + currentItem.getPriority());
-        }*/
 
         holder.textViewDate.setText(currentItem.getDate());
         holder.textViewFromUserEmail.setText(currentItem.getFromEmailAddress());

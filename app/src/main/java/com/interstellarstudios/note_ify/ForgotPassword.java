@@ -78,9 +78,9 @@ public class ForgotPassword extends AppCompatActivity {
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
 
-            editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
 
         } else {
 
@@ -111,9 +111,9 @@ public class ForgotPassword extends AppCompatActivity {
                     container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
                 }
 
-                editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-                DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorDarkThemeText));
+                editTextEmail.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                editTextEmail.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                DrawableCompat.setTint(editTextEmail.getBackground(), ContextCompat.getColor(context, R.color.colorPrimary));
 
                 saveDarkModePreference();
             }

@@ -15,12 +15,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+
 import androidx.exifinterface.media.ExifInterface;
+
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.core.content.ContextCompat;
@@ -28,8 +31,11 @@ import androidx.core.content.FileProvider;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
+
 import androidx.appcompat.widget.Toolbar;
+
 import android.speech.RecognizerIntent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -45,6 +51,7 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -61,6 +68,7 @@ import com.interstellarstudios.note_ify.util.AlertReceiver;
 import com.interstellarstudios.note_ify.util.DatePickerFragment;
 import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -73,8 +81,10 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import es.dmoral.toasty.Toasty;
 import jp.wasabeef.richeditor.RichEditor;
+
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
@@ -254,7 +264,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         mEditor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                if(hasFocus){
+                if (hasFocus) {
                     horizontalScrollView.setVisibility(View.VISIBLE);
                 } else {
                     horizontalScrollView.setVisibility(View.GONE);
@@ -554,7 +564,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             });
         }
 
-        if (audioDownloadUrl != null && !audioDownloadUrl.equals("")){
+        if (audioDownloadUrl != null && !audioDownloadUrl.equals("")) {
 
             playAudioText.setVisibility(View.VISIBLE);
             playAudioIcon.setVisibility(View.VISIBLE);
@@ -592,15 +602,15 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                 container.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
             }
             toolbar.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            toolbarSave.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            toolbarShare.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextTitle.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            editTextTitle.setHintTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            toolbarSave.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            toolbarShare.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            priorityTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextTitle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            editTextTitle.setHintTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
             DrawableCompat.setTint(editTextTitle.getBackground(), ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
 
             String colorDarkThemeString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimaryDarkTheme));
-            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            String colorDarkThemeTextString = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
             mEditor.setEditorFontColor(Color.parseColor(colorDarkThemeTextString));
             mEditor.setBackgroundColor(Color.parseColor(colorDarkThemeString));
 
@@ -608,11 +618,11 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             buttonBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.buttonBackgroundDarkTheme));
 
             audioOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
-            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textSpeech.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            textVoice.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
             imageOverlay.setBackgroundResource(R.drawable.transparent_overlay_primary_dark);
-            textGallery.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
-            textCamera.setTextColor(ContextCompat.getColor(context, R.color.colorDarkThemeText));
+            textGallery.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            textCamera.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
 
         } else {
 
@@ -1184,7 +1194,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
         } else if (imageOverlay.getVisibility() == View.VISIBLE) {
 
             imageOverlay.setVisibility(View.GONE);
-        }  else {
+        } else {
 
             title = editTextTitle.getText().toString();
             description = mEditor.getHtml();
@@ -1230,10 +1240,10 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             View v = getCurrentFocus();
-            if ( v instanceof EditText) {
+            if (v instanceof EditText) {
                 Rect outRect = new Rect();
                 v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
                     v.clearFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     if (imm != null) {
@@ -1242,7 +1252,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
                 }
             }
         }
-        return super.dispatchTouchEvent( event );
+        return super.dispatchTouchEvent(event);
     }
 
     public static void hideKeyboard(Activity activity) {
@@ -1273,8 +1283,7 @@ public class EditNote extends AppCompatActivity implements DatePickerDialog.OnDa
             description = "";
         }
 
-        Intent i = new Intent (context, Share.class);
-        i.putExtra("fromActivity", "Note");
+        Intent i = new Intent(context, Share.class);
         i.putExtra("title", title);
         i.putExtra("description", description);
         i.putExtra("priority", priority);
